@@ -1,10 +1,10 @@
 import Users from "../models/userModel.js";
+import Student from "../models/studentsModel.js";
 
 export const register = async (req, res, next) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password, studentID, accountType } = req.body;
 
-  //validate fileds
-
+  // Validate fields
   if (!firstName) {
     next("First Name is required");
     return;
@@ -22,6 +22,12 @@ export const register = async (req, res, next) => {
     return;
   }
 
+  // If accountType is 'seeker', studentID is required
+  if (accountType === "seeker" && !studentID) {
+    next("Student ID is required");
+    return;
+  }
+
   try {
     const userExist = await Users.findOne({ email });
 
@@ -30,14 +36,25 @@ export const register = async (req, res, next) => {
       return;
     }
 
+      const studentExist = await Users.findOne({ studentID });
+      if (studentExist) return next("Student ID already exists");
+
+      const studentRegister= await Student.findOne({studentID});
+      if (!studentRegister) {
+        return next("Student not registered for the internship course");
+      }
+
+    // Create new user with studentID if accountType is seeker
     const user = await Users.create({
       firstName,
       lastName,
       email,
       password,
+      studentID, // Save studentID only for seekers
+      accountType,
     });
 
-    // user token
+    // Generate user token
     const token = await user.createJWT();
 
     res.status(201).send({
@@ -49,6 +66,7 @@ export const register = async (req, res, next) => {
         lastName: user.lastName,
         email: user.email,
         accountType: user.accountType,
+        studentID: user.studentID, // Return studentID in response
       },
       token,
     });
@@ -57,6 +75,7 @@ export const register = async (req, res, next) => {
     res.status(404).json({ message: error.message });
   }
 };
+
 
 export const signIn = async (req, res, next) => {
   const { email, password } = req.body;
