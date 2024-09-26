@@ -44,7 +44,7 @@ MongoDB needs to be installed in your system:
 
 ### Setting Up Environment Variables
 
-Create a `.env` file in the root of your project directory and add the following content:
+Create a `.env` file in the server directory and add the following content:
 
     ```properties
     MONGODB_URL = mongodb://localhost:27017/
