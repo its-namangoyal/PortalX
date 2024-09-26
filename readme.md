@@ -30,7 +30,7 @@ MongoDB needs to be installed in your system:
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/PortalX.git
+    git clone https://github.com/its-namangoyal/PortalX.git
     cd PortalX
     ```
 
