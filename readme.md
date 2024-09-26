@@ -42,6 +42,17 @@ MongoDB needs to be installed in your system:
     npm install
     ```
 
+### Setting Up Environment Variables
+
+Create a `.env` file in the root of your project directory and add the following content:
+
+    ```properties
+    MONGODB_URL = mongodb://localhost:27017/
+    JWT_SECRET_KEY = portalx
+    PORT = 8800
+    APP_URL = http://localhost:8800/api-v1
+    ```
+
 ### Running the Client
 
 1. Navigate to the client directory:
