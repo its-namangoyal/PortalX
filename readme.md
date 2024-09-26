@@ -90,17 +90,3 @@ Create a `.env` file in the server directory and add the following content:
     ```sh
     npm run build
     ```
-
-### Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
-
-### License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
-### Acknowledgments
-
-- Hat tip to anyone whose code was used
-- Inspiration
-- etc
