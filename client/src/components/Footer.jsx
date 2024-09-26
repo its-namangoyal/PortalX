@@ -91,7 +91,7 @@ const Footer = () => {
         <div className='bg-[#001a36]'>
           <div className='container mx-auto py-4 px-5 flex flex-wrap flex-col sm:flex-row'>
             <p className='text-gray-300 text-sm text-center sm:text-left'>
-              &copy; 2024 Internship Finder
+              &copy; 2024 PortalX
               <a
                 href='https://youtube.com/@CodeWaveWithAsante'
                 className='text-[#1199e7] ml-1'
@@ -103,7 +103,7 @@ const Footer = () => {
             </p>
 
             <span className='sm:ml-auto sm:mt-0 mt-2 sm:w-auto w-full sm:text-left text-center text-gray-300 text-sm'>
-              Designed by Shyamkumar & Shivani
+              Designed and Developed by University of Windsor
             </span>
           </div>
         </div>
