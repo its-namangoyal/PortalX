@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
 import Companies from "../models/companiesModel.js";
+import Professor from "../models/professorModel.js";  // Import ProfessorModel
 import { compareString } from "../utils/index.js";
 import Verification from "../models/emailVerification.js";
 import projects from "../models/projectsModel.js";
 
 export const register = async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, userID, accountType } = req.body;
 
-  //validate fields
+  // Validate fields
   if (!name) {
     next("Company Name is required!");
     return;
@@ -16,29 +17,42 @@ export const register = async (req, res, next) => {
     next("Email address is required!");
     return;
   }
-  if (!password) {
+  if (!password || password.length < 6) {
     next("Password is required and must be greater than 6 characters");
     return;
   }
 
   try {
+    // Check if account already exists
     const accountExist = await Companies.findOne({ email });
-
     if (accountExist) {
       next("Email Already Registered. Please Login");
       return;
     }
 
-    // create a new account
+    // If account type is company/professor, validate userID
+    if (accountType !== "seeker") {
+      if (!userID) {
+        next("User ID is required for company/professor registration");
+        return;
+      }
+
+      const professor = await Professor.findOne({ professorID: userID });
+      if (!professor) {
+        next("User ID is not present in the Professor/Company Database!");
+        return;
+      }
+    }
+
+    // Create a new company account
     const company = await Companies.create({
       name,
       email,
       password,
+      userID: accountType !== "seeker" ? userID : null,  // Only save userID if it's a company/professor
     });
 
-    const type = "companies";
-
-    // user token
+    // Generate a token
     const token = company.createJWT();
 
     res.status(201).json({
@@ -56,6 +70,7 @@ export const register = async (req, res, next) => {
     res.status(404).json({ message: error.message });
   }
 };
+
 
 export const signIn = async (req, res, next) => {
   const { email, password } = req.body;
