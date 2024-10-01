@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { footerLinks } from "../utils/data";
 import CustomButton from "./CustomButton";
 import TextInput from "./TextInput";
-import uwinLogo from "D:/UWindsor/Project - Final Sem/PortalX/client/src/assets/uw logo.png"; // Import the logo
+import uwinLogo from "../assets/uw logo.png"; // Import the logo
 
 const Footer = () => {
   return (
