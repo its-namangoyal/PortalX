@@ -1,11 +1,10 @@
 import React from "react";
-import { AiOutlineCloseCircle, AiOutlineSearch } from "react-icons/ai";
-import { CiLocationOn } from "react-icons/ci";
+import { AiOutlineCloseCircle } from "react-icons/ai";
+import { FaSearch } from "react-icons/fa";
 import { HeroImage } from "../assets";
 import { popularSearch } from "../utils/data";
-import CustomButton from "./CustomButton";
 
-const SearchInput = ({ placeholder, icon, value, setValue, styles }) => {
+const SearchInput = ({ placeholder, value, setValue, handleClick }) => {
   const handleChange = (e) => {
     setValue(e.target.value);
   };
@@ -13,21 +12,23 @@ const SearchInput = ({ placeholder, icon, value, setValue, styles }) => {
   const clearInput = () => setValue("");
 
   return (
-    <div className={`flex w-full md:w-1/3 items-center ${styles}`}>
-      {icon}
-
+    <div className='flex w-full md:w-2/3 items-center bg-white shadow-md p-3' style={{ borderRadius: '25px', background: 'rgba(255, 255, 255, 0.8)' }}>
       <input
         value={value}
-        onChange={(e) => handleChange(e)}
+        onChange={handleChange}
         type='text'
-        className='w-full md:w-64 p-2 outline-none bg-transparent text-base'
+        className='w-full p-2 outline-none bg-transparent text-base placeholder-gray-500'
         placeholder={placeholder}
       />
-
-      <AiOutlineCloseCircle
-        className='hidden md:flex text-gray-600 text-xl cursor-pointer'
-        onClick={clearInput}
-      />
+      {value && (
+        <AiOutlineCloseCircle
+          className='text-gray-600 text-xl cursor-pointer mr-2'
+          onClick={clearInput}
+        />
+      )}
+      <button onClick={handleClick} className='flex items-center justify-center'>
+        <FaSearch className='text-gray-600 text-2xl cursor-pointer' />
+      </button>
     </div>
   );
 };
@@ -38,8 +39,6 @@ const Header = ({
   handleClick,
   searchQuery,
   setSearchQuery,
-  location,
-  setLocation,
 }) => {
   return (
     <div className='bg-[#f7fdfd]'>
@@ -53,34 +52,17 @@ const Header = ({
             <p className='text-slate-700 font-bold text-4xl'>{title}</p>
           </div>
 
-          <div className='w-full flex items-center justify-around bg-white px-2 md:px-5 py-2.5 md:py-6 shadow-2xl rounded-full'>
+          <div className='w-full flex items-center justify-around bg-transparent px-5 py-4'>
             <SearchInput
-              placeholder='Internship Title or Keywords'
-              icon={<AiOutlineSearch className='text-gray-600 text-xl' />}
+              placeholder='Search by internship title, keywords, or location'
               value={searchQuery}
               setValue={setSearchQuery}
+              handleClick={handleClick}
             />
-            <SearchInput
-              placeholder='Country or City'
-              icon={<CiLocationOn className='text-gray-600 text-xl' />}
-              value={location}
-              setValue={setLocation}
-              styles={"hidden md:flex"}
-            />
-
-            <div>
-              <CustomButton
-                onClick={handleClick}
-                title='Search'
-                containerStyles={
-                  "text-white py-2 md:py3 px-3 md:px-10 focus:outline-none bg-blue-600 rounded-full md:rounded-md text-sm md:text-base"
-                }
-              />
-            </div>
           </div>
 
           {type && (
-            <div className='w-full lg:1/2 flex flex-wrap gap-3 md:gap-6 py-10 md:py-14'>
+            <div className='w-full lg:w-1/2 flex flex-wrap gap-3 md:gap-6 py-10 md:py-14'>
               {popularSearch.map((search, index) => (
                 <span
                   key={index}

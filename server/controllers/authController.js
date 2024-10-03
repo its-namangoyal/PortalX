@@ -4,17 +4,18 @@ import Student from "../models/studentsModel.js";
 export const register = async (req, res, next) => {
   const { firstName, lastName, email, password, studentID, accountType } = req.body;
 
+
   // Validate fields
   if (!firstName) {
     next("First Name is required");
     return;
   }
-  if (!email) {
-    next("Email is required");
-    return;
-  }
   if (!lastName) {
     next("Last Name is required");
+    return;
+  }
+  if (!email) {
+    next("Email is required");
     return;
   }
   if (!password) {
@@ -29,22 +30,28 @@ export const register = async (req, res, next) => {
   }
 
   try {
+    // Check if the email already exists in the system
     const userExist = await Users.findOne({ email });
-
     if (userExist) {
       next("Email Address already exists");
       return;
     }
 
-      const studentExist = await Users.findOne({ studentID });
-      if (studentExist) return next("Student ID already exists");
+    // Check if the studentID already exists
+    const studentExist = await Users.findOne({ studentID });
+    if (studentExist) {
+      next("Student ID already exists");
+      return;
+    }
 
-      const studentRegister= await Student.findOne({studentID});
-      if (!studentRegister) {
-        return next("Student not registered for the internship course");
-      }
+    // Verify if the student is registered for the internship course
+    const studentRegister = await Student.findOne({ studentID });
+    if (!studentRegister) {
+      next("Student not registered for the internship course");
+      return;
+    }
 
-    // Create new user with studentID if accountType is seeker
+    // Create new user
     const user = await Users.create({
       firstName,
       lastName,
@@ -57,6 +64,7 @@ export const register = async (req, res, next) => {
     // Generate user token
     const token = await user.createJWT();
 
+    // Respond with success
     res.status(201).send({
       success: true,
       message: "Account created successfully",
@@ -75,6 +83,7 @@ export const register = async (req, res, next) => {
     res.status(404).json({ message: error.message });
   }
 };
+
 
 
 export const signIn = async (req, res, next) => {
