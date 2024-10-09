@@ -1,91 +1,95 @@
 import Admin from "../models/adminModel.js";
-import bcrypt from "bcryptjs";
+import { createJWT } from "../utils/index.js"; // Assume you have a utility function for creating JWTs
 
-// Register Admin
 export const register = async (req, res, next) => {
-  const { name, email, password, semester, accountType } = req.body;
-
-  // Validate required fields
-  if (!name || !email || !password || !semester || !accountType) {
-    return res.status(400).json({ message: "All fields are required!" });
-  }
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    semester,
+    year,
+  } = req.body;
 
   try {
-    // Check if the admin email already exists
+    // Validate fields
+    if (!firstName || !lastName || !email || !password || !semester || !year) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Check if the email already exists
     const adminExist = await Admin.findOne({ email });
     if (adminExist) {
-      return res.status(400).json({ message: "Email already exists!" });
+      return res.status(400).json({ message: "Email Address already exists" });
     }
 
     // Create new admin
-    const admin = await Admin.create({
-      name,
+    const newAdmin = new Admin({
+      firstName,
+      lastName,
       email,
-      password,
+      password, // Assuming the model handles password hashing
       semester,
-      accountType,
+      year,
     });
 
-    // Generate JWT token for admin
-    const token = admin.createJWT();
+    await newAdmin.save();
+
+    // Generate JWT
+    const token = createJWT(newAdmin._id);
 
     res.status(201).json({
       success: true,
       message: "Admin account created successfully",
-      admin: {
-        _id: admin._id,
-        name: admin.name,
-        email: admin.email,
-        semester: admin.semester,
-        accountType: admin.accountType,
+      user: {
+        _id: newAdmin._id,
+        firstName: newAdmin.firstName,
+        lastName: newAdmin.lastName,
+        email: newAdmin.email,
+        accountType: "admin",
+        semester: newAdmin.semester,
+        year: newAdmin.year,
       },
       token,
     });
   } catch (error) {
-    console.error("Error registering admin:", error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("Admin registration error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// Sign In Admin
 export const signIn = async (req, res, next) => {
   const { email, password } = req.body;
 
-  // Validate required fields
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required!" });
-  }
-
   try {
-    // Find admin by email
+    if (!email || !password) {
+      return res.status(400).json({ message: "Please provide email and password" });
+    }
+
     const admin = await Admin.findOne({ email }).select("+password");
-    if (!admin) {
-      return res.status(400).json({ message: "Invalid credentials!" });
+
+    if (!admin || !(await admin.comparePassword(password))) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // Check if password matches
-    const isMatch = await admin.comparePassword(password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials!" });
-    }
-
-    // Generate JWT token
-    const token = admin.createJWT();
+    const token = createJWT(admin._id);
 
     res.status(200).json({
       success: true,
-      message: "Admin logged in successfully",
-      admin: {
+      message: "Admin login successful",
+      user: {
         _id: admin._id,
-        name: admin.name,
+        firstName: admin.firstName,
+        lastName: admin.lastName,
         email: admin.email,
+        accountType: "admin",
         semester: admin.semester,
-        accountType: admin.accountType,
+        year: admin.year,
       },
       token,
     });
   } catch (error) {
-    console.error("Error signing in admin:", error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("Admin login error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

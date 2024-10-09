@@ -3,9 +3,6 @@ import Users from "../models/userModel.js";
 import Verification from "../models/emailVerification.js";
 import { compareString } from "../utils/index.js";
 
-// Added
-import Projects from '../models/projectsModel.js';
-
 export const updateUser = async (req, res, next) => {
   const {
     firstName,
