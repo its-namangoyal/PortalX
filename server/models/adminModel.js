@@ -3,21 +3,22 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 import JWT from "jsonwebtoken";
 
-// Schema
+//schema for Admin
 const adminSchema = new mongoose.Schema(
   {
-    name: {
+    firstName: {
       type: String,
-      required: [true, "Name is Required!"],
+      required: [true, "First Name is Required!"],
+    },
+    lastName: {
+      type: String,
+      required: [true, "Last Name is Required!"],
     },
     email: {
       type: String,
       required: [true, "Email is Required!"],
       unique: true,
-      validate: {
-        validator: (email) => validator.isEmail(email),
-        message: "Please provide a valid email",
-      },
+      validate: validator.isEmail,
     },
     password: {
       type: String,
@@ -27,27 +28,21 @@ const adminSchema = new mongoose.Schema(
     },
     semester: {
       type: String,
-      required: [true, "Semester is required!"], // Example: "Fall 2024"
-      enum: ["Fall 2024", "Winter 2025", "Summer 2025"], // Optional: Restrict to specific semesters
+      required: [true, "Semester is Required!"],
     },
-    accountType: { 
-        type: String, 
-        default: "seeker" // Default account type as "seeker"
-      }// To distinguish admin accounts
+    year: {
+      type: Number,
+      required: [true, "Year is Required!"],
+    },
   },
   { timestamps: true }
 );
 
 // Middleware to hash password before saving
-adminSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error);
-  }
+adminSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Method to compare passwords
@@ -55,7 +50,7 @@ adminSchema.methods.comparePassword = async function (userPassword) {
   return await bcrypt.compare(userPassword, this.password);
 };
 
-// Method to create JWT
+// Method to create a JWT
 adminSchema.methods.createJWT = function () {
   return JWT.sign({ adminId: this._id }, process.env.JWT_SECRET_KEY, {
     expiresIn: "1d",

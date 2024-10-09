@@ -17,6 +17,7 @@ const SignUp = ({ open, setOpen }) => {
   const [accountType, setAccountType] = useState("seeker");
   const [isLoading, setIsLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const currentYear = new Date().getFullYear(); 
 
   const {
     register,
@@ -148,42 +149,134 @@ const SignUp = ({ open, setOpen }) => {
                           value: accountType === "seeker" ? /^[a-zA-Z0-9._%+-]+@uwindsor\.ca$/i : /^[a-zA-Z0-9._%+-]+@[a-zA-Z]+\.[a-zA-Z]+$/i,
                           message:
                             accountType === "seeker" ? "Email must be a valid '@uwindsor.ca' address" : "Enter a valid email address",
+                            
                         },
                       })}
                       error={errors.email ? errors.email.message : ""}
                     />
-                    {isRegister && (
-                      <div className="w-full flex gap-1 md:gap-2">
-                        <div className={`${
-                          accountType === "seeker" ? "w-1/2" : "w-full"
-                        }`}>
-                          <TextInput
-                            name={accountType === "seeker" ? "firstName" : "name"}
-                            label={accountType === "seeker" ? "First Name" : "Company/Professor Name"}
-                            placeholder={accountType === "seeker" ? "eg. James" : "Company/Professor Name"}
-                            type="text"
-                            register={register(accountType === "seeker" ? "firstName" : "name", {
-                              required: accountType === "seeker" ? "First Name is required" : "Company Name is required",
-                            })}
-                            error={accountType === "seeker" ? errors.firstName ? errors.firstName?.message : "" : errors.name ? errors.name?.message : ""}
-                          />
-                        </div>
-                        {accountType === "seeker" && isRegister && (
-                          <div className="w-1/2">
-                            <TextInput
-                              name="lastName"
-                              label="Last Name"
-                              placeholder="Wagonner"
-                              type="text"
-                              register={register("lastName", {
-                                required: "Last Name is required",
-                              })}
-                              error={errors.lastName ? errors.lastName.message : ""}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    )}
+                   
+                   {isRegister && (
+  <div className="w-full flex gap-1 md:gap-2">
+    {/* For seeker: Show First Name and Last Name */}
+    {accountType === "seeker" && (
+      <>
+        <div className="w-1/2">
+          <TextInput
+            name="firstName"
+            label="First Name"
+            placeholder="Enter First Name"
+            type="text"
+            register={register("firstName", {
+              required: "First Name is required",
+            })}
+            error={errors.firstName ? errors.firstName.message : ""}
+          />
+        </div>
+
+        <div className="w-1/2">
+          <TextInput
+            name="lastName"
+            label="Last Name"
+            placeholder="Enter Last Name"
+            type="text"
+            register={register("lastName", {
+              required: "Last Name is required",
+            })}
+            error={errors.lastName ? errors.lastName.message : ""}
+          />
+        </div>
+      </>
+    )}
+
+    {/* For admin: Show First Name and Last Name */}
+    {accountType === "admin" && (
+      <>
+        <div className="w-1/2">
+          <TextInput
+            name="firstName"
+            label="First Name"
+            placeholder="Enter First Name"
+            type="text"
+            register={register("firstName", {
+              required: "First Name is required",
+            })}
+            error={errors.firstName ? errors.firstName.message : ""}
+          />
+        </div>
+
+        <div className="w-1/2">
+          <TextInput
+            name="lastName"
+            label="Last Name"
+            placeholder="Enter Last Name"
+            type="text"
+            register={register("lastName", {
+              required: "Last Name is required",
+            })}
+            error={errors.lastName ? errors.lastName.message : ""}
+          />
+        </div>
+      </>
+    )}
+
+    {/* For company: Show Company/Professor Name */}
+    {accountType === "company" && (
+      <div className="w-full">
+        <TextInput
+          name="name"
+          label="Company/Professor Name"
+          placeholder="Company/Professor Name"
+          type="text"
+          register={register("name", {
+            required: "Company Name is required",
+          })}
+          error={errors.name ? errors.name.message : ""}
+        />
+      </div>
+    )}
+  </div>
+)}
+
+{isRegister && accountType === "admin" && (
+  <div className="w-full">
+    {/* Semester Dropdown */}
+    <div className="mt-4">
+      <label htmlFor="semester" className="block text-sm font-medium text-gray-700">
+        Semester
+      </label>
+      <select
+        id="semester"
+        {...register("semester", { required: "Semester is required" })}
+        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
+      >
+        <option value="">Select Semester</option>
+        <option value="fall">Fall</option>
+        <option value="winter">Winter</option>
+        <option value="summer">Summer</option>
+      </select>
+      {errors.semester && (
+        <p className="mt-1 text-red-600">{errors.semester.message}</p>
+      )}
+    </div>
+
+    {/* Year Input */}
+    <div className="mt-4">
+      <TextInput
+        name="year"
+        label="Year"
+        placeholder="Enter Year"
+        type="number"
+        register={register("year", {
+          required: "Year is required",
+          validate: {
+            validYear: value => value <= currentYear || "Year must be less than or equal to current year",
+          },
+        })}
+        error={errors.year ? errors.year.message : ""}
+      />
+    </div>
+  </div>
+)}
                     {isRegister && accountType === "seeker" && (
                       <div className="w-full">
                         <TextInput
@@ -198,7 +291,7 @@ const SignUp = ({ open, setOpen }) => {
                         />
                       </div>
                     )}
-                    {isRegister && accountType !== "seeker" && (
+                    {isRegister && accountType == "company" && (
                       <div className="w-full">
                         <TextInput
                           name="userID"
@@ -212,6 +305,7 @@ const SignUp = ({ open, setOpen }) => {
                         />
                       </div>
                     )}
+
                     <div className="w-full flex gap-1 md:gap-2">
                       <div className={`${isRegister ? "w-1/2" : "w-full"}`}>
                         <TextInput
