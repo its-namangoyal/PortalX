@@ -6,6 +6,7 @@ import FindProjects from "./FindProjects";
 import ProjectDetail from "./ProjectDetail";
 import UploadProject from "./UploadProject";
 import UserProfile from "./UserProfile";
+import Admin from "./Admin";
 
 export {
   About,
@@ -16,4 +17,5 @@ export {
   ProjectDetail,
   UploadProject,
   UserProfile,
+  Admin
 };
