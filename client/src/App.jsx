@@ -15,6 +15,7 @@ import {
 import Projects from "./pages/Projects";
 import MyApplications from "./pages/MyApplications";
 import CreateProject from "./pages/CreateProject"; // Import CreateProject component
+import PreviousProject from "./pages/PreviousProject"; // Import PreviousProject component
 
 function Layout() {
   const { user } = useSelector((state) => state.user);
@@ -82,6 +83,7 @@ function App() {
         {/* Public Routes with Navbar and Footer */}
         <Route element={<PublicLayout />}>
           <Route path="/about-us" element={<About />} />
+          <Route path="/previous-projects" element={<PreviousProject />} /> {/* New Previous Project Route */}  
           <Route path="/create-project" element={<CreateProject />} /> {/* New Create Project Route */}
         </Route>
 

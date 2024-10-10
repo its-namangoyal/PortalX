@@ -138,10 +138,13 @@ const Navbar = () => {
                   <Link to='/'>Find Internships</Link>
                 </li>
                 <li>
-                  <Link to='/companies'>Companies / Professors</Link>
+                  <Link to='/companies'>Companies/Professors</Link>
                 </li>
                 <li>
                   <Link to='/my-projects'>My Projects</Link>
+                </li>
+                <li>
+                  <Link to='/previous-projects'>Previous Projects</Link> {/* Link to PreviousProjects */}
                 </li>
               </>
             )}
@@ -195,6 +198,9 @@ const Navbar = () => {
             </Link>
             <Link to='/about-us' onClick={handleCloseNavbar} className='py-2'>
               About
+            </Link>
+            <Link to='/previous-projects' onClick={handleCloseNavbar} className='py-2'>
+              Previous Projects {/* Mobile menu for Previous Projects */}
             </Link>
 
             <div className='w-full py-4'>
