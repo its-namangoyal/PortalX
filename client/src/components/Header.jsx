@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { FaSearch } from "react-icons/fa";
 import { HeroImage } from "../assets";
@@ -12,7 +13,10 @@ const SearchInput = ({ placeholder, value, setValue, handleClick }) => {
   const clearInput = () => setValue("");
 
   return (
-    <div className='flex w-full md:w-2/3 items-center bg-white shadow-md p-3' style={{ borderRadius: '25px', background: 'rgba(255, 255, 255, 0.8)' }}>
+    <div
+      className='flex w-full md:w-2/3 items-center bg-white shadow-md p-3'
+      style={{ borderRadius: "25px", background: "rgba(255, 255, 255, 0.8)" }}
+    >
       <input
         value={value}
         onChange={handleChange}
@@ -40,6 +44,13 @@ const Header = ({
   searchQuery,
   setSearchQuery,
 }) => {
+  const navigate = useNavigate(); // Use react-router-dom's useNavigate hook for navigation
+
+  // Function to handle navigation to the Create Project page
+  const goToCreateProject = () => {
+    navigate("/create-project");
+  };
+
   return (
     <div className='bg-[#f7fdfd]'>
       <div
@@ -61,6 +72,16 @@ const Header = ({
             />
           </div>
 
+          {/* Button to navigate to the Create Project page */}
+          <div className='mt-4'>
+            <button
+              onClick={goToCreateProject}
+              className='bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700'
+            >
+              Create Project
+            </button>
+          </div>
+
           {type && (
             <div className='w-full lg:w-1/2 flex flex-wrap gap-3 md:gap-6 py-10 md:py-14'>
               {popularSearch.map((search, index) => (
@@ -76,7 +97,7 @@ const Header = ({
         </div>
 
         <div className='w-1/3 h-full absolute top-24 md:-top-6 lg:-top-12 right-16 2xl:right-[18rem]'>
-          <img src={HeroImage} className='object-contain' />
+          <img src={HeroImage} className='object-contain' alt='Hero' />
         </div>
       </div>
     </div>

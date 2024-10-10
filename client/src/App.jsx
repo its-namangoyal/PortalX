@@ -14,6 +14,7 @@ import {
 } from "./pages";
 import Projects from "./pages/Projects";
 import MyApplications from "./pages/MyApplications";
+import CreateProject from "./pages/CreateProject"; // Import CreateProject component
 
 function Layout() {
   const { user } = useSelector((state) => state.user);
@@ -81,6 +82,7 @@ function App() {
         {/* Public Routes with Navbar and Footer */}
         <Route element={<PublicLayout />}>
           <Route path="/about-us" element={<About />} />
+          <Route path="/create-project" element={<CreateProject />} /> {/* New Create Project Route */}
         </Route>
 
         {/* Public Routes without Navbar and Footer */}
