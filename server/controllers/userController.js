@@ -1,11 +1,9 @@
 import mongoose from "mongoose";
 import Users from "../models/userModel.js";
-import Verification from "../models/emailVerification.js";
-import { compareString } from "../utils/index.js";
+import crypto from "crypto"; // To handle token generation
+import nodemailer from "nodemailer"; // Email service
 
-// Added
-import Projects from '../models/projectsModel.js';
-
+// Update user profile
 export const updateUser = async (req, res, next) => {
   const {
     firstName,
@@ -19,11 +17,9 @@ export const updateUser = async (req, res, next) => {
     about,
   } = req.body;
 
-  console.log("CVURL", cvUrl);
-
   try {
     if (!firstName || !lastName || !email || !contact || !projectTitle || !about) {
-      next("Please provide all required fields");
+      return next("Please provide all required fields");
     }
 
     const id = req.body.user.userId;
@@ -52,7 +48,7 @@ export const updateUser = async (req, res, next) => {
     user.password = undefined;
 
     res.status(200).json({
-      sucess: true,
+      success: true,
       message: "User updated successfully",
       user,
       token,
@@ -63,6 +59,7 @@ export const updateUser = async (req, res, next) => {
   }
 };
 
+// Get user information
 export const getUser = async (req, res, next) => {
   try {
     const id = req.body.user.userId;
@@ -92,74 +89,111 @@ export const getUser = async (req, res, next) => {
   }
 };
 
+// Verify email
 export const verifyEmail = async (req, res) => {
   const { userId, token } = req.params;
 
-  Verification.findOne({ userId })
-    .then((result) => {
-      if (result) {
-        const { expiresAt, token: hashedToken } = result;
+  try {
+    // Find user by ID
+    const user = await Users.findById(userId);
 
-        // token has expires
-        if (expiresAt < Date.now()) {
-          Verification.findOneAndDelete({ userId })
-            .then(() => {
-              Users.findOneAndDelete({ _id: userId })
-                .then(() => {
-                  const message = "Verification token has expired.";
-                  res.redirect(
-                    `/api-v1/users/verified?status=error&message=${message}`
-                  );
-                })
-                .catch((err) => {
-                  res.redirect(`/api-v1/users/verified?message=`);
-                });
-            })
-            .catch((error) => {
-              console.log(error);
-              res.redirect(`/api-v1/users/verified?message=`);
-            });
-        } else {
-          //token valid
-          compareString(token, hashedToken)
-            .then((isMatch) => {
-              if (isMatch) {
-                Users.findOneAndUpdate({ _id: userId }, { verified: true })
-                  .then(() => {
-                    Verification.findOneAndDelete({ userId }).then(() => {
-                      const message = "Email verified successfully";
-                      res.redirect(
-                        `/api-v1/users/verified?status=success&message=${message}`
-                      );
-                    });
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                    const message = "Verification failed or link is invalid";
-                    res.redirect(
-                      `/api-v1/users/verified?status=error&message=${message}`
-                    );
-                  });
-              } else {
-                // invalid token
-                const message = "Verification failed or link is invalid";
-                res.redirect(
-                  `/api-v1/users/verified?status=error&message=${message}`
-                );
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-              res.redirect(`/api-v1/users/verified?message=`);
-            });
-        }
-      } else {
-        const message = "Invalid verification link. Try again later.";
-        res.redirect(`/api-v1/users/verified?status=error&message=${message}`);
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.redirect(`/api-v1/users/verified?message=`);
+    if (!user) {
+      return res.status(400).json({ message: "Invalid user." });
+    }
+
+    // Check if token matches and hasn't expired
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    if (user.verificationToken !== hashedToken || user.verificationExpires < Date.now()) {
+      return res.status(400).json({ message: "Invalid or expired token." });
+    }
+
+    // Mark user as verified and remove the token
+    user.verified = true;
+    user.verificationToken = undefined;
+    user.verificationExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Email verified successfully. You can now log in." });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error verifying email." });
+  }
+};
+
+// Check if user is verified before allowing login
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await Users.findOne({ email }).select("+password");
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid email or password." });
+    }
+
+    // Check if the user's email is verified
+    if (!user.verified) {
+      return res.status(403).json({ message: "Please verify your email before logging in." });
+    }
+
+    const isMatch = await user.comparePassword(password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid email or password." });
+    }
+
+    const token = user.createJWT();
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error logging in." });
+  }
+};
+
+// Resend verification email (Optional)
+export const resendVerificationEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await Users.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    if (user.verified) {
+      return res.status(400).json({ message: "Email already verified." });
+    }
+
+    // Create new token
+    const newToken = user.createVerificationToken();
+    await user.save();
+
+    // Send email (email sending logic)
+    const verificationUrl = `http://localhost:3000/verify/${user._id}/${newToken}`;
+
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
     });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: 'Verify Your Email',
+      text: `Click the link to verify your email: ${verificationUrl}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "Verification email resent. Please check your inbox." });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error resending verification email." });
+  }
 };

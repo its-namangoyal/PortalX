@@ -1,12 +1,12 @@
-import mongoose, { Schema } from "mongoose";
+// import mongoose, { Schema } from "mongoose";
 
-const emailVerificationSchema = Schema({
-  userId: String,
-  token: String,
-  createdAt: Date,
-  expiresAt: Date,
-});
+// const emailVerificationSchema = Schema({
+//   userId: String,
+//   token: String,
+//   createdAt: Date,
+//   expiresAt: Date,
+// });
 
-const Verification = mongoose.model("Verification", emailVerificationSchema);
+// const Verification = mongoose.model("Verification", emailVerificationSchema);
 
-export default Verification;
+// export default Verification;

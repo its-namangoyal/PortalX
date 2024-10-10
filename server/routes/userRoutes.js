@@ -5,14 +5,18 @@ import {
   getUser,
   updateUser,
   verifyEmail,
+  resendVerificationEmail, // New controller for resending verification email
 } from "../controllers/userController.js";
 
 const router = express.Router();
 
 const __dirname = path.resolve(path.dirname(""));
 
-//verify user email
+// Verify user email
 router.get("/verify/:userId/:token", verifyEmail);
+
+// Resend verification email (optional)
+router.post("/resend-verification", resendVerificationEmail);
 
 // GET user
 router.post("/get-user", userAuth, getUser);
