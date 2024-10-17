@@ -16,6 +16,7 @@ export const createProject = async (req, res, next) => {
       experience,
       desc,
       requirements,
+      semester,
     } = req.body;
 
     if (
@@ -42,6 +43,7 @@ export const createProject = async (req, res, next) => {
       experience,
       detail: { desc, requirements },
       company: id,
+      semester,
     };
 
     const project = new Projects(projectPost);
@@ -57,7 +59,7 @@ export const createProject = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Project Posted SUccessfully",
+      message: "Project Posted Successfully",
       project,
     });
   } catch (error) {

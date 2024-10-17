@@ -93,7 +93,7 @@ const UploadProject = () => {
     <div className='container mx-auto flex flex-col md:flex-row gap-8 2xl:gap-14 bg-[#f7fdfd] px-5'>
       <div className='w-full h-fit md:w-2/3 2xl:2/4 bg-white px-5 py-10 md:px-10 shadow-md'>
         <div>
-          <p className='text-gray-500 font-semibold text-2xl'>Project Post</p>
+          <p className='text-gray-500 font-semibold text-2xl'>Projects Posted</p>
 
           <form
             className='w-full mt-2 flex flex-col gap-8'
@@ -110,6 +110,25 @@ const UploadProject = () => {
               })}
               error={errors.projectTitle ? errors.projectTitle?.message : ""}
             />
+
+            <div className='w-full'>
+              <label className='text-gray-600 text-sm mb-1'>Semester</label>
+              <select
+                {...register("semester", {
+                  required: "Semester is required",
+                })}
+                className='w-full rounded border border-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-base px-3 py-2'
+              >
+                <option value="">Select Semester</option>
+                <option value="Fall 2024">Fall 2024</option>
+                <option value="Winter 2025">Winter 2025</option>
+                <option value="Spring 2025">Spring 2025</option>
+                <option value="Summer 2025">Summer 2025</option>
+              </select>
+              {errors.semester && (
+                <span className='text-red-500 text-sm mt-1'>{errors.semester.message}</span>
+              )}
+            </div>
 
             <div className='w-full flex gap-4'>
               {/* <div className={`w-1/2 mt-2`}>
@@ -211,7 +230,7 @@ const UploadProject = () => {
                 <CustomButton
                   type='submit'
                   containerStyles='inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-8 py-2 text-sm font-medium text-white hover:bg-[#1d4fd846] hover:text-[#1d4fd8] focus:outline-none '
-                  title='Sumbit'
+                  title='Submit'
                 />
               )}
             </div>

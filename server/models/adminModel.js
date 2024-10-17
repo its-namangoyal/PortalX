@@ -34,6 +34,10 @@ const adminSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Year is Required!"],
     },
+    accountType: { 
+      type: String, 
+      default: "admin" // Default account type as "admin"
+    },
   },
   { timestamps: true }
 );

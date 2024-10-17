@@ -248,6 +248,7 @@ const CompanyProfile = () => {
             <div className='flex items-center justifu-center py-5 md:py-0 gap-4'>
               <CustomButton
                 onClick={() => setOpenForm(true)}
+                title='Edit Profile'
                 iconRight={<FiEdit3 />}
                 containerStyles={`py-1.5 px-3 md:px-5 focus:outline-none bg-blue-600  hover:bg-blue-700 text-white rounded text-sm md:text-base border border-blue-600`}
               />
@@ -276,7 +277,7 @@ const CompanyProfile = () => {
 
           <div className='flex flex-col items-center mt-10 md:mt-0'>
             <span className='text-xl'>{info?.projectPosts?.length}</span>
-            <p className='text-blue-600 '>Project Post</p>
+            <p className='text-blue-600 '>Projects Posted</p>
           </div>
         </div>
       </div>
@@ -284,17 +285,21 @@ const CompanyProfile = () => {
       <div className='w-full mt-20 flex flex-col gap-2'>
         <p>Projects Posted</p>
 
-        <div className='flex flex-wrap gap-3'>
-          {info?.projectPosts?.map((project, index) => {
-            const data = {
-              name: info?.name,
-              email: info?.email,
-              logo: info?.profileUrl,
-              ...project,
-            };
-            return <ProjectCard project={data} key={index} />;
-          })}
-        </div>
+        {info?.projectPosts?.length > 0 ? (
+          <div className='flex flex-wrap gap-3'>
+            {info.projectPosts.map((project, index) => {
+              const data = {
+                name: info?.name,
+                email: info?.email,
+                logo: info?.profileUrl,
+                ...project,
+              };
+              return <ProjectCard project={data} key={index} />;
+            })}
+          </div>
+        ) : (
+          <p className='text-gray-500 italic'>No projects posted yet.</p>
+        )}
       </div>
 
       <CompnayForm open={openForm} setOpen={setOpenForm} />

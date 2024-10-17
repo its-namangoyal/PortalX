@@ -66,7 +66,7 @@ function MenuList({ user, isProfileOpen, onClick }) {
               <Menu.Item>
                 {({ active }) => (
                   <Link
-                    to={`${user?.accountType ? "user-profile" : "company-profile"}`}
+                    to={`${user?.accountType === "seeker" ? "user-profile" : user?.accountType === "company" ? "company-profile" : "admin-profile"}`}
                     className={`${
                       active ? "bg-blue-500 text-white" : "text-gray-900"
                     } group flex items-center rounded-md p-2 text-sm`}
@@ -76,7 +76,11 @@ function MenuList({ user, isProfileOpen, onClick }) {
                       className={`${active ? "text-white" : "text-gray-600"} mr-2 h-5 w-5`}
                       aria-hidden='true'
                     />
-                    {user?.accountType ? "Student Profile" : "Company / Professor Profile"}
+                    {user?.accountType === "seeker"
+                      ? "Student Profile"
+                      : user?.accountType === "company"
+                      ? "Company / Professor Profile"
+                      : "Admin Profile"}
                   </Link>
                 )}
               </Menu.Item>

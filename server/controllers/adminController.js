@@ -49,6 +49,7 @@ export const register = async (req, res, next) => {
         accountType: "admin",
         semester: newAdmin.semester,
         year: newAdmin.year,
+        accountType: newAdmin.accountType,
       },
       token,
     });
