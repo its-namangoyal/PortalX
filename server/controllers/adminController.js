@@ -1,5 +1,6 @@
 import Admin from "../models/adminModel.js";
 import { createJWT } from "../utils/index.js"; // Assume you have a utility function for creating JWTs
+import Project from "../models/projectsModel.js";
 
 export const register = async (req, res, next) => {
   const {
@@ -92,5 +93,42 @@ export const signIn = async (req, res, next) => {
   } catch (error) {
     console.error("Admin login error:", error);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getProjectApplications = async (req, res) => {
+  try {
+    const projects = await Project.find({ application: { $exists: true, $ne: [] } })
+      .populate({
+        path: 'application',
+        select: 'firstName lastName email'
+      });
+
+    const formattedProjects = projects.map(project => ({
+      _id: project._id,
+      projectTitle: project.projectTitle,
+      detail: {
+        desc: project.detail.desc,
+        requirements: project.detail.requirements
+      },
+      application: project.application.map(user => ({
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email
+      }))
+    }));
+
+    res.status(200).json({
+      success: true,
+      projects: formattedProjects,
+    });
+  } catch (error) {
+    console.error("Error fetching project applications:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Error fetching project applications", 
+      error: error.message 
+    });
   }
 };
