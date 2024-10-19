@@ -74,7 +74,7 @@ function App() {
           {/* New Admin route */}
           <Route 
             path="/admin" 
-            element={user?.accountType === "seeker" ? <Admin /> : <Navigate to="/" replace />} 
+            element={user?.accountType === "admin" ? <Admin /> : <Navigate to="/admin" replace />} 
           />
         </Route>
 
