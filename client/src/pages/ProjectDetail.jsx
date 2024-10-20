@@ -412,8 +412,8 @@ const ProjectDetail = () => {
                     {project?.company?.name}
                   </span>
 
-                  <span className="text-gray-500 text-sm">
-                    {moment(project?.createdAt).fromNow()}
+                  <span className="text-sm text-gray-500 mt-1">
+                    Semester: {project?.semester}
                   </span>
                 </div>
               </div>

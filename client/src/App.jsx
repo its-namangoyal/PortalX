@@ -54,11 +54,19 @@ function App() {
             element={
               user ? (
                 <Navigate
-                  to={user.accountType === "seeker" ? "/find-projects" : "/projects"}
+                  to={
+                    user.accountType === "seeker"
+                      ? "/find-projects"
+                      : user.accountType === "company"
+                      ? "/projects"
+                      : user.accountType === "admin"
+                      ? "/admin"
+                      : "/"
+                  }
                   replace
                 />
               ) : (
-                <Navigate to="/user-auth" replace />
+                <Navigate to="/" replace />
               )
             }
           />
@@ -71,10 +79,10 @@ function App() {
           <Route path="/upload-project" element={<UploadProject />} />
           <Route path="/project-detail/:id" element={<ProjectDetail />} />
           <Route path="/projects" element={<Projects />} />
-          {/* New Admin route */}
+          {/* Updated Admin route */}
           <Route 
             path="/admin" 
-            element={user?.accountType === "admin" ? <Admin /> : <Navigate to="/admin" replace />} 
+            element={user?.accountType === "admin" ? <Admin /> : <Navigate to="/" replace />} 
           />
         </Route>
 

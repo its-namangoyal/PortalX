@@ -9,6 +9,7 @@ const projectSchema = new mongoose.Schema(
     salary: { type: Number, required: [true, "Salary is required"] },
     vacancies: { type: Number },
     experience: { type: Number, default: 0 },
+    semester: { type: String }, // New field added
     detail: [{ desc: { type: String }, requirements: { type: String } }],
     application: [{ type: Schema.Types.ObjectId, ref: "Users" }],
   },
