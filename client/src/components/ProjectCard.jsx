@@ -1,10 +1,14 @@
+import React from "react";
 import moment from "moment";
-import { GoLocation } from "react-icons/go";
 import { Link } from "react-router-dom";
+
 const noLogo =
   "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/450px-No_image_available.svg.png";
 
-const ProjectCard = ({ project }) => {
+const ProjectCard = ({ project, currentUser }) => {
+  const isApplyDisabled = currentUser?.semester !== project.semester;
+  const hasApplied = project.application?.some(app => app.userId === currentUser?._id);
+
   return (
     <Link
       to={`/project-detail/${project?._id}`}
@@ -24,7 +28,7 @@ const ProjectCard = ({ project }) => {
           />
 
           <div className='w-full h-16 flex flex-col justify-center'>
-            <p className='w-full h-20 flex iteme-center text-lg font-semibold overflow-hidden leading-5'>
+            <p className='w-full h-20 flex items-center text-lg font-semibold overflow-hidden leading-5'>
               {project?.projectTitle}
             </p>
             {/* <span className='flex gap-2 items-center'>
@@ -47,6 +51,35 @@ const ProjectCard = ({ project }) => {
           <span className='text-gray-500 text-sm'>
             {moment(project?.createdAt).fromNow()}
           </span>
+          <span className='text-blue-600 font-semibold text-sm'>
+            Semester: {project.semester}
+          </span>
+        </div>
+
+        <div className='w-full flex flex-wrap md:flex-row gap-2 items-center justify-between'>
+          <button
+            className={`text-sm px-3 py-1 rounded ${
+              isApplyDisabled || hasApplied
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
+            disabled={isApplyDisabled || hasApplied}
+            onClick={(e) => {
+              e.preventDefault();
+              if (!isApplyDisabled && !hasApplied) {
+                window.location.href = `/project-detail/${project?._id}`;
+              }
+            }}
+            title={
+              isApplyDisabled
+                ? "Your semester doesn't match the project semester"
+                : hasApplied
+                ? "You have already applied for this project"
+                : ""
+            }
+          >
+            {hasApplied ? "Applied" : "Apply Now"}
+          </button>
         </div>
       </div>
       {/* </div> */}

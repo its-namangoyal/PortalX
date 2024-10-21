@@ -201,10 +201,17 @@ const FindProjects = () => {
               const newProject = {
                 name: project?.company?.name,
                 logo: project?.company?.profileUrl,
+                application: project?.application || [], // Changed from applicants to application
                 ...project,
               };
 
-              return <ProjectCard project={newProject} key={index} />;
+              return (
+                <ProjectCard 
+                  project={newProject} 
+                  key={index} 
+                  currentUser={user?.user}
+                />
+              );
             })}
           </div>
 
