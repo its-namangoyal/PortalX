@@ -3,6 +3,7 @@ import { BiBriefcaseAlt2 } from "react-icons/bi";
 import { BsStars } from "react-icons/bs";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import { CustomButton, ProjectCard, ListBox, Loading } from "../components";
 import Header from "../components/Header";
@@ -27,6 +28,8 @@ const FindProjects = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const { user } = useSelector((state) => state.user);
+
   const fetchProjects = async () => {
     setIsFetching(true);
 
@@ -47,9 +50,12 @@ const FindProjects = () => {
         method: "GET",
       });
 
+      // Filter projects based on user's semester
+      const filteredProjects = res.data.filter(project => project.semester === user.semester);
+
       setNumPage(res?.numOfPage);
-      setRecordCount(res?.totalProjects);
-      setData(res.data);
+      setRecordCount(filteredProjects.length);
+      setData(filteredProjects);
 
       setIsFetching(false);
     } catch (error) {
@@ -100,8 +106,10 @@ const FindProjects = () => {
   }, [expVal]);
 
   useEffect(() => {
-    fetchProjects();
-  }, [sort, filterProjectTypes, filterExp, page]);
+    if (user?.semester) {
+      fetchProjects();
+    }
+  }, [sort, filterProjectTypes, filterExp, page, user?.semester]);
 
   return (
     <div>

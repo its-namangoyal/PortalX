@@ -36,6 +36,9 @@ const userSchema = new mongoose.Schema(
       unique: [true, "Student ID already exists"], 
 
     },
+    semester: {
+      type: String,
+    },
     contact: { type: String },
     location: { type: String },
     profileUrl: { type: String },
