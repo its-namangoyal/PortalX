@@ -98,17 +98,21 @@ const Projects = () => {
       <div className='w-full mt-20 flex flex-col gap-2'>
         <p>Projects Posted</p>
 
-        <div className='flex flex-wrap gap-3'>
-          {info?.projectPosts?.map((project, index) => {
-            const data = {
-              name: info?.name,
-              email: info?.email,
-              logo: info?.profileUrl,
-              ...project,
-            };
-            return <ProjectCard project={data} key={index} />;
-          })}
-        </div>
+        {info?.projectPosts?.length > 0 ? (
+          <div className='flex flex-wrap gap-3'>
+            {info.projectPosts.map((project, index) => {
+              const data = {
+                name: info?.name,
+                email: info?.email,
+                logo: info?.profileUrl,
+                ...project,
+              };
+              return <ProjectCard project={data} key={index} />;
+            })}
+          </div>
+        ) : (
+          <p className='text-gray-500 mt-4'>No projects posted yet.</p>
+        )}
       </div>
 
       {/* <CompnayForm open={openForm} setOpen={setOpenForm} /> */}

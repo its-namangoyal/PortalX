@@ -9,6 +9,7 @@ import mongoSanitize from "express-mongo-sanitize";
 
 import dbConnection from "./dbConfig/dbConnection.js";
 import router from "./routes/index.js";
+import adminRoutes from "./routes/adminRoutes.js"; // Add this line
 import errorMiddleware from "./middlewares/errorMiddleware.js";
 
 dotenv.config();
@@ -20,7 +21,7 @@ const PORT = process.env.PORT || 8800;
 // MONGODB CONNECTION
 dbConnection();
 
-// middlenames
+// middlewares
 app.use(cors());
 app.use(xss());
 app.use(mongoSanitize());
@@ -31,7 +32,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(morgan("dev"));
 
+// Routes
 app.use(router);
+app.use("/admin", adminRoutes); // Add this line to mount admin routes
 
 //error middleware
 app.use(errorMiddleware);

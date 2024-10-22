@@ -1,5 +1,4 @@
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
-
 import { useSelector } from "react-redux";
 import { Footer, Navbar } from "./components";
 import {
@@ -11,6 +10,7 @@ import {
   ProjectDetail,
   UploadProject,
   UserProfile,
+  Admin, // Added Admin import
 } from "./pages";
 import Projects from "./pages/Projects";
 import MyApplications from "./pages/MyApplications";
@@ -20,9 +20,24 @@ function Layout() {
   const location = useLocation();
 
   return user?.token ? (
-    <Outlet />
+    <>
+      <Navbar />
+      <Outlet />
+      <Footer />
+    </>
   ) : (
-    <Navigate to='/user-auth' state={{ from: location }} replace />
+    <Navigate to="/user-auth" state={{ from: location }} replace />
+  );
+}
+
+// New layout component for pages with Navbar and Footer but no auth required
+function PublicLayout() {
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+      <Footer />
+    </>
   );
 }
 
@@ -30,38 +45,55 @@ function App() {
   const { user } = useSelector((state) => state.user);
 
   return (
-    <main className='bg-[#f7fdfd]'>
-      <Navbar />
-
+    <main className="bg-[#f7fdfd]">
       <Routes>
+        {/* Protected Routes */}
         <Route element={<Layout />}>
           <Route
-            path='/'
-            // element={<Navigate to='/find-projects' replace={true} 
-            element={user ? <Navigate to={user.accountType === "seeker" ? '/find-projects' : '/projects'} replace={true} /> : <Navigate to='/user-auth' replace={true}
-            />}
+            path="/"
+            element={
+              user ? (
+                <Navigate
+                  to={
+                    user.accountType === "seeker"
+                      ? "/find-projects"
+                      : user.accountType === "company"
+                      ? "/projects"
+                      : user.accountType === "admin"
+                      ? "/admin"
+                      : "/"
+                  }
+                  replace
+                />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
           />
-          {/* {user && user.user} */}
-          <Route path='/find-projects' element={<FindProjects />} />
-          <Route path='/companies' element={<Companies />} />
-          {/* <Route path='/' element={<Companies />} /> */}
-          <Route path={"/user-profile/:id?"} element={<UserProfile />} />
-          <Route path={"/applications/"} element={<MyApplications />}/>
-          {/* <Route path={"/"} element={<UserProfile />} /> */}
-
-          <Route path={"/company-profile"} element={<CompanyProfile />} />
-          <Route path={"/company-profile/:id"} element={<CompanyProfile />} />
-          {/* <Route path={"/upload-project"} element={<UploadProject />} /> */}
-          <Route path={"/upload-project"} element={<UploadProject />} />
-          {/* <Route path={"/"} element={<UploadProject />} /> */}
-          <Route path={"/project-detail/:id"} element={<ProjectDetail />} />
-          <Route path={"/projects"} element={<Projects />} />
+          <Route path="/find-projects" element={<FindProjects />} />
+          <Route path="/companies" element={<Companies />} />
+          <Route path="/user-profile/:id?" element={<UserProfile />} />
+          <Route path="/applications" element={<MyApplications />} />
+          <Route path="/company-profile" element={<CompanyProfile />} />
+          <Route path="/company-profile/:id" element={<CompanyProfile />} />
+          <Route path="/upload-project" element={<UploadProject />} />
+          <Route path="/project-detail/:id" element={<ProjectDetail />} />
+          <Route path="/projects" element={<Projects />} />
+          {/* Updated Admin route */}
+          <Route 
+            path="/admin" 
+            element={user?.accountType === "admin" ? <Admin /> : <Navigate to="/" replace />} 
+          />
         </Route>
 
-        <Route path='/about-us' element={<About />} />
-        <Route path='/user-auth' element={<AuthPage />} />
+        {/* Public Routes with Navbar and Footer */}
+        <Route element={<PublicLayout />}>
+          <Route path="/about-us" element={<About />} />
+        </Route>
+
+        {/* Public Routes without Navbar and Footer */}
+        <Route path="/user-auth" element={<AuthPage />} />
       </Routes>
-      {user && <Footer />}
     </main>
   );
 }

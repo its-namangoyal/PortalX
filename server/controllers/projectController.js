@@ -16,6 +16,7 @@ export const createProject = async (req, res, next) => {
       experience,
       desc,
       requirements,
+      semester,
     } = req.body;
 
     if (
@@ -42,6 +43,7 @@ export const createProject = async (req, res, next) => {
       experience,
       detail: { desc, requirements },
       company: id,
+      semester,
     };
 
     const project = new Projects(projectPost);
@@ -57,7 +59,7 @@ export const createProject = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Project Posted SUccessfully",
+      message: "Project Posted Successfully",
       project,
     });
   } catch (error) {
@@ -155,10 +157,12 @@ export const getProjectPosts = async (req, res, next) => {
       queryObject = { ...queryObject, ...searchQuery };
     }
 
-    let queryResult = Projects.find(queryObject).populate({
-      path: "company",
-      select: "-password",
-    });
+    let queryResult = Projects.find(queryObject)
+      .select('projectTitle projectType location salary vacancies experience detail company semester createdAt')
+      .populate({
+        path: "company",
+        select: "-password",
+      });
 
     // SORTING
     if (sort === "Newest") {
@@ -190,7 +194,7 @@ export const getProjectPosts = async (req, res, next) => {
     res.status(200).json({
       success: true,
       totalProjects,
-      data: projects,
+      data: projects,  // This will now include the semester field for each project
       page,
       numOfPage,
     });

@@ -21,6 +21,10 @@ const companySchema = new Schema(
       minlength: [6, "Password must be at least"],
       select: true,
     },
+    accountType: { 
+      type: String, 
+      default: "company" // Default account type as "company"
+    },
     contact: { type: String },
     location: { type: String },
     about: { type: String },

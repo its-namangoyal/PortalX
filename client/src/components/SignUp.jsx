@@ -16,8 +16,9 @@ const SignUp = ({ open, setOpen }) => {
   const [isRegister, setIsRegister] = useState(false);
   const [accountType, setAccountType] = useState("seeker");
   const [isLoading, setIsLoading] = useState(false);
-
   const [errMsg, setErrMsg] = useState("");
+  const currentYear = new Date().getFullYear(); 
+
   const {
     register,
     handleSubmit,
@@ -25,6 +26,7 @@ const SignUp = ({ open, setOpen }) => {
     watch,
     formState: { errors },
   } = useForm({ mode: "onChange" });
+
   let from = location.state?.from?.pathname || "/";
 
   const closeModal = () => {}; // setOpen(false);
@@ -36,12 +38,18 @@ const SignUp = ({ open, setOpen }) => {
     if (isRegister) {
       if (accountType === "seeker") {
         URL = "auth/register";
-      } else URL = "companies/register";
+      } else if (accountType === "company") {
+        URL = "companies/register";
+      } else if (accountType === "admin") {
+        URL = "admin/register"; // Adjust the URL for admin registration
+      }
     } else {
       if (accountType === "seeker") {
         URL = "auth/login";
-      } else {
+      } else if (accountType === "company") {
         URL = "companies/login";
+      } else if (accountType === "admin") {
+        URL = "admin/login"; // Adjust the URL for admin login
       }
     }
 
@@ -69,7 +77,6 @@ const SignUp = ({ open, setOpen }) => {
 
           const redirectPath =
             accountType === "seeker" ? "/find-projects" : "/projects";
-          // window.location.replace(from);
           window.location.replace(redirectPath);
         }
       }
@@ -83,7 +90,7 @@ const SignUp = ({ open, setOpen }) => {
   return (
     <>
       <Transition appear show={open || false}>
-        <Dialog as="div" className="relative z-10 " onClose={closeModal}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -110,32 +117,21 @@ const SignUp = ({ open, setOpen }) => {
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all ">
                   <Dialog.Title
                     as="h3"
-                    className="text-xl font-semibold lwading-6 text-gray-900"
+                    className="text-xl font-semibold leading-6 text-gray-900"
                   >
-                    {isRegister ? "Create Account" : "Account Sign In"}{" "}
+                    {isRegister ? "Create Account" : "Account Sign In"}
                   </Dialog.Title>
 
                   <div className="w-full flex items-center justify-center py-4 ">
-                    <button
-                      className={`flex-1 px-4 py-2 rounded text-sm outline-none ${
-                        accountType === "seeker"
-                          ? "bg-[#1d4fd862] text-blue-900 font-semibold"
-                          : "bg-white border border-blue-400"
-                      }`}
-                      onClick={() => setAccountType("seeker")}
+                    <select
+                      value={accountType}
+                      onChange={(e) => setAccountType(e.target.value)}
+                      className="flex-1 px-4 py-2 rounded text-sm outline-none bg-white border border-gray-300"
                     >
-                      Student Account
-                    </button>
-                    <button
-                      className={`flex-2 px-4 py-2 rounded text-sm outline-none ${
-                        accountType !== "seeker"
-                          ? "bg-[#1d4fd862] text-blue-900 font-semibold"
-                          : "bg-white border border-blue-400"
-                      }`}
-                      onClick={() => setAccountType("company")}
-                    >
-                      Company / Professor Account
-                    </button>
+                      <option value="seeker">Student Account</option>
+                      <option value="company">Company / Professor Account</option>
+                      <option value="admin">Admin Account</option>
+                    </select>
                   </div>
 
                   <form
@@ -150,73 +146,137 @@ const SignUp = ({ open, setOpen }) => {
                       register={register("email", {
                         required: "Email Address is required!",
                         pattern: {
-                          value: accountType === "seeker" ? /^[a-zA-Z0-9._%+-]+@uwindsor\.ca$/i : /^[a-zA-Z0-9._%+-]+@[a-zA-Z]\.[a-zA-Z]$/i,
+                          value: accountType === "seeker" ? /^[a-zA-Z0-9._%+-]+@uwindsor\.ca$/i : /^[a-zA-Z0-9._%+-]+@[a-zA-Z]+\.[a-zA-Z]+$/i,
                           message:
                             accountType === "seeker" ? "Email must be a valid '@uwindsor.ca' address" : "Enter a valid email address",
+                            
                         },
                       })}
                       error={errors.email ? errors.email.message : ""}
-                    />{" "}
-                    {isRegister && (
-                      <div className="w-full flex gap-1 md:gap-2">
-                        <div
-                          className={`${
-                            accountType === "seeker" ? "w-1/2" : "w-full"
-                          }`}
-                        >
-                          <TextInput
-                            name={
-                              accountType === "seeker" ? "firstName" : "name"
-                            }
-                            label={
-                              accountType === "seeker"
-                                ? "First Name"
-                                : "Company/Professor Name"
-                            }
-                            placeholder={
-                              accountType === "seeker"
-                                ? "eg. James"
-                                : "Company/Professor Name"
-                            }
-                            type="text"
-                            register={register(
-                              accountType === "seeker" ? "firstName" : "name",
-                              {
-                                required:
-                                  accountType === "seeker"
-                                    ? "First Name is required"
-                                    : "Company Name is required",
-                              }
-                            )}
-                            error={
-                              accountType === "seeker"
-                                ? errors.firstName
-                                  ? errors.firstName?.message
-                                  : ""
-                                : errors.name
-                                ? errors.name?.message
-                                : ""
-                            }
-                          />
-                        </div>
-                        {accountType === "seeker" && isRegister && (
-                          <div className="w-1/2">
-                            <TextInput
-                              name="lastName"
-                              label="Last Name"
-                              placeholder="Wagonner"
-                              type="text"
-                              register={register("lastName", {
-                                required: "Last Name is required",
-                              })}
-                              error={
-                                errors.lastName ? errors.lastName?.message : ""
-                              }
-                            />
-                          </div>
-                        )}{" "}
-                      </div>
-                    )}
+                    />
+                   
+                   {isRegister && (
+  <div className="w-full flex gap-1 md:gap-2">
+    {/* For seeker: Show First Name and Last Name */}
+    {accountType === "seeker" && (
+      <>
+        <div className="w-1/2">
+          <TextInput
+            name="firstName"
+            label="First Name"
+            placeholder="Enter First Name"
+            type="text"
+            register={register("firstName", {
+              required: "First Name is required",
+            })}
+            error={errors.firstName ? errors.firstName.message : ""}
+          />
+        </div>
+
+        <div className="w-1/2">
+          <TextInput
+            name="lastName"
+            label="Last Name"
+            placeholder="Enter Last Name"
+            type="text"
+            register={register("lastName", {
+              required: "Last Name is required",
+            })}
+            error={errors.lastName ? errors.lastName.message : ""}
+          />
+        </div>
+      </>
+    )}
+
+    {/* For admin: Show First Name and Last Name */}
+    {accountType === "admin" && (
+      <>
+        <div className="w-1/2">
+          <TextInput
+            name="firstName"
+            label="First Name"
+            placeholder="Enter First Name"
+            type="text"
+            register={register("firstName", {
+              required: "First Name is required",
+            })}
+            error={errors.firstName ? errors.firstName.message : ""}
+          />
+        </div>
+
+        <div className="w-1/2">
+          <TextInput
+            name="lastName"
+            label="Last Name"
+            placeholder="Enter Last Name"
+            type="text"
+            register={register("lastName", {
+              required: "Last Name is required",
+            })}
+            error={errors.lastName ? errors.lastName.message : ""}
+          />
+        </div>
+      </>
+    )}
+
+    {/* For company: Show Company/Professor Name */}
+    {accountType === "company" && (
+      <div className="w-full">
+        <TextInput
+          name="name"
+          label="Company/Professor Name"
+          placeholder="Company/Professor Name"
+          type="text"
+          register={register("name", {
+            required: "Company Name is required",
+          })}
+          error={errors.name ? errors.name.message : ""}
+        />
+      </div>
+    )}
+  </div>
+)}
+
+{isRegister && accountType === "admin" && (
+  <div className="w-full">
+    {/* Semester Dropdown */}
+    <div className="mt-4">
+      <label htmlFor="semester" className="block text-sm font-medium text-gray-700">
+        Semester
+      </label>
+      <select
+        id="semester"
+        {...register("semester", { required: "Semester is required" })}
+        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
+      >
+        <option value="">Select Semester</option>
+        <option value="fall">Fall</option>
+        <option value="winter">Winter</option>
+        <option value="summer">Summer</option>
+      </select>
+      {errors.semester && (
+        <p className="mt-1 text-red-600">{errors.semester.message}</p>
+      )}
+    </div>
+
+    {/* Year Input */}
+    <div className="mt-4">
+      <TextInput
+        name="year"
+        label="Year"
+        placeholder="Enter Year"
+        type="number"
+        register={register("year", {
+          required: "Year is required",
+          validate: {
+            validYear: value => value <= currentYear || "Year must be less than or equal to current year",
+          },
+        })}
+        error={errors.year ? errors.year.message : ""}
+      />
+    </div>
+  </div>
+)}
                     {isRegister && accountType === "seeker" && (
                       <div className="w-full">
                         <TextInput
@@ -227,13 +287,11 @@ const SignUp = ({ open, setOpen }) => {
                           register={register("studentID", {
                             required: "Student ID is required",
                           })}
-                          error={
-                            errors.studentID ? errors.studentID.message : ""
-                          }
+                          error={errors.studentID ? errors.studentID.message : ""}
                         />
                       </div>
                     )}
-                    {isRegister && accountType !== "seeker" && (
+                    {isRegister && accountType == "company" && (
                       <div className="w-full">
                         <TextInput
                           name="userID"
@@ -247,6 +305,7 @@ const SignUp = ({ open, setOpen }) => {
                         />
                       </div>
                     )}
+
                     <div className="w-full flex gap-1 md:gap-2">
                       <div className={`${isRegister ? "w-1/2" : "w-full"}`}>
                         <TextInput
@@ -257,9 +316,7 @@ const SignUp = ({ open, setOpen }) => {
                           register={register("password", {
                             required: "Password is required!",
                           })}
-                          error={
-                            errors.password ? errors.password?.message : ""
-                          }
+                          error={errors.password ? errors.password?.message : ""}
                         />
                       </div>
                       {isRegister && (
@@ -272,28 +329,18 @@ const SignUp = ({ open, setOpen }) => {
                               validate: (value) => {
                                 const { password } = getValues();
 
-                                if (password != value) {
-                                  return "Passwords do no match";
+                                if (password !== value) {
+                                  return "Passwords do not match";
                                 }
                               },
                             })}
-                            error={
-                              errors.cPassword &&
-                              errors.cPassword.type === "validate"
-                                ? errors.cPassword?.message
-                                : ""
-                            }
+                            error={errors.cPassword ? errors.cPassword.message : ""}
                           />
                         </div>
-                      )}{" "}
+                      )}
                     </div>
                     {errMsg && (
-                      <span
-                        role="alert"
-                        className="text-sm text-red-500 mt-0.5"
-                      >
-                        {errMsg}{" "}
-                      </span>
+                      <p className="text-sm text-red-600">{errMsg}</p>
                     )}
                     <div className="mt-2">
                       {isLoading ? (
@@ -302,27 +349,33 @@ const SignUp = ({ open, setOpen }) => {
                         <CustomButton
                           type="submit"
                           containerStyles={`inline-flex justify-center rounded-md bg-blue-600 px-8 py-2 text-sm font-medium text-white outline-none hover:bg-blue-800`}
-                          title={
-                            isRegister ? "Create Account" : "Login Account"
-                          }
+                          title={isRegister ? "Create Account" : "Login Account"}
                         />
-                      )}{" "}
+                      )}
                     </div>
                   </form>
-
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-700">
-                      {isRegister
-                        ? "Already have an account?"
-                        : "Don't have an account?"}
-
-                      <span
-                        className="text-sm text-blue-600 ml-2 hover:text-blue-700 hover:font-semibold cursor-pointer"
-                        onClick={() => setIsRegister((prev) => !prev)}
-                      >
-                        {isRegister ? "Login" : "Create Account"}{" "}
-                      </span>
-                    </p>
+                  <div className="mt-4 text-sm">
+                    {isRegister ? (
+                      <p>
+                        Already have an account?{" "}
+                        <span
+                          onClick={() => setIsRegister(false)}
+                          className="cursor-pointer text-blue-600 hover:underline"
+                        >
+                          Sign In
+                        </span>
+                      </p>
+                    ) : (
+                      <p>
+                        Don't have an account?{" "}
+                        <span
+                          onClick={() => setIsRegister(true)}
+                          className="cursor-pointer text-blue-600 hover:underline"
+                        >
+                          Create Account
+                        </span>
+                      </p>
+                    )}
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

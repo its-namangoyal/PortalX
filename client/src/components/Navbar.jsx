@@ -66,7 +66,7 @@ function MenuList({ user, isProfileOpen, onClick }) {
               <Menu.Item>
                 {({ active }) => (
                   <Link
-                    to={`${user?.accountType ? "user-profile" : "company-profile"}`}
+                    to={`${user?.accountType === "seeker" ? "user-profile" : user?.accountType === "company" ? "company-profile" : "admin-profile"}`}
                     className={`${
                       active ? "bg-blue-500 text-white" : "text-gray-900"
                     } group flex items-center rounded-md p-2 text-sm`}
@@ -76,7 +76,11 @@ function MenuList({ user, isProfileOpen, onClick }) {
                       className={`${active ? "text-white" : "text-gray-600"} mr-2 h-5 w-5`}
                       aria-hidden='true'
                     />
-                    {user?.accountType ? "Student Profile" : "Company / Professor Profile"}
+                    {user?.accountType === "seeker"
+                      ? "Student Profile"
+                      : user?.accountType === "company"
+                      ? "Company / Professor Profile"
+                      : "Admin Profile"}
                   </Link>
                 )}
               </Menu.Item>
@@ -145,13 +149,28 @@ const Navbar = () => {
                 </li>
               </>
             )}
-            {user?.email && (
+            {user?.accountType === "admin" && (
               <>
                 <li>
-                  <Link to={user?.accountType === "seeker" ? "/applications" : "/upload-project"}>
-                    {user?.accountType === "seeker" ? "My Applications" : "Post a Project"}
-                  </Link>
+                  <Link to='/student-list'>Student List</Link>
                 </li>
+                <li>
+                  <Link to='/company-professor-list'>Professor / Company List</Link>
+                </li>
+              </>
+            )}
+            {user?.email && (
+              <>
+                {user?.accountType === "seeker" && (
+                  <li>
+                    <Link to="/applications">My Applications</Link>
+                  </li>
+                )}
+                {user?.accountType === "company" && (
+                  <li>
+                    <Link to="/upload-project">Post a Project</Link>
+                  </li>
+                )}
                 <li>
                   <Link to='/about-us'>About</Link>
                 </li>
@@ -180,22 +199,42 @@ const Navbar = () => {
         {/* MOBILE MENU */}
         {isOpen && (
           <div className='lg:hidden flex flex-col items-start bg-[#f7fdfd] container mx-auto px-5 py-5'>
-            <Link to='/' onClick={handleCloseNavbar} className='py-2'>
-              Find Project
-            </Link>
-            <Link to='/companies' onClick={handleCloseNavbar} className='py-2'>
-              Companies
-            </Link>
-            <Link
-              onClick={handleCloseNavbar}
-              to={user?.accountType === "seeker" ? "/applications" : "/upload-project"}
-              className='py-2'
-            >
-              {user?.accountType === "seeker" ? "Applications" : "Upload Project"}
-            </Link>
-            <Link to='/about-us' onClick={handleCloseNavbar} className='py-2'>
-              About
-            </Link>
+            {user?.accountType === "seeker" && (
+              <>
+                <Link to='/' onClick={handleCloseNavbar} className='py-2'>
+                  Find Project
+                </Link>
+                <Link to='/companies' onClick={handleCloseNavbar} className='py-2'>
+                  Companies
+                </Link>
+                <Link to='/my-projects' onClick={handleCloseNavbar} className='py-2'>
+                  My Projects
+                </Link>
+                <Link to='/applications' onClick={handleCloseNavbar} className='py-2'>
+                  Applications
+                </Link>
+              </>
+            )}
+            {user?.accountType === "admin" && (
+              <>
+                <Link to='/student-list' onClick={handleCloseNavbar} className='py-2'>
+                  Student List
+                </Link>
+                <Link to='/company-professor-list' onClick={handleCloseNavbar} className='py-2'>
+                  Professor / Company List
+                </Link>
+              </>
+            )}
+            {user?.accountType === "company" && (
+              <Link to='/upload-project' onClick={handleCloseNavbar} className='py-2'>
+                Upload Project
+              </Link>
+            )}
+            {user?.email && (
+              <Link to='/about-us' onClick={handleCloseNavbar} className='py-2'>
+                About
+              </Link>
+            )}
 
             <div className='w-full py-4'>
               {!user?.token ? (

@@ -57,8 +57,9 @@ export const register = async (req, res, next) => {
       lastName,
       email,
       password,
-      studentID, // Save studentID only for seekers
+      studentID,
       accountType,
+      semester: studentRegister.semester, // Add semester from student model
     });
 
     // Generate user token
@@ -74,7 +75,8 @@ export const register = async (req, res, next) => {
         lastName: user.lastName,
         email: user.email,
         accountType: user.accountType,
-        studentID: user.studentID, // Return studentID in response
+        studentID: user.studentID,
+        semester: user.semester, // Include semester in the response
       },
       token,
     });
