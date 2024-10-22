@@ -238,8 +238,8 @@ const Navbar = () => {
                 <Link to="/companies" onClick={handleCloseNavbar} className="py-2">
                   Companies
                 </Link>
-                <Link to='/my-projects' onClick={handleCloseNavbar} className='py-2'>
-                  My Projects
+                <Link to="/projects" onClick={handleCloseNavbar} className="py-2">
+                  Projects
                 </Link>
                 <Link to="/applications" onClick={handleCloseNavbar} className="py-2">
                   Applications
