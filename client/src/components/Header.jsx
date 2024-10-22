@@ -61,7 +61,7 @@ const Header = ({
             />
           </div>
 
-          {type && (
+          {/* {type && (
             <div className='w-full lg:w-1/2 flex flex-wrap gap-3 md:gap-6 py-10 md:py-14'>
               {popularSearch.map((search, index) => (
                 <span
@@ -72,12 +72,9 @@ const Header = ({
                 </span>
               ))}
             </div>
-          )}
+          )} */}
         </div>
 
-        <div className='w-1/3 h-full absolute top-24 md:-top-6 lg:-top-12 right-16 2xl:right-[18rem]'>
-          <img src={HeroImage} className='object-contain' />
-        </div>
       </div>
     </div>
   );
