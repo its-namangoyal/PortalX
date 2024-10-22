@@ -1,9 +1,9 @@
-// controllers/adminController.js
 import XLSX from 'xlsx';
 import fs from 'fs';
 import Admin from "../models/adminModel.js";
 import { createJWT } from "../utils/index.js";
 import Student from '../models/studentsModel.js'; // Assuming you have a Student model
+import Company from '../models/professorModel.js'; // Assuming you have a Company model
 
 export const uploadStudentFile = async (req, res) => {
   try {
@@ -26,6 +26,30 @@ export const uploadStudentFile = async (req, res) => {
     res.status(500).json({ message: 'Error uploading student data.' });
   }
 };
+
+// New function for uploading company/professor files
+export const uploadCompanyFile = async (req, res) => {
+  try {
+    const filePath = req.file.path;
+
+    // Read the uploaded file
+    const workbook = XLSX.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    // Insert data into MongoDB
+    await Company.insertMany(data);
+
+    // Remove the uploaded file after processing
+    fs.unlinkSync(filePath);
+
+    res.status(200).json({ message: 'Company/Professor data uploaded successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error uploading company/professor data.' });
+  }
+};
+
 
 export const register = async (req, res, next) => {
   const {
