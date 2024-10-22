@@ -110,7 +110,7 @@ const CompnayForm = ({ open, setOpen }) => {
                       label='Company Name'
                       type='text'
                       register={register("name", {
-                        required: "Compnay Name is required",
+                        required: "Company Name is required",
                       })}
                       error={errors.name ? errors.name?.message : ""}
                     />
@@ -118,7 +118,7 @@ const CompnayForm = ({ open, setOpen }) => {
                     <TextInput
                       name='location'
                       label='Location/Address'
-                      placeholder='eg. Califonia'
+                      placeholder='eg. Toronto, Canada'
                       type='text'
                       register={register("location", {
                         required: "Address is required",
@@ -131,7 +131,7 @@ const CompnayForm = ({ open, setOpen }) => {
                         <TextInput
                           name='contact'
                           label='Contact'
-                          placeholder='Phone Number'
+                          placeholder='Mobile Number'
                           type='text'
                           register={register("contact", {
                             required: "Contact is required!",

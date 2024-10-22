@@ -39,7 +39,7 @@ const UploadProject = () => {
       !user?.contact ||
       !user?.location
     ) {
-      setErrMsg("Company profile not set. Please set compnay profile first.");
+      setErrMsg("Company profile not set. Please set Company profile first.");
       return;
     }
 
