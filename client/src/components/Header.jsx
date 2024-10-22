@@ -1,7 +1,6 @@
 import React from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { FaSearch } from "react-icons/fa";
-import { HeroImage } from "../assets";
 import { popularSearch } from "../utils/data";
 
 const SearchInput = ({ placeholder, value, setValue, handleClick }) => {
