@@ -11,6 +11,7 @@ import dbConnection from "./dbConfig/dbConnection.js";
 import router from "./routes/index.js";
 import adminRoutes from "./routes/adminRoutes.js"; // Add this line
 import errorMiddleware from "./middlewares/errorMiddleware.js";
+import applicationRoutes from "./routes/applicationRoutes.js";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use(morgan("dev"));
 // Routes
 app.use(router);
 app.use("/admin", adminRoutes); // Add this line to mount admin routes
+app.use("/applications", applicationRoutes); // Updated this line
 
 //error middleware
 app.use(errorMiddleware);

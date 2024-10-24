@@ -11,6 +11,7 @@ import {
   updateCompanyProfile,
   verifyEmail,
   getAllProjetsOfCompany,
+  getApplicationsForCompany
 } from "../controllers/companiesController.js";
 import userAuth from "../middlewares/authMiddleware.js";
 
@@ -46,6 +47,8 @@ router.get("/get-company-projects/:companyId", userAuth, getAllProjetsOfCompany)
 
 // UPDATE DATA
 router.put("/update-company/", userAuth, updateCompanyProfile);
+
+router.get('/:id/applications', getApplicationsForCompany);
 
 export default router;
 

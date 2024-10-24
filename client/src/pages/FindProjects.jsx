@@ -14,6 +14,8 @@ const FindProjects = () => {
   const [numPage, setNumPage] = useState(1);
   const [recordCount, setRecordCount] = useState(0);
   const [data, setData] = useState([]);
+  const [applications, setApplications] = useState([]); // State for storing user's applications
+
   const [searchQuery, setSearchQuery] = useState("");
   const [projectLocation, setProjectLocation] = useState("");
   const [filterExp, setFilterExp] = useState([]);
@@ -24,8 +26,8 @@ const FindProjects = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.user);
 
-  // Fetch Projects
-  const fetchProjects = async () => {
+  // Fetch projects and user applications
+  const fetchProjectsAndApplications = async () => {
     setIsFetching(true);
     const newURL = updateURL({
       pageNum: page,
@@ -38,40 +40,60 @@ const FindProjects = () => {
     });
 
     try {
+      // Fetch projects
       const res = await apiRequest({
         url: "/projects" + newURL,
         method: "GET",
       });
 
-      const filteredProjects = res.data.filter(project => project.semester === user.semester);
+      // Fetch user's applications
+      const appsRes = await apiRequest({
+        url: `/applications/user/${user?._id}`, // Fetch applications for the logged-in user
+        method: "GET",
+      });
+
+      const filteredProjects = res.data.filter(
+        (project) => project.semester === user.semester
+      );
+
       setNumPage(res?.numOfPage);
       setRecordCount(filteredProjects.length);
       setData(filteredProjects);
-    } catch (error) {
-      console.log(error);
-    } finally {
+      setApplications(appsRes?.data || []); // Store user's applications
+
       setIsFetching(false);
+    } catch (error) {
+      setIsFetching(false);
+      console.error("Error fetching projects or applications:", error);
     }
   };
 
-  // Filter Experience
+  // Filter projects by type
+  const filterProjects = (val) => {
+    if (filterProjectTypes?.includes(val)) {
+      setFilterProjectTypes(filterProjectTypes.filter((el) => el != val));
+    } else {
+      setFilterProjectTypes([...filterProjectTypes, val]);
+    }
+  };
+
+  // Filter projects by experience
   const filterExperience = (e) => {
-    const selectedExp = e.target.value;
-    setExpVal(prevExpVal => {
-      return prevExpVal.includes(selectedExp)
-        ? prevExpVal.filter(exp => exp !== selectedExp)
-        : [...prevExpVal, selectedExp];
-    });
+    if (expVal?.includes(e)) {
+      setExpVal(expVal?.filter((el) => el != e));
+    } else {
+      setExpVal([...expVal, e]);
+    }
   };
 
-  // Handle search form submit
-  const handleSearchSubmit = (e) => {
+  // Handle search submit
+  const handleSearchSubmit = async (e) => {
     e.preventDefault();
-    fetchProjects();
+    await fetchProjectsAndApplications();
   };
 
-  // Load more projects
-  const handleShowMore = (e) => {
+  // Handle "Show More" click
+  const handleShowMore = async (e) => {
     e.preventDefault();
     setPage(prevPage => prevPage + 1);
   };
@@ -79,17 +101,23 @@ const FindProjects = () => {
   // Handle experience range update
   useEffect(() => {
     if (expVal.length > 0) {
-      const range = expVal.map(el => el.split("-").map(Number));
-      const minExp = Math.min(...range.map(([min]) => min));
-      const maxExp = Math.max(...range.map(([, max]) => max));
-      setFilterExp(`${minExp}-${maxExp}`);
+      let newExpVal = [];
+
+      expVal?.map((el) => {
+        const newEl = el?.split("-");
+        newExpVal.push(Number(newEl[0]), Number(newEl[1]));
+      });
+
+      newExpVal?.sort((a, b) => a - b);
+
+      setFilterExp(`${newExpVal[0]}-${newExpVal?.length > 1 ? newExpVal[newExpVal.length - 1] : newExpVal[0]}`);
     }
   }, [expVal]);
 
   // Fetch projects on initial render or when dependencies change
   useEffect(() => {
     if (user?.semester) {
-      fetchProjects();
+      fetchProjectsAndApplications();
     }
   }, [sort, filterExp, page, user?.semester]);
 
@@ -97,7 +125,7 @@ const FindProjects = () => {
     <div>
       {/* Header Section */}
       <Header
-        title={<span className="text-4xl font-bold text-white-700">Find Your Dream Internship with Ease</span>}
+        title="Find Your Dream Internship with Ease"
         type="home"
         handleClick={handleSearchSubmit}
         searchQuery={searchQuery}
@@ -107,25 +135,40 @@ const FindProjects = () => {
       />
 
       <div className="container mx-auto flex gap-6 2xl:gap-10 md:px-5 py-0 md:py-6 bg-[#f7fdfd]">
-        {/* Filters Section */}
-        <div className="hidden md:flex flex-col w-1/6 h-fit bg-white shadow-sm p-5 rounded-lg">
-          <p className="text-lg font-semibold text-slate-600 mb-4">Filter by Experience</p>
-          <div className="flex flex-col gap-3">
-            {experience.map((exp) => (
-              <label key={exp.title} className="flex gap-3 items-center">
-                <input
-                  type="checkbox"
-                  value={exp?.value}
-                  className="w-4 h-4"
-                  onChange={filterExperience}
-                />
-                <span>{exp.title}</span>
-              </label>
-            ))}
+        <div className="hidden md:flex flex-col w-1/6 h-fit bg-white shadow-sm">
+          <p className="text-lg font-semibold text-slate-600">Filter Search</p>
+
+          <div className="py-2">
+            {/* Experience Filter */}
+            <div className="py-2 mt-0">
+              <div className="flex justify-between mb-3">
+                <p className="flex items-center gap-2 font-semibold">
+                  <BsStars />
+                  Experience
+                </p>
+
+                <button>
+                  <MdOutlineKeyboardArrowDown />
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {experience.map((exp) => (
+                  <div key={exp.title} className="flex gap-3">
+                    <input
+                      type="checkbox"
+                      value={exp?.value}
+                      className="w-4 h-4"
+                      onChange={(e) => filterExperience(e.target.value)}
+                    />
+                    <span>{exp.title}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Projects Section */}
         <div className="w-full md:w-5/6 px-5 md:px-0">
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm md:text-base">
@@ -139,18 +182,31 @@ const FindProjects = () => {
           </div>
 
           <div className="w-full flex flex-wrap gap-4">
-            {data?.map((project, index) => (
-              <ProjectCard
-                project={{
-                  name: project?.company?.name,
-                  logo: project?.company?.profileUrl,
-                  application: project?.application || [],
-                  ...project,
-                }}
-                key={index}
-                currentUser={user?.user}
-              />
-            ))}
+            {data?.map((project, index) => {
+              // Check if the user has applied to this project by matching the project ID with applications
+              const hasApplied = applications?.some(
+                (application) => application.project._id === project._id
+              );
+
+              // Create the project data object to pass to ProjectCard
+              const newProject = {
+                name: project?.company?.name,
+                logo: project?.company?.profileUrl,
+                hasApplied, // Add the hasApplied flag
+                status: hasApplied
+                  ? applications.find((app) => app.project._id === project._id)?.status
+                  : null, // If applied, get the application status
+                ...project,
+              };
+
+              return (
+                <ProjectCard
+                  project={newProject}
+                  key={index}
+                  currentUser={user}
+                />
+              );
+            })}
           </div>
 
           {/* Show loading spinner */}
@@ -166,7 +222,7 @@ const FindProjects = () => {
               <CustomButton
                 onClick={handleShowMore}
                 title="Load More"
-                containerStyles="text-blue-600 py-1.5 px-5 focus:outline-none hover:bg-blue-700 hover:text-white rounded-full text-base border border-blue-600"
+                containerStyles={`text-blue-600 py-1.5 px-5 focus:outline-none hover:bg-blue-700 hover:text-white rounded-full text-base border border-blue-600`}
               />
             </div>
           )}
