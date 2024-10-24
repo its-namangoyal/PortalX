@@ -1,38 +1,33 @@
 import { useEffect, useState } from "react";
-import { BiBriefcaseAlt2 } from "react-icons/bi";
 import { BsStars } from "react-icons/bs";
-import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-
 import { CustomButton, ProjectCard, ListBox, Loading } from "../components";
 import Header from "../components/Header";
 import { apiRequest, updateURL } from "../utils";
-import { experience, projectTypes } from "../utils/data";
+import { experience } from "../utils/data";
 
 const FindProjects = () => {
+  // State management
   const [sort, setSort] = useState("Newest");
   const [page, setPage] = useState(1);
   const [numPage, setNumPage] = useState(1);
   const [recordCount, setRecordCount] = useState(0);
   const [data, setData] = useState([]);
-
+  const [applications, setApplications] = useState([]); // Store user's applications
   const [searchQuery, setSearchQuery] = useState("");
   const [projectLocation, setProjectLocation] = useState("");
-  const [filterProjectTypes, setFilterProjectTypes] = useState([]);
-  const [filterExp, setFilterExp] = useState([]);
+  const [filterExp, setFilterExp] = useState("");
   const [expVal, setExpVal] = useState([]);
-
   const [isFetching, setIsFetching] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
-
   const { user } = useSelector((state) => state.user);
 
-  const fetchProjects = async () => {
+  // Fetch projects and user applications
+  const fetchProjectsAndApplications = async () => {
     setIsFetching(true);
-
     const newURL = updateURL({
       pageNum: page,
       query: searchQuery,
@@ -40,82 +35,83 @@ const FindProjects = () => {
       sort: sort,
       navigate: navigate,
       location: location,
-      jType: filterProjectTypes,
       exp: filterExp,
     });
 
     try {
-      const res = await apiRequest({
+      // Fetch projects
+      const projectsRes = await apiRequest({
         url: "/projects" + newURL,
         method: "GET",
       });
 
-      // Filter projects based on user's semester
-      const filteredProjects = res.data.filter(project => project.semester === user.semester);
-
-      setNumPage(res?.numOfPage);
-      setRecordCount(filteredProjects.length);
-      setData(filteredProjects);
-
-      setIsFetching(false);
-    } catch (error) {
-      setIsFetching(false);
-      console.log(error);
-    }
-  };
-
-  const filterProjects = (val) => {
-    if (filterProjectTypes?.includes(val)) {
-      setFilterProjectTypes(filterProjectTypes.filter((el) => el != val));
-    } else {
-      setFilterProjectTypes([...filterProjectTypes, val]);
-    }
-  };
-
-  const filterExperience = async (e) => {
-    if (expVal?.includes(e)) {
-      setExpVal(expVal?.filter((el) => el != e));
-    } else {
-      setExpVal([...expVal, e]);
-    }
-  };
-
-  const handleSearchSubmit = async (e) => {
-    e.preventDefault();
-    await fetchProjects();
-  };
-
-  const handleShowMore = async (e) => {
-    e.preventDefault();
-    setPage((prev) => prev + 1);
-  };
-
-  useEffect(() => {
-    if (expVal.length > 0) {
-      let newExpVal = [];
-
-      expVal?.map((el) => {
-        const newEl = el?.split("-");
-        newExpVal.push(Number(newEl[0]), Number(newEl[1]));
+      // Fetch user's applications
+      const appsRes = await apiRequest({
+        url: `/applications/user/${user?._id}`, // Fetch applications for the logged-in user
+        method: "GET",
       });
 
-      newExpVal?.sort((a, b) => a - b);
+      const filteredProjects = projectsRes.data.filter(
+        (project) => project.semester === user.semester
+      );
 
-      setFilterExp(`${newExpVal[0]}-${newExpVal[newExpVal?.length - 1]}`);
+      setNumPage(projectsRes?.numOfPage || 1);
+      setRecordCount(filteredProjects.length);
+      setData(filteredProjects);
+      setApplications(appsRes?.data || []); // Store user's applications
+
+    } catch (error) {
+      console.error("Error fetching projects or applications:", error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  // Filter by experience
+  const filterExperience = (e) => {
+    const selectedExp = e.target.value;
+    setExpVal((prevExpVal) =>
+      prevExpVal.includes(selectedExp)
+        ? prevExpVal.filter((exp) => exp !== selectedExp)
+        : [...prevExpVal, selectedExp]
+    );
+  };
+
+  // Handle form submit to search projects
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    await fetchProjectsAndApplications();
+  };
+
+  // Handle "Show More" functionality for pagination
+  const handleShowMore = async (e) => {
+    e.preventDefault();
+    setPage((prevPage) => prevPage + 1);
+  };
+
+  // Update experience filter based on selected values
+  useEffect(() => {
+    if (expVal.length > 0) {
+      const ranges = expVal.map((el) => el.split("-").map(Number));
+      const minExp = Math.min(...ranges.map(([min]) => min));
+      const maxExp = Math.max(...ranges.map(([, max]) => max));
+      setFilterExp(`${minExp}-${maxExp}`);
     }
   }, [expVal]);
 
+  // Fetch projects and applications on component mount or when page/sort changes
   useEffect(() => {
     if (user?.semester) {
-      fetchProjects();
+      fetchProjectsAndApplications();
     }
-  }, [sort, filterProjectTypes, filterExp, page, user?.semester]);
+  }, [sort, filterExp, page, user?.semester]);
 
   return (
     <div>
+      {/* Header Section */}
       <Header
-        title='Find Your Dream Internship with Ease'
-        type='home'
+        title="Find Your Dream Internship with Ease"
+        type="home"
         handleClick={handleSearchSubmit}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -123,110 +119,77 @@ const FindProjects = () => {
         setLocation={setProjectLocation}
       />
 
-      <div className='container mx-auto flex gap-6 2xl:gap-10 md:px-5 py-0 md:py-6 bg-[#f7fdfd]'>
-        <div className='hidden md:flex flex-col w-1/6 h-fit bg-white shadow-sm'>
-          <p className='text-lg font-semibold text-slate-600'>Filter Search</p>
-
-          <div className='py-2'>
-            {/* <div className='flex justify-between mb-3'>
-              <p className='flex items-center gap-2 font-semibold'>
-                <BiBriefcaseAlt2 />
-                Project Type
-              </p>
-
-              <button>
-                <MdOutlineKeyboardArrowDown />
-              </button>
-            </div> */}
-
-            {/* <div className='flex flex-col gap-2'>
-              {projectTypes.map((jtype, index) => (
-                <div key={index} className='flex gap-2 text-sm md:text-base '>
-                  <input
-                    type='checkbox'
-                    value={jtype}
-                    className='w-4 h-4'
-                    onChange={(e) => filterProjects(e.target.value)}
-                  />
-                  <span>{jtype}</span>
-                </div>
-              ))}
-            </div> */}
-          </div>
-
-          <div className='py-2 mt-0'>
-            <div className='flex justify-between mb-3'>
-              <p className='flex items-center gap-2 font-semibold'>
-                <BsStars />
-                Experience
-              </p>
-
-              <button>
-                <MdOutlineKeyboardArrowDown />
-              </button>
-            </div>
-
-            <div className='flex flex-col gap-2'>
-              {experience.map((exp) => (
-                <div key={exp.title} className='flex gap-3'>
-                  <input
-                    type='checkbox'
-                    value={exp?.value}
-                    className='w-4 h-4'
-                    onChange={(e) => filterExperience(e.target.value)}
-                  />
-                  <span>{exp.title}</span>
-                </div>
-              ))}
-            </div>
+      <div className="container mx-auto flex gap-6 2xl:gap-10 md:px-5 py-0 md:py-6 bg-[#f7fdfd]">
+        {/* Filters Section */}
+        <div className="hidden md:flex flex-col w-1/6 h-fit bg-white shadow-sm">
+          <p className="text-lg font-semibold text-slate-600">Filter by Experience</p>
+          <div className="flex flex-col gap-2">
+            {experience.map((exp) => (
+              <label key={exp.title} className="flex gap-3 items-center">
+                <input
+                  type="checkbox"
+                  value={exp.value}
+                  className="w-4 h-4"
+                  onChange={filterExperience}
+                />
+                <span>{exp.title}</span>
+              </label>
+            ))}
           </div>
         </div>
 
-        <div className='w-full md:w-5/6 px-5 md:px-0'>
-          <div className='flex items-center justify-between mb-4'>
-            <p className='text-sm md:text-base'>
-              Shwoing: <span className='font-semibold'>{recordCount}</span> Internships
-              Available
+        {/* Projects Section */}
+        <div className="w-full md:w-5/6 px-5 md:px-0">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm md:text-base">
+              Showing: <span className="font-semibold">{recordCount}</span> Internships Available
             </p>
-
-            <div className='flex flex-col md:flex-row gap-0 md:gap-2 md:items-center'>
-              <p className='text-sm md:text-base'>Sort By:</p>
-
+            <div className="flex flex-col md:flex-row gap-0 md:gap-2 md:items-center">
+              <p className="text-sm md:text-base">Sort By:</p>
               <ListBox sort={sort} setSort={setSort} />
             </div>
           </div>
 
-          <div className='w-full flex flex-wrap gap-4'>
+          {/* Projects List */}
+          <div className="w-full flex flex-wrap gap-4">
             {data?.map((project, index) => {
+              const hasApplied = applications?.some(
+                (application) => application.project._id === project._id
+              );
               const newProject = {
                 name: project?.company?.name,
                 logo: project?.company?.profileUrl,
-                application: project?.application || [], // Changed from applicants to application
+                hasApplied,
+                status: hasApplied
+                  ? applications.find((app) => app.project._id === project._id)?.status
+                  : null,
                 ...project,
               };
 
               return (
-                <ProjectCard 
-                  project={newProject} 
-                  key={index} 
-                  currentUser={user?.user}
+                <ProjectCard
+                  project={newProject}
+                  key={index}
+                  currentUser={user}
                 />
               );
             })}
           </div>
 
+          {/* Loading Spinner */}
           {isFetching && (
-            <div className='py-10'>
+            <div className="py-10">
               <Loading />
             </div>
           )}
 
+          {/* Load More Button */}
           {numPage > page && !isFetching && (
-            <div className='w-full flex items-center justify-center pt-16'>
+            <div className="w-full flex items-center justify-center pt-16">
               <CustomButton
                 onClick={handleShowMore}
-                title='Load More'
-                containerStyles={`text-blue-600 py-1.5 px-5 focus:outline-none hover:bg-blue-700 hover:text-white rounded-full text-base border border-blue-600`}
+                title="Load More"
+                containerStyles="text-blue-600 py-1.5 px-5 focus:outline-none hover:bg-blue-700 hover:text-white rounded-full text-base border border-blue-600"
               />
             </div>
           )}

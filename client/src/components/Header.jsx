@@ -1,8 +1,8 @@
 import React from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { FaSearch } from "react-icons/fa";
-import { HeroImage } from "../assets";
 import { popularSearch } from "../utils/data";
+import { Homepage } from "../assets"; // Import the Homepage image
 
 const SearchInput = ({ placeholder, value, setValue, handleClick }) => {
   const handleChange = (e) => {
@@ -12,71 +12,53 @@ const SearchInput = ({ placeholder, value, setValue, handleClick }) => {
   const clearInput = () => setValue("");
 
   return (
-    <div className='flex w-full md:w-2/3 items-center bg-white shadow-md p-3' style={{ borderRadius: '25px', background: 'rgba(255, 255, 255, 0.8)' }}>
+    <div className="flex w-full md:w-2/3 items-center bg-white shadow-md p-3" style={{ borderRadius: "25px", background: "rgba(255, 255, 255, 0.8)" }}>
       <input
         value={value}
         onChange={handleChange}
-        type='text'
-        className='w-full p-2 outline-none bg-transparent text-base placeholder-gray-500'
+        type="text"
+        className="w-full p-2 outline-none bg-transparent text-base placeholder-gray-500"
         placeholder={placeholder}
       />
       {value && (
         <AiOutlineCloseCircle
-          className='text-gray-600 text-xl cursor-pointer mr-2'
+          className="text-gray-600 text-xl cursor-pointer mr-2"
           onClick={clearInput}
         />
       )}
-      <button onClick={handleClick} className='flex items-center justify-center'>
-        <FaSearch className='text-gray-600 text-2xl cursor-pointer' />
+      <button onClick={handleClick} className="flex items-center justify-center">
+        <FaSearch className="text-gray-600 text-2xl cursor-pointer" />
       </button>
     </div>
   );
 };
 
-const Header = ({
-  title,
-  type,
-  handleClick,
-  searchQuery,
-  setSearchQuery,
-}) => {
+const Header = ({ title, type, handleClick, searchQuery, setSearchQuery }) => {
   return (
-    <div className='bg-[#f7fdfd]'>
+    <div className="relative">
+      {/* Background Image Section */}
       <div
-        className={`container mx-auto px-5 ${
-          type ? "h-[500px]" : "h-[350px]"
-        } flex items-center relative`}
-      >
-        <div className='w-full z-10'>
-          <div className='mb-8'>
-            <p className='text-slate-700 font-bold text-4xl'>{title}</p>
+        className={`absolute inset-x-0 top-0 z-0 h-[350px] bg-cover bg-center`}
+        style={{ backgroundImage: `url(${Homepage})` }}
+      ></div>
+
+      {/* Dark overlay only for the background image */}
+      <div className="absolute inset-x-0 top-0 h-[350px] bg-black opacity-10 z-0"></div>
+
+      <div className={`container mx-auto relative z-10 px-5 flex items-center h-[350px]`}>
+        <div className="w-full">
+          <div className="mb-8">
+            <p className="text-white font-bold text-4xl">{title}</p> {/* Changed text color to white */}
           </div>
 
-          <div className='w-full flex items-center justify-around bg-transparent px-5 py-4'>
+          <div className="w-full flex items-center justify-around bg-transparent px-5 py-4">
             <SearchInput
-              placeholder='Search by internship title, keywords, or location'
+              placeholder="Search by internship title, keywords, or location"
               value={searchQuery}
               setValue={setSearchQuery}
               handleClick={handleClick}
             />
           </div>
-
-          {type && (
-            <div className='w-full lg:w-1/2 flex flex-wrap gap-3 md:gap-6 py-10 md:py-14'>
-              {popularSearch.map((search, index) => (
-                <span
-                  key={index}
-                  className='bg-[#1d4fd826] text-[#1d4ed8] py-1 px-2 rounded-full text-sm md:text-base'
-                >
-                  {search}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className='w-1/3 h-full absolute top-24 md:-top-6 lg:-top-12 right-16 2xl:right-[18rem]'>
-          <img src={HeroImage} className='object-contain' />
         </div>
       </div>
     </div>

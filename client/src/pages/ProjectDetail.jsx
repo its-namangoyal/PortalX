@@ -20,6 +20,7 @@ const ProjectDetail = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
   const [isSemesterMatch, setIsSemesterMatch] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState(null); // To hold the application status
 
   const getProjectDetails = async () => {
     setIsFetching(true);
@@ -30,7 +31,7 @@ const ProjectDetail = () => {
       });
 
       setProject(res?.data);
-      setSimilarProjects(res?.similarProjects.filter(p => p._id !== id));
+      setSimilarProjects(res?.similarProjects.filter((p) => p._id !== id));
       setIsFetching(false);
 
       // Check if user's semester matches project's semester
@@ -42,15 +43,18 @@ const ProjectDetail = () => {
         method: "GET",
         token: user?.token,
       });
-      console.log("DATA", companyRes?.data);
-      setCompanyProjects(companyRes?.data?.projectPosts.filter(p => p._id !== id));
+      setCompanyProjects(
+        companyRes?.data?.projectPosts.filter((p) => p._id !== id)
+      );
 
-      // Check if user has already applied for the project
-      if (res?.data?.application?.includes(user?._id)) {
-        setHasApplied(true);
-      } else {
-        setHasApplied(false);
-      }
+      // Updated API call to include userId as query parameter
+      const applicationRes = await apiRequest({
+        url: `/applications/check/${id}?userId=${user?._id}`,
+        method: "GET",
+        token: user?.token,
+      });
+      setHasApplied(applicationRes?.exists || false);
+      setApplicationStatus(applicationRes?.status || null); // Set the application status if exists
     } catch (error) {
       setIsFetching(false);
       console.log(error);
@@ -95,6 +99,7 @@ const ProjectDetail = () => {
       if (res?.success) {
         alert(res?.message);
         setHasApplied(true);
+        setApplicationStatus(res?.status); // Assuming the response includes the new application status
       }
     } catch (error) {
       console.log(error);
@@ -153,7 +158,7 @@ const ProjectDetail = () => {
               <div className="bg-[#fed0ab] w-40 h-16 px-6 rounded-lg flex flex-col items-center justify-center">
                 <span className="text-sm">No. of Applicants</span>
                 <p className="text-lg font-semibold text-gray-700">
-                  {project?.application?.length}
+                  {project?.applications?.length || 0}
                 </p>
               </div>
 
@@ -214,7 +219,9 @@ const ProjectDetail = () => {
                     <p className="text-xl text-blue-600 font-semibold">
                       {project?.company?.name}
                     </p>
-                    <span className="text-base">{project?.company?.location}</span>
+                    <span className="text-base">
+                      {project?.company?.location}
+                    </span>
                     <span className="text-sm">{project?.company?.email}</span>
                   </div>
                   <p className="text-xl font-semibold">About Company</p>
@@ -234,13 +241,25 @@ const ProjectDetail = () => {
                 <CustomButton
                   title={
                     hasApplied
-                      ? "Applied"
+                      ? applicationStatus === "accepted"
+                        ? "Application Accepted"
+                        : applicationStatus === "rejected"
+                        ? "Application Rejected"
+                        : "Application Submitted"
                       : !isSemesterMatch
                       ? "Semester Mismatch"
                       : "Apply Now"
                   }
                   containerStyles={`w-full flex items-center justify-center text-white py-3 px-5 outline-none rounded-full text-base ${
-                    hasApplied || !isSemesterMatch ? "bg-gray-500 cursor-not-allowed" : "bg-black"
+                    hasApplied
+                      ? applicationStatus === "accepted"
+                        ? "bg-green-500" // Accepted
+                        : applicationStatus === "rejected"
+                        ? "bg-red-500" // Rejected
+                        : "bg-yellow-500" // Submitted or under review
+                      : !isSemesterMatch
+                      ? "bg-gray-500 cursor-not-allowed"
+                      : "bg-black" // Apply Now
                   }`}
                   onClick={handleApply}
                   disabled={hasApplied || !isSemesterMatch}
@@ -251,36 +270,43 @@ const ProjectDetail = () => {
         )}
 
         {/* RIGHT SIDE */}
-        { user?.accountType === "seeker" ? 
-        <div className="w-full md:w-1/3 2xl:w-2/4 p-5 mt-20 md:mt-0">
-          <p className="text-gray-500 font-semibold">Similar Projects</p>
-          <div className="w-full flex flex-wrap gap-4" style={{ marginTop: '12px' }}>
-            {similarProjects?.slice(0, 6).map((project, index) => {
-              const data = {
-                name: project?.company.name,
-                logo: project?.company.profileUrl || noLogo,
-                ...project,
-              };
-              return <ProjectCard project={data} key={index} />;
-            })}
+        {user?.accountType === "seeker" ? (
+          <div className="w-full md:w-1/3 2xl:w-2/4 p-5 mt-20 md:mt-0">
+            <p className="text-gray-500 font-semibold">Similar Projects</p>
+            <div
+              className="w-full flex flex-wrap gap-4"
+              style={{ marginTop: "12px" }}
+            >
+              {similarProjects?.slice(0, 6).map((project, index) => {
+                const data = {
+                  name: project?.company.name,
+                  logo: project?.company.profileUrl || noLogo,
+                  ...project,
+                };
+                return <ProjectCard project={data} key={index} />;
+              })}
+            </div>
           </div>
-        </div>
-        : 
-        <div className="w-full md:w-1/3 2xl:w-2/4 p-5 mt-20 md:mt-0">
-          <p className="text-gray-500 font-semibold">Other projects from { user?.name }</p>
-          <div className="w-full flex flex-wrap gap-4" style={{ marginTop: '12px' }}>
-            {companyProjects?.slice(0, 6).map((project, index) => {
-              const data = {
-                name: project?.company.name,
-                logo: project?.company.profileUrl || noLogo,
-                ...project,
-              };
-              return <ProjectCard project={data} key={index} />;
-            })}
+        ) : (
+          <div className="w-full md:w-1/3 2xl:w-2/4 p-5 mt-20 md:mt-0">
+            <p className="text-gray-500 font-semibold">
+              Other projects from {user?.name}
+            </p>
+            <div
+              className="w-full flex flex-wrap gap-4"
+              style={{ marginTop: "12px" }}
+            >
+              {companyProjects?.slice(0, 6).map((project, index) => {
+                const data = {
+                  name: project?.company.name,
+                  logo: project?.company.profileUrl || noLogo,
+                  ...project,
+                };
+                return <ProjectCard project={data} key={index} />;
+              })}
+            </div>
           </div>
-        </div>
-        }
-
+        )}
       </div>
     </div>
   );

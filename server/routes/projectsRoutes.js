@@ -10,7 +10,7 @@ import {
 
 
 // Added
-import { applyForProject, getProjectApplications, getUserApplications } from '../controllers/projectController.js'; // Adjust path as per your folder structure
+import { applyForProject } from '../controllers/projectController.js'; // Adjust path as per your folder structure
 
 
 const router = express.Router();
@@ -31,8 +31,6 @@ router.delete("/delete-project/:id", userAuth, deleteProjectPost);
 
 // Added
 router.post('/apply/:projectId', userAuth, applyForProject);
-router.get('/applications/:userId', getUserApplications);
-router.get('/:projectId/applications', userAuth, getProjectApplications);
 
 
 export default router;

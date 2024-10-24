@@ -29,7 +29,7 @@ const companySchema = new Schema(
     location: { type: String },
     about: { type: String },
     profileUrl: { type: String },
-    projectPosts: [{ type: Schema.Types.ObjectId, ref: "projects" }],
+    projectPosts: [{ type: Schema.Types.ObjectId, ref: "Projects" }],
     verified: { type: Boolean, default: false },
   },
   { timestamps: true }

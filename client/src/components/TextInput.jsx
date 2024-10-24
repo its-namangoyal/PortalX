@@ -1,21 +1,27 @@
 import React from "react";
 
+// Using forwardRef to maintain reference to the input element
 const TextInput = React.forwardRef(
-  ({ type, placeholder, styles, label, register, name, error }, ref) => {
+  ({ type = "text", placeholder, className = "", label, register, name, error }, ref) => {
     return (
-      <div className='flex flex-col mt-2'>
-        <p className='text-gray-600 text-sm mb-1 '>{label}</p>
-
+      <div className="flex flex-col mt-4">
+        {/* Display label only if provided */}
+        {label && <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>}
+        
         <input
           type={type}
           name={name}
           placeholder={placeholder}
           ref={ref}
-          className={`rounded border border-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-base px-4 py-2 ${styles}`}
+          className={`rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-base px-4 py-2 transition-all duration-300 ease-in-out ${className}`}
           {...register}
           aria-invalid={error ? "true" : "false"}
         />
-        {error && <span className='text-xs text-red-500 mt-0.5 '>{error}</span>}
+
+        {/* Display error message */}
+        {error && (
+          <span className="text-xs text-red-500 mt-1">{error}</span>
+        )}
       </div>
     );
   }
