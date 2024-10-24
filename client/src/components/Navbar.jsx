@@ -167,9 +167,14 @@ const Navbar = () => {
                   </li>
                 )}
                 {user?.accountType === "company" && (
-                  <li>
-                    <Link to="/upload-project">Post a Project</Link>
-                  </li>
+                  <>
+                    <li>
+                      <Link to="/upload-project">Post a Project</Link>
+                    </li>
+                    <li>
+                      <Link to="/student-applications">Applications</Link>
+                    </li>
+                  </>
                 )}
                 <li>
                   <Link to='/about-us'>About</Link>
@@ -226,9 +231,14 @@ const Navbar = () => {
               </>
             )}
             {user?.accountType === "company" && (
-              <Link to='/upload-project' onClick={handleCloseNavbar} className='py-2'>
-                Upload Project
-              </Link>
+              <>
+                <Link to='/upload-project' onClick={handleCloseNavbar} className='py-2'>
+                  Upload Project
+                </Link>
+                <Link to='/applications' onClick={handleCloseNavbar} className='py-2'>
+                  Applications
+                </Link>
+              </>
             )}
             {user?.email && (
               <Link to='/about-us' onClick={handleCloseNavbar} className='py-2'>

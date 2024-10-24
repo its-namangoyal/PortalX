@@ -11,11 +11,10 @@ const projectSchema = new mongoose.Schema(
     experience: { type: Number, default: 0 },
     semester: { type: String }, // New field added
     detail: [{ desc: { type: String }, requirements: { type: String } }],
-    application: [{ type: Schema.Types.ObjectId, ref: "Users" }],
   },
   { timestamps: true }
 );
 
-const projects = mongoose.model("projects", projectSchema);
+const Projects = mongoose.model("Projects", projectSchema);  // Changed from "projects" to "Projects"
 
-export default projects;
+export default Projects;

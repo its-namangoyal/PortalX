@@ -7,6 +7,8 @@ import ProjectDetail from "./ProjectDetail";
 import UploadProject from "./UploadProject";
 import UserProfile from "./UserProfile";
 import Admin from "./Admin";
+import StudentApplications from "./StudentApplications";
+import ApplicationDetails from "./ApplicationDetails"
 
 export {
   About,
@@ -17,5 +19,7 @@ export {
   ProjectDetail,
   UploadProject,
   UserProfile,
-  Admin
+  Admin,
+  StudentApplications,
+  ApplicationDetails
 };
