@@ -10,6 +10,7 @@ import Office from "./office.jpg";
 import JobImg from "./job.jpg";
 import Facebook from "./facebook.png";
 import CodeWave from "./codewave.png";
+import Homepage from "./homepage.png";
 
 export {
   CodeWave,
@@ -24,4 +25,5 @@ export {
   Youtube,
   Office,
   JobImg,
+  Homepage,
 };
