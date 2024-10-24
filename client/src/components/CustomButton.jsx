@@ -1,15 +1,14 @@
 import React from "react";
 
-const CustomButton = ({ title, containerStyles, iconRight, type, onClick }) => {
+const CustomButton = ({ title, containerStyles = "", iconRight = null, type = "button", onClick }) => {
   return (
     <button
       onClick={onClick}
-      type={type || "button"}
-      className={`inline-flex items-center ${containerStyles}`}
+      type={type}
+      className={`inline-flex items-center justify-center transition duration-300 ease-in-out ${containerStyles}`}
     >
-      {title}
-
-      {iconRight && <div className='ml-2'>{iconRight}</div>}
+      <span>{title}</span>
+      {iconRight && <span className="ml-2">{iconRight}</span>}
     </button>
   );
 };

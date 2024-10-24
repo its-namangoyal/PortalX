@@ -1,20 +1,16 @@
 import { FaFacebookF, FaLinkedinIn, FaTwitter } from "react-icons/fa";
 import { FiInstagram } from "react-icons/fi";
-import { Link } from "react-router-dom";
-import { footerLinks } from "../utils/data";
-import CustomButton from "./CustomButton";
-import TextInput from "./TextInput";
 import uwinLogo from "../assets/uw logo.png"; // Import the logo
 
 const Footer = () => {
   return (
     <footer
-      className="text-white mp-20"
+      className="text-white"
       style={{
-        fontFamily:
-          "'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif",
+        fontFamily: "'Lucida Sans', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif",
       }}
     >
+      {/* Background SVG */}
       <div className="overflow-x-hidden -mb-0.5">
         <svg
           preserveAspectRatio="none"
@@ -33,30 +29,45 @@ const Footer = () => {
 
       <div className="bg-[#1d4ed8]">
         {/* University Logo */}
-        <img
-          src={uwinLogo}
-          alt="University of Windsor Logo"
-          className="mx-auto mb-6 pt-5 w-64"
-          style={{
-            width: 120
-          }}
-        />
+        <div className="flex justify-center pt-5 mb-6">
+          <img
+            src={uwinLogo}
+            alt="University of Windsor Logo"
+            className="w-28 h-auto"
+          />
+        </div>
+
+        {/* Licensing and Copyright */}
         <div className="text-center mb-5">
-          {/* Licensing and Copyright */}
-          <p className="text-black-700 text-sm font-light">
+          <p className="text-gray-200 text-sm font-light">
             &copy; {new Date().getFullYear()} PortalX. All rights reserved.
           </p>
-          <p className="text-black-600 text-sm mt-2 font-light">
+          <p className="text-gray-300 text-sm mt-2 font-light">
             Designed and Developed by the University of Windsor.
           </p>
         </div>
 
-        {/* Bottom Decoration */}
+        {/* Social Icons */}
+        <div className="flex justify-center space-x-4 text-lg text-white mb-8">
+          <a href="https://www.facebook.com/UWindsor" target="_blank" rel="noreferrer" aria-label="Facebook">
+            <FaFacebookF className="hover:text-gray-300 transition duration-300 ease-in-out" />
+          </a>
+          <a href="https://www.instagram.com/uwincoop?igsh=N2g2Y3l2anBsYWFp" target="_blank" rel="noreferrer" aria-label="Instagram">
+            <FiInstagram className="hover:text-gray-300 transition duration-300 ease-in-out" />
+          </a>
+          <a href="https://www.linkedin.com/company/uwindsorcoop/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+            <FaLinkedinIn className="hover:text-gray-300 transition duration-300 ease-in-out" />
+          </a>
+          {/* <a href="https://x.com/UWindsor" target="_blank" rel="noreferrer" aria-label="Twitter">
+            <FaTwitter className="hover:text-gray-300 transition duration-300 ease-in-out" />
+          </a>  */}
+        </div>
+
+        {/* Bottom Section */}
         <div className="bg-[#001a36] py-4">
-          <div className="container mx-auto px-5">
-            <p className="text-black-700 text-center text-s">
-              PortalX is a project developed as part of the University of
-              Windsor's MAC Program.
+          <div className="container mx-auto text-center text-gray-400 text-sm">
+            <p>
+              PortalX is a project developed as part of the University of Windsor's MAC Program.
             </p>
           </div>
         </div>
