@@ -86,7 +86,7 @@ function App() {
           <Route path="/company-profile/:id" element={<CompanyProfile />} />
           <Route path="/upload-project" element={<UploadProject />} />
           <Route path="/project-detail/:id" element={<ProjectDetail />} />
-          <Route path="/projects" element={<ProjectsSection />} />
+          <Route path="/previous-projects" element={<ProjectsSection />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/student-applications" element={<StudentApplications />} />
           <Route path="/applications/:applicationId" element={<ApplicationDetails />} />
