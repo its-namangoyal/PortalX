@@ -5,71 +5,84 @@ import { useLocation, useNavigate } from 'react-router-dom'; // For URL navigati
 import Loading from '../components/Loading'; // Assuming you have a Loading component
 
 const ProjectsSection = () => {
-  const [projects, setProjects] = useState([]);
-  const [filteredProjects, setFilteredProjects] = useState([]);
-  const [category, setCategory] = useState('All');
-  const [isFetching, setIsFetching] = useState(false);
-  const [recordCount, setRecordCount] = useState(0);
-  const [numPage, setNumPage] = useState(1);
-  const [page, setPage] = useState(1);
+  const [projects, setProjects] = useState([]); // All projects fetched from the database
+  const [filteredProjects, setFilteredProjects] = useState([]); // Projects filtered by category
+  const [category, setCategory] = useState('All'); // Current category
+  const [isFetching, setIsFetching] = useState(false); // Loading state
+  const [recordCount, setRecordCount] = useState(0); // Total number of filtered projects
+  const [numPage, setNumPage] = useState(1); // Number of pages for pagination
+  const [page, setPage] = useState(1); // Current page number
 
   const user = useSelector(state => state.user); // Assuming user data is in Redux store
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Mock data for testing
-  useEffect(() => {
-    const mockProjects = [
-      { projectId: "1", title: "Mock Project 1", term: "Fall 2024" },
-      { projectId: "2", title: "Mock Project 2", term: "Winter 2023" },
-      { projectId: "3", title: "Mock Project 3", term: "Summer 2023" },
-    ];
-    
-    // Uncomment the following lines to test with mock data
-    // setProjects(mockProjects); 
-    // setFilteredProjects(mockProjects);
-  }, []);
+  // // Fetch projects from the server and filter based on the user's semester
+  // const fetchProjects = async () => {
+  //   setIsFetching(true);
 
-  // Fetch projects from the server and filter based on the user's semester
+  //   // Construct the URL using updateURL for pagination and filtering
+  //   const newURL = `?page=${page}`; // Adjust this URL as needed to include pagination/filtering
+
+  //   try {
+  //     const res = await apiRequest({
+  //       url: '/projects' + newURL, // Use the constructed URL
+  //       method: 'GET',
+  //     });
+
+  //     console.log("API Response:", res); // Log the entire response to inspect the data
+
+  //     if (res?.data) {
+  //       // Filter projects based on the user's semester, if needed
+  //       const filteredBySemester = res.data.filter(project => project.semester === user.semester);
+
+  //       console.log("Filtered Projects:", filteredBySemester); // Log filtered projects
+
+  //       setNumPage(res?.numOfPage || 1); // Update total pages if provided by API
+  //       setRecordCount(filteredBySemester.length); // Update the record count
+  //       setProjects(filteredBySemester); // Set projects fetched from the API
+  //       setFilteredProjects(filteredBySemester); // Initially display all projects
+  //     }
+  //   } catch (error) {
+  //     console.log("API Error:", error); // Log the error to inspect the problem
+  //   } finally {
+  //     setIsFetching(false); // Stop fetching
+  //   }
+  // };
+  // Fetch Projects
   const fetchProjects = async () => {
     setIsFetching(true);
-
-    // Construct the URL using updateURL for pagination and filtering
-    const newURL = ""; // You can use updateURL here for proper filtering and pagination
+    const newURL = updateURL({
+      pageNum: page,
+      query: searchQuery,
+      cmpLoc: projectLocation,
+      sort: sort,
+      navigate: navigate,
+      location: location,
+      exp: filterExp,
+    });
 
     try {
       const res = await apiRequest({
-        url: '/projects' + newURL, // Use the constructed URL
-        method: 'GET',
+        url: "/projects" + newURL,
+        method: "GET",
       });
 
-      console.log("API Response:", res); // Log the entire response to inspect the data
-
-      // Filter projects based on user's semester
       const filteredProjects = res.data.filter(project => project.semester === user.semester);
-
-      console.log("Filtered Projects:", filteredProjects); // Check the filtered projects
-
       setNumPage(res?.numOfPage);
       setRecordCount(filteredProjects.length);
-      setProjects(filteredProjects); // Set filtered projects as the main project state
-
-      setIsFetching(false);
+      setData(filteredProjects);
     } catch (error) {
+      console.log(error);
+    } finally {
       setIsFetching(false);
-      console.log("API Error:", error); // Log the error to inspect the problem
     }
   };
-
-  // Fetch the projects from the database on component mount and when page/category changes
-  useEffect(() => {
-    fetchProjects();
-  }, [page, category]); // Refetch projects when page or category changes
 
   // Filter projects based on selected category
   const filterProjects = (selectedCategory) => {
     if (selectedCategory === 'All') {
-      setFilteredProjects(projects);
+      setFilteredProjects(projects); // Display all projects
     } else if (selectedCategory === 'Current') {
       const currentProjects = projects.filter(project => project.term === 'Fall 2024');
       setFilteredProjects(currentProjects);
@@ -77,13 +90,16 @@ const ProjectsSection = () => {
       const filtered = projects.filter(project => project.term === selectedCategory);
       setFilteredProjects(filtered);
     }
-
-    console.log("Filtered Projects after category:", filteredProjects);
   };
+
+  // Fetch projects from the database on component mount and when page/category changes
+  useEffect(() => {
+    fetchProjects();
+  }, [page, category]); // Refetch projects when page or category changes
 
   useEffect(() => {
     filterProjects(category);
-  }, [category, projects]);
+  }, [category, projects]); // Refetch filtered projects when category or projects list changes
 
   return (
     <div className="container mx-auto p-5">
