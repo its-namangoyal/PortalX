@@ -292,6 +292,7 @@ const CompanyProfile = () => {
                 name: info?.name,
                 email: info?.email,
                 logo: info?.profileUrl,
+                location: info?.location,
                 ...project,
               };
               return <ProjectCard project={data} key={index} />;
