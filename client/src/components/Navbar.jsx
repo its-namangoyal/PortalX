@@ -170,7 +170,7 @@ const Navbar = () => {
                   <Link to="/companies">Companies / Professors</Link>
                 </li>
                 <li>
-                  <Link to="/projects">Projects</Link>
+                  <Link to="/previous-projects">Previous Projects</Link>
                 </li>
               </>
             )}
@@ -243,8 +243,8 @@ const Navbar = () => {
                 <Link to="/companies" onClick={handleCloseNavbar} className="py-2">
                   Companies
                 </Link>
-                <Link to="/projects" onClick={handleCloseNavbar} className="py-2">
-                  Projects
+                <Link to="/previous-projects" onClick={handleCloseNavbar} className="py-2">
+                  Previous Projects
                 </Link>
                 <Link to="/applications" onClick={handleCloseNavbar} className="py-2">
                   Applications
