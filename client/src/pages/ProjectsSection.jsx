@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { apiRequest } from '../utils';  // Assuming this is the correct import
-import { useSelector } from 'react-redux'; // Assuming you're using redux to get user data
-import { useLocation, useNavigate } from 'react-router-dom'; // For URL navigation and updating
-import Loading from '../components/Loading'; // Assuming you have a Loading component
+import { apiRequest, updateURL } from '../utils'; // Assuming correct imports from utils
+import { useSelector } from 'react-redux'; // For fetching user data from the Redux store
+import { useLocation, useNavigate } from 'react-router-dom'; // For URL handling
+import Loading from '../components/Loading'; // Loading component
 
 const ProjectsSection = () => {
   const [projects, setProjects] = useState([]); // All projects fetched from the database
@@ -13,67 +13,35 @@ const ProjectsSection = () => {
   const [numPage, setNumPage] = useState(1); // Number of pages for pagination
   const [page, setPage] = useState(1); // Current page number
 
-  const user = useSelector(state => state.user); // Assuming user data is in Redux store
+  const user = useSelector((state) => state.user); // Assuming user data is in Redux store
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState(""); // Search query (for future use)
+  const [projectLocation, setProjectLocation] = useState(""); // Location filter (for future use)
+  const [filterExp, setFilterExp] = useState(""); // Experience filter (for future use)
 
-  // // Fetch projects from the server and filter based on the user's semester
-  // const fetchProjects = async () => {
-  //   setIsFetching(true);
-
-  //   // Construct the URL using updateURL for pagination and filtering
-  //   const newURL = `?page=${page}`; // Adjust this URL as needed to include pagination/filtering
-
-  //   try {
-  //     const res = await apiRequest({
-  //       url: '/projects' + newURL, // Use the constructed URL
-  //       method: 'GET',
-  //     });
-
-  //     console.log("API Response:", res); // Log the entire response to inspect the data
-
-  //     if (res?.data) {
-  //       // Filter projects based on the user's semester, if needed
-  //       const filteredBySemester = res.data.filter(project => project.semester === user.semester);
-
-  //       console.log("Filtered Projects:", filteredBySemester); // Log filtered projects
-
-  //       setNumPage(res?.numOfPage || 1); // Update total pages if provided by API
-  //       setRecordCount(filteredBySemester.length); // Update the record count
-  //       setProjects(filteredBySemester); // Set projects fetched from the API
-  //       setFilteredProjects(filteredBySemester); // Initially display all projects
-  //     }
-  //   } catch (error) {
-  //     console.log("API Error:", error); // Log the error to inspect the problem
-  //   } finally {
-  //     setIsFetching(false); // Stop fetching
-  //   }
-  // };
-  // Fetch Projects
+  // Fetch Projects from the server
   const fetchProjects = async () => {
     setIsFetching(true);
-    const newURL = updateURL({
-      pageNum: page,
-      query: searchQuery,
-      cmpLoc: projectLocation,
-      sort: sort,
-      navigate: navigate,
-      location: location,
-      exp: filterExp,
-    });
-
     try {
       const res = await apiRequest({
-        url: "/projects" + newURL,
-        method: "GET",
+        url: '/projects', // Correct endpoint
+        method: 'GET',
       });
-
-      const filteredProjects = res.data.filter(project => project.semester === user.semester);
-      setNumPage(res?.numOfPage);
-      setRecordCount(filteredProjects.length);
-      setData(filteredProjects);
+      
+      if (res?.data && res.data.length > 0) {
+        const filteredProjects = res.data.filter(project => project.semester === user.semester);
+        setProjects(filteredProjects);
+        setFilteredProjects(filteredProjects);
+        setRecordCount(filteredProjects.length);
+        setNumPage(res?.numOfPage || 1); // Optional, handle pagination
+      } else {
+        setProjects([]); // If no projects, clear the state
+        setFilteredProjects([]); // Update filtered state as well
+        setRecordCount(0);
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching projects:", error);
     } finally {
       setIsFetching(false);
     }
@@ -94,12 +62,12 @@ const ProjectsSection = () => {
 
   // Fetch projects from the database on component mount and when page/category changes
   useEffect(() => {
-    fetchProjects();
-  }, [page, category]); // Refetch projects when page or category changes
+    fetchProjects(); // Fetch projects when page or category changes
+  }, [page, category]);
 
   useEffect(() => {
-    filterProjects(category);
-  }, [category, projects]); // Refetch filtered projects when category or projects list changes
+    filterProjects(category); // Refetch filtered projects when category or projects list changes
+  }, [category, projects]);
 
   return (
     <div className="container mx-auto p-5">
@@ -107,7 +75,7 @@ const ProjectsSection = () => {
 
       {/* Category Tabs */}
       <div className="flex gap-5 mb-5">
-        {['All', 'Current', 'Summer 2024', 'Winter 2024', 'Fall 2023', 'Summer 2023', 'Winter 2023'].map(cat => (
+        {['All', 'Current', 'Summer 2024', 'Winter 2024', 'Fall 2023', 'Summer 2023', 'Winter 2023'].map((cat) => (
           <button
             key={cat}
             className={`px-4 py-2 rounded ${category === cat ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
@@ -126,7 +94,7 @@ const ProjectsSection = () => {
           {/* Display projects or No Projects Found */}
           {filteredProjects.length > 0 ? (
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {filteredProjects.map(project => (
+              {filteredProjects.map((project) => (
                 <li key={project.projectId} className="border p-4 rounded shadow">
                   <h2 className="text-xl font-semibold">{project.title}</h2>
                   <p className="text-gray-600">{project.term}</p>

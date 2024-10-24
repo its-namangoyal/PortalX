@@ -14,11 +14,10 @@ const FindProjects = () => {
   const [numPage, setNumPage] = useState(1);
   const [recordCount, setRecordCount] = useState(0);
   const [data, setData] = useState([]);
-  const [applications, setApplications] = useState([]); // State for storing user's applications
-
+  const [applications, setApplications] = useState([]); // Store user's applications
   const [searchQuery, setSearchQuery] = useState("");
   const [projectLocation, setProjectLocation] = useState("");
-  const [filterExp, setFilterExp] = useState([]);
+  const [filterExp, setFilterExp] = useState("");
   const [expVal, setExpVal] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -41,7 +40,7 @@ const FindProjects = () => {
 
     try {
       // Fetch projects
-      const res = await apiRequest({
+      const projectsRes = await apiRequest({
         url: "/projects" + newURL,
         method: "GET",
       });
@@ -52,69 +51,55 @@ const FindProjects = () => {
         method: "GET",
       });
 
-      const filteredProjects = res.data.filter(
+      const filteredProjects = projectsRes.data.filter(
         (project) => project.semester === user.semester
       );
 
-      setNumPage(res?.numOfPage);
+      setNumPage(projectsRes?.numOfPage || 1);
       setRecordCount(filteredProjects.length);
       setData(filteredProjects);
       setApplications(appsRes?.data || []); // Store user's applications
 
-      setIsFetching(false);
     } catch (error) {
-      setIsFetching(false);
       console.error("Error fetching projects or applications:", error);
+    } finally {
+      setIsFetching(false);
     }
   };
 
-  // Filter projects by type
-  const filterProjects = (val) => {
-    if (filterProjectTypes?.includes(val)) {
-      setFilterProjectTypes(filterProjectTypes.filter((el) => el != val));
-    } else {
-      setFilterProjectTypes([...filterProjectTypes, val]);
-    }
-  };
-
-  // Filter projects by experience
+  // Filter by experience
   const filterExperience = (e) => {
-    if (expVal?.includes(e)) {
-      setExpVal(expVal?.filter((el) => el != e));
-    } else {
-      setExpVal([...expVal, e]);
-    }
+    const selectedExp = e.target.value;
+    setExpVal((prevExpVal) =>
+      prevExpVal.includes(selectedExp)
+        ? prevExpVal.filter((exp) => exp !== selectedExp)
+        : [...prevExpVal, selectedExp]
+    );
   };
 
-  // Handle search submit
+  // Handle form submit to search projects
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
     await fetchProjectsAndApplications();
   };
 
-  // Handle "Show More" click
+  // Handle "Show More" functionality for pagination
   const handleShowMore = async (e) => {
     e.preventDefault();
-    setPage(prevPage => prevPage + 1);
+    setPage((prevPage) => prevPage + 1);
   };
 
-  // Handle experience range update
+  // Update experience filter based on selected values
   useEffect(() => {
     if (expVal.length > 0) {
-      let newExpVal = [];
-
-      expVal?.map((el) => {
-        const newEl = el?.split("-");
-        newExpVal.push(Number(newEl[0]), Number(newEl[1]));
-      });
-
-      newExpVal?.sort((a, b) => a - b);
-
-      setFilterExp(`${newExpVal[0]}-${newExpVal?.length > 1 ? newExpVal[newExpVal.length - 1] : newExpVal[0]}`);
+      const ranges = expVal.map((el) => el.split("-").map(Number));
+      const minExp = Math.min(...ranges.map(([min]) => min));
+      const maxExp = Math.max(...ranges.map(([, max]) => max));
+      setFilterExp(`${minExp}-${maxExp}`);
     }
   }, [expVal]);
 
-  // Fetch projects on initial render or when dependencies change
+  // Fetch projects and applications on component mount or when page/sort changes
   useEffect(() => {
     if (user?.semester) {
       fetchProjectsAndApplications();
@@ -135,67 +120,49 @@ const FindProjects = () => {
       />
 
       <div className="container mx-auto flex gap-6 2xl:gap-10 md:px-5 py-0 md:py-6 bg-[#f7fdfd]">
+        {/* Filters Section */}
         <div className="hidden md:flex flex-col w-1/6 h-fit bg-white shadow-sm">
-          <p className="text-lg font-semibold text-slate-600">Filter Search</p>
-
-          <div className="py-2">
-            {/* Experience Filter */}
-            <div className="py-2 mt-0">
-              <div className="flex justify-between mb-3">
-                <p className="flex items-center gap-2 font-semibold">
-                  <BsStars />
-                  Experience
-                </p>
-
-                <button>
-                  <MdOutlineKeyboardArrowDown />
-                </button>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                {experience.map((exp) => (
-                  <div key={exp.title} className="flex gap-3">
-                    <input
-                      type="checkbox"
-                      value={exp?.value}
-                      className="w-4 h-4"
-                      onChange={(e) => filterExperience(e.target.value)}
-                    />
-                    <span>{exp.title}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+          <p className="text-lg font-semibold text-slate-600">Filter by Experience</p>
+          <div className="flex flex-col gap-2">
+            {experience.map((exp) => (
+              <label key={exp.title} className="flex gap-3 items-center">
+                <input
+                  type="checkbox"
+                  value={exp.value}
+                  className="w-4 h-4"
+                  onChange={filterExperience}
+                />
+                <span>{exp.title}</span>
+              </label>
+            ))}
           </div>
         </div>
 
+        {/* Projects Section */}
         <div className="w-full md:w-5/6 px-5 md:px-0">
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm md:text-base">
               Showing: <span className="font-semibold">{recordCount}</span> Internships Available
             </p>
-
             <div className="flex flex-col md:flex-row gap-0 md:gap-2 md:items-center">
               <p className="text-sm md:text-base">Sort By:</p>
               <ListBox sort={sort} setSort={setSort} />
             </div>
           </div>
 
+          {/* Projects List */}
           <div className="w-full flex flex-wrap gap-4">
             {data?.map((project, index) => {
-              // Check if the user has applied to this project by matching the project ID with applications
               const hasApplied = applications?.some(
                 (application) => application.project._id === project._id
               );
-
-              // Create the project data object to pass to ProjectCard
               const newProject = {
                 name: project?.company?.name,
                 logo: project?.company?.profileUrl,
-                hasApplied, // Add the hasApplied flag
+                hasApplied,
                 status: hasApplied
                   ? applications.find((app) => app.project._id === project._id)?.status
-                  : null, // If applied, get the application status
+                  : null,
                 ...project,
               };
 
@@ -209,20 +176,20 @@ const FindProjects = () => {
             })}
           </div>
 
-          {/* Show loading spinner */}
+          {/* Loading Spinner */}
           {isFetching && (
             <div className="py-10">
               <Loading />
             </div>
           )}
 
-          {/* Show Load More Button */}
+          {/* Load More Button */}
           {numPage > page && !isFetching && (
             <div className="w-full flex items-center justify-center pt-16">
               <CustomButton
                 onClick={handleShowMore}
                 title="Load More"
-                containerStyles={`text-blue-600 py-1.5 px-5 focus:outline-none hover:bg-blue-700 hover:text-white rounded-full text-base border border-blue-600`}
+                containerStyles="text-blue-600 py-1.5 px-5 focus:outline-none hover:bg-blue-700 hover:text-white rounded-full text-base border border-blue-600"
               />
             </div>
           )}

@@ -14,7 +14,6 @@ import {
   UserProfile,
   Admin, // Added Admin import
   ProjectsSection,
-  Admin,
   StudentApplications, 
   ApplicationDetails
 } from "./pages";
