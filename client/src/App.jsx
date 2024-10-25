@@ -12,8 +12,7 @@ import {
   ProjectDetail,
   UploadProject,
   UserProfile,
-  Admin, // Added Admin import
-  ProjectsSection,
+  Admin,
   StudentApplications, 
   ApplicationDetails
 } from "./pages";
@@ -86,7 +85,6 @@ function App() {
           <Route path="/company-profile/:id" element={<CompanyProfile />} />
           <Route path="/upload-project" element={<UploadProject />} />
           <Route path="/project-detail/:id" element={<ProjectDetail />} />
-          <Route path="/previous-projects" element={<ProjectsSection />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/student-applications" element={<StudentApplications />} />
           <Route path="/applications/:applicationId" element={<ApplicationDetails />} />

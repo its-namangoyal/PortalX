@@ -95,7 +95,7 @@ function MenuList({ user, isProfileOpen, onClick }) {
                     {user?.accountType === "seeker"
                       ? "Student Profile"
                       : user?.accountType === "company"
-                      ? "Company / Professor Profile"
+                      ? "Company Profile"
                       : "Admin Profile"}
                   </Link>
                 )}
@@ -169,9 +169,6 @@ const Navbar = () => {
                 <li>
                   <Link to="/companies">Companies / Professors</Link>
                 </li>
-                <li>
-                  <Link to="/previous-projects">Previous Projects</Link>
-                </li>
               </>
             )}
 
@@ -238,13 +235,10 @@ const Navbar = () => {
             {user?.accountType === "seeker" && (
               <>
                 <Link to="/" onClick={handleCloseNavbar} className="py-2">
-                  Find Projects
+                  Projects
                 </Link>
                 <Link to="/companies" onClick={handleCloseNavbar} className="py-2">
                   Companies
-                </Link>
-                <Link to="/previous-projects" onClick={handleCloseNavbar} className="py-2">
-                  Previous Projects
                 </Link>
                 <Link to="/applications" onClick={handleCloseNavbar} className="py-2">
                   Applications

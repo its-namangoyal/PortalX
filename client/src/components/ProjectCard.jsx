@@ -40,7 +40,7 @@ const ProjectCard = ({ project, currentUser }) => {
     <Link
       to={`/project-detail/${project?._id}`}
       className="block overflow-hidden bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-200"
-      style={{ width: "350px", height: "auto" }} // Set fixed width
+      style={{ width: "350px", height: "auto" }}
     >
       <div className="p-4 flex justify-between items-center">
         {/* Left Section with Logo and Info */}
@@ -52,27 +52,25 @@ const ProjectCard = ({ project, currentUser }) => {
           />
           <div>
             <div className="text-sm text-gray-600">
-              {project?.company?.name || project?.companyName} {/* Company Name */}
+              {project?.company?.name || project?.companyName}
             </div>
             <div className="flex justify-between items-center" style={{ width: "250px", height: "auto" }}>
-              {/* Project Title aligned to the left */}
               <h3 className="text-base font-semibold text-gray-900">
                 {project?.projectTitle || "Untitled Project"}
               </h3>
-
-              {/* Time Ago aligned to the right */}
               <div className="text-sm text-gray-500 ml-10">
-                {getTimeAgoShort(project?.createdAt)} {/* Time Ago (e.g., 2d+) */}
+                {getTimeAgoShort(project?.createdAt)}
               </div>
             </div>
 
             <div className="text-sm text-gray-600">
-              {project?.company?.location ||
-                project?.location ||
-                "Unknown location"} {/* Project Location */}
+              {project?.company?.location || project?.location || "Unknown location"}
             </div>
             <div className="text-sm text-gray-500 mt-1">
-              ${project?.salary || "N/A"} {/* Project Salary */}
+              ${project?.salary || "N/A"}
+            </div>
+            <div className="text-sm text-gray-500 mt-1">
+              {project?.semester || "Not specified"} {/* Semester Info */}
             </div>
           </div>
         </div>

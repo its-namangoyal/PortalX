@@ -8,18 +8,17 @@ import { apiRequest, updateURL } from "../utils";
 import { experience } from "../utils/data";
 
 const FindProjects = () => {
-  // State management
   const [sort, setSort] = useState("Newest");
   const [page, setPage] = useState(1);
   const [numPage, setNumPage] = useState(1);
   const [recordCount, setRecordCount] = useState(0);
   const [data, setData] = useState([]);
-  const [applications, setApplications] = useState([]); // Store user's applications
+  const [applications, setApplications] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [projectLocation, setProjectLocation] = useState("");
-  const [filterExp, setFilterExp] = useState("");
-  const [expVal, setExpVal] = useState([]);
+  const [filterExp, setFilterExp] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
+  const [semesterFilter, setSemesterFilter] = useState("All");
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,31 +34,46 @@ const FindProjects = () => {
       sort: sort,
       navigate: navigate,
       location: location,
-      exp: filterExp,
     });
 
     try {
-      // Fetch projects
       const projectsRes = await apiRequest({
         url: "/projects" + newURL,
         method: "GET",
       });
 
-      // Fetch user's applications
       const appsRes = await apiRequest({
-        url: `/applications/user/${user?._id}`, // Fetch applications for the logged-in user
+        url: `/applications/user/${user?._id}`,
         method: "GET",
       });
 
-      const filteredProjects = projectsRes.data.filter(
-        (project) => project.semester === user.semester
-      );
+      let filteredProjects = projectsRes.data;
+
+      // Apply semester filter
+      if (semesterFilter === "Current") {
+        filteredProjects = filteredProjects.filter(
+          (project) => project.semester === user.semester
+        );
+      } else if (semesterFilter !== "All") {
+        filteredProjects = filteredProjects.filter(
+          (project) => project.semester === semesterFilter
+        );
+      }
+
+      // Apply experience filter
+      if (filterExp.length > 0) {
+        filteredProjects = filteredProjects.filter((project) =>
+          filterExp.some((range) => {
+            const [min, max] = range.split("-").map(Number);
+            return project.experience >= min && project.experience <= max;
+          })
+        );
+      }
 
       setNumPage(projectsRes?.numOfPage || 1);
       setRecordCount(filteredProjects.length);
       setData(filteredProjects);
-      setApplications(appsRes?.data || []); // Store user's applications
-
+      setApplications(appsRes?.data || []);
     } catch (error) {
       console.error("Error fetching projects or applications:", error);
     } finally {
@@ -67,52 +81,28 @@ const FindProjects = () => {
     }
   };
 
-  // Filter by experience
+  // Handle experience filter updates
   const filterExperience = (e) => {
     const selectedExp = e.target.value;
-    setExpVal((prevExpVal) =>
-      prevExpVal.includes(selectedExp)
-        ? prevExpVal.filter((exp) => exp !== selectedExp)
-        : [...prevExpVal, selectedExp]
+    setFilterExp((prevExp) =>
+      prevExp.includes(selectedExp)
+        ? prevExp.filter((exp) => exp !== selectedExp)
+        : [...prevExp, selectedExp]
     );
   };
 
-  // Handle form submit to search projects
-  const handleSearchSubmit = async (e) => {
-    e.preventDefault();
-    await fetchProjectsAndApplications();
-  };
-
-  // Handle "Show More" functionality for pagination
-  const handleShowMore = async (e) => {
-    e.preventDefault();
-    setPage((prevPage) => prevPage + 1);
-  };
-
-  // Update experience filter based on selected values
-  useEffect(() => {
-    if (expVal.length > 0) {
-      const ranges = expVal.map((el) => el.split("-").map(Number));
-      const minExp = Math.min(...ranges.map(([min]) => min));
-      const maxExp = Math.max(...ranges.map(([, max]) => max));
-      setFilterExp(`${minExp}-${maxExp}`);
-    }
-  }, [expVal]);
-
-  // Fetch projects and applications on component mount or when page/sort changes
   useEffect(() => {
     if (user?.semester) {
       fetchProjectsAndApplications();
     }
-  }, [sort, filterExp, page, user?.semester]);
+  }, [sort, filterExp, page, user?.semester, semesterFilter]);
 
   return (
     <div>
-      {/* Header Section */}
       <Header
         title="Find Your Dream Internship with Ease"
         type="home"
-        handleClick={handleSearchSubmit}
+        handleClick={fetchProjectsAndApplications}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         location={projectLocation}
@@ -136,6 +126,21 @@ const FindProjects = () => {
               </label>
             ))}
           </div>
+
+          <div className="mt-4">
+            <label className="text-lg font-semibold text-slate-600">Filter by Semester</label>
+            <select
+              value={semesterFilter}
+              onChange={(e) => setSemesterFilter(e.target.value)}
+              className="w-full mt-2 p-2 border rounded text-gray-700"
+            >
+              <option value="All">All</option>
+              <option value="Current">Current</option>
+              <option value="Fall 2024">Fall 2024</option>
+              <option value="Summer 2024">Summer 2024</option>
+              <option value="Winter 2024">Winter 2024</option>
+            </select>
+          </div>
         </div>
 
         {/* Projects Section */}
@@ -150,7 +155,6 @@ const FindProjects = () => {
             </div>
           </div>
 
-          {/* Projects List */}
           <div className="w-full flex flex-wrap gap-4">
             {data?.map((project, index) => {
               const hasApplied = applications?.some(
@@ -176,18 +180,16 @@ const FindProjects = () => {
             })}
           </div>
 
-          {/* Loading Spinner */}
           {isFetching && (
             <div className="py-10">
               <Loading />
             </div>
           )}
 
-          {/* Load More Button */}
           {numPage > page && !isFetching && (
             <div className="w-full flex items-center justify-center pt-16">
               <CustomButton
-                onClick={handleShowMore}
+                onClick={() => setPage((prevPage) => prevPage + 1)}
                 title="Load More"
                 containerStyles="text-blue-600 py-1.5 px-5 focus:outline-none hover:bg-blue-700 hover:text-white rounded-full text-base border border-blue-600"
               />
