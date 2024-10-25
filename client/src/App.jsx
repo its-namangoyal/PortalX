@@ -14,7 +14,7 @@ import {
   UserProfile,
   Admin,
   StudentApplications, 
-  ApplicationDetails
+  ApplicationDetails,
   StudentList,
   CompanyProfessorList,
   UploadedList,
