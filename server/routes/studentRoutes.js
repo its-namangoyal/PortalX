@@ -1,39 +1,45 @@
 import express from 'express';
-import Student from '../models/userModel.js'; // Adjust the path as needed
+import Company from '../models/companiesModel.js'; // Adjust the path as needed
 
 const router = express.Router();
 
-// GET all students
+// GET all professors
 router.get('/', async (req, res) => {
   try {
-    const students = await Student.find();
-    res.status(200).json(students);
+    const professors = await Company.find({ role: 'professor' }); // Adjust filtering if needed
+    res.status(200).json(professors);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch students' });
+    res.status(500).json({ error: 'Failed to fetch professors' });
   }
 });
 
-// UPDATE a student by ID
+// UPDATE a professor by ID
 router.put('/:id', async (req, res) => {
   try {
-    const updatedStudent = await Student.findByIdAndUpdate(
+    const updatedProfessor = await Company.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true }
     );
-    res.status(200).json(updatedStudent);
+    if (!updatedProfessor) {
+      return res.status(404).json({ message: 'Professor not found' });
+    }
+    res.status(200).json(updatedProfessor);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update student' });
+    res.status(500).json({ error: 'Failed to update professor' });
   }
 });
 
-// DELETE a student by ID
+// DELETE a professor by ID
 router.delete('/:id', async (req, res) => {
   try {
-    await Student.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: 'Student deleted successfully' });
+    const deletedProfessor = await Company.findByIdAndDelete(req.params.id);
+    if (!deletedProfessor) {
+      return res.status(404).json({ message: 'Professor not found' });
+    }
+    res.status(200).json({ message: 'Professor deleted successfully' });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete student' });
+    res.status(500).json({ error: 'Failed to delete professor' });
   }
 });
 

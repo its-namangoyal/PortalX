@@ -2,38 +2,42 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const CompanyProfessorList = () => {
-  const [professors, setProfessors] = useState([]);
-  const [editingProfessor, setEditingProfessor] = useState(null);
+  const [companies, setCompanies] = useState([]);
+  const [editingCompany, setEditingCompany] = useState(null);
   const [formData, setFormData] = useState({
-    professorID: '',
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
+    contact: '',
+    location: '',
+    about: '',
+    profileUrl: '', // Added profile image URL
   });
   const [message, setMessage] = useState({ type: '', text: '' });
   const [confirmPopup, setConfirmPopup] = useState({ visible: false, action: null });
 
   useEffect(() => {
-    fetchProfessors();
+    fetchCompanies();
   }, []);
 
-  const fetchProfessors = async () => {
+  const fetchCompanies = async () => {
     try {
       const response = await axios.get('http://localhost:8800/api-v1/professors');
-      setProfessors(response.data);
+      setCompanies(response.data);
     } catch (err) {
-      console.error('Error fetching professors:', err);
-      showMessage('error', 'Failed to load professors.');
+      console.error('Error fetching companies:', err);
+      showMessage('error', 'Failed to load companies.');
     }
   };
 
-  const handleEdit = (professor) => {
-    setEditingProfessor(professor._id);
+  const handleEdit = (company) => {
+    setEditingCompany(company._id);
     setFormData({
-      professorID: professor.professorID,
-      firstName: professor.firstName,
-      lastName: professor.lastName,
-      email: professor.email,
+      name: company.name,
+      email: company.email,
+      contact: company.contact,
+      location: company.location,
+      about: company.about,
+      profileUrl: company.profileUrl, // Load the image URL
     });
   };
 
@@ -43,11 +47,11 @@ const CompanyProfessorList = () => {
       action: async () => {
         try {
           await axios.delete(`http://localhost:8800/api-v1/professors/${id}`);
-          showMessage('error', 'Professor deleted successfully!');
-          fetchProfessors();
+          showMessage('success', 'Company deleted successfully!');
+          fetchCompanies();
         } catch (err) {
-          console.error('Error deleting professor:', err);
-          showMessage('error', 'Failed to delete professor.');
+          console.error('Error deleting company:', err);
+          showMessage('error', 'Failed to delete company.');
         }
       },
     });
@@ -58,13 +62,13 @@ const CompanyProfessorList = () => {
       visible: true,
       action: async () => {
         try {
-          await axios.put(`http://localhost:8800/api-v1/professors/${editingProfessor}`, formData);
-          setEditingProfessor(null);
-          showMessage('success', 'Professor updated successfully!');
-          fetchProfessors();
+          await axios.put(`http://localhost:8800/api-v1/professors/${editingCompany}`, formData);
+          setEditingCompany(null);
+          showMessage('success', 'Company updated successfully!');
+          fetchCompanies();
         } catch (err) {
-          console.error('Error updating professor:', err);
-          showMessage('error', 'Failed to update professor.');
+          console.error('Error updating company:', err);
+          showMessage('error', 'Failed to update company.');
         }
       },
     });
@@ -86,7 +90,7 @@ const CompanyProfessorList = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold text-center mb-6">Professor List</h1>
+      <h1 className="text-3xl font-bold text-center mb-6">Company List</h1>
 
       {message.text && (
         <div
@@ -106,10 +110,7 @@ const CompanyProfessorList = () => {
             <h2 className="text-xl font-bold">Are you sure?</h2>
             <p>This action cannot be undone.</p>
             <div className="flex space-x-4">
-              <button
-                onClick={handleConfirm}
-                className="btn btn-primary"
-              >
+              <button onClick={handleConfirm} className="btn btn-primary">
                 Yes
               </button>
               <button
@@ -124,36 +125,19 @@ const CompanyProfessorList = () => {
       )}
 
       <div className="space-y-6">
-        {professors.map((professor) => (
+        {companies.map((company) => (
           <div
-            key={professor._id}
+            key={company._id}
             className="bg-white shadow-md p-6 rounded-md flex items-center justify-between"
           >
-            {editingProfessor === professor._id ? (
+            {editingCompany === company._id ? (
               <div className="flex flex-col space-y-4 w-full">
-                <label className="font-semibold">Professor ID</label>
+                {/* Edit form for company */}
+                <label className="font-semibold">Name</label>
                 <input
                   type="text"
-                  name="professorID"
-                  value={formData.professorID}
-                  disabled
-                  className="input-field bg-gray-200 cursor-not-allowed"
-                />
-
-                <label className="font-semibold">First Name</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  className="input-field"
-                />
-
-                <label className="font-semibold">Last Name</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
                   className="input-field"
                 />
@@ -167,17 +151,46 @@ const CompanyProfessorList = () => {
                   className="input-field"
                 />
 
+                <label className="font-semibold">Contact</label>
+                <input
+                  type="text"
+                  name="contact"
+                  value={formData.contact}
+                  onChange={handleChange}
+                  className="input-field"
+                />
+
+                <label className="font-semibold">Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  className="input-field"
+                />
+
+                <label className="font-semibold">About</label>
+                <textarea
+                  name="about"
+                  value={formData.about}
+                  onChange={handleChange}
+                  className="input-field"
+                />
+
+                <label className="font-semibold">Profile Image URL</label>
+                <input
+                  type="text"
+                  name="profileUrl"
+                  value={formData.profileUrl}
+                  onChange={handleChange}
+                  className="input-field"
+                />
+
                 <div className="flex space-x-4">
-                  <button
-                    onClick={handleUpdate}
-                    className="btn btn-primary"
-                  >
+                  <button onClick={handleUpdate} className="btn btn-primary">
                     Update
                   </button>
-                  <button
-                    onClick={() => setEditingProfessor(null)}
-                    className="btn btn-secondary"
-                  >
+                  <button onClick={() => setEditingCompany(null)} className="btn btn-secondary">
                     Cancel
                   </button>
                 </div>
@@ -185,27 +198,43 @@ const CompanyProfessorList = () => {
             ) : (
               <div className="flex justify-between w-full items-center">
                 <div className="text-lg font-medium">
-                  <p>
-                    <strong>Name:</strong> {professor.firstName} {professor.lastName}
-                  </p>
-                  <p>
-                    <strong>Professor ID:</strong> {professor.professorID}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {professor.email}
-                  </p>
+                  <img src={company.profileUrl} alt={`${company.name} Logo`} className="w-16 h-16 rounded-full mb-4" />
+                  <p><strong>Name:</strong> {company.name}</p>
+                  <p><strong>Email:</strong> {company.email}</p>
+                  <p><strong>Contact:</strong> {company.contact}</p>
+                  <p><strong>Location:</strong> {company.location}</p>
+                  <p><strong>About:</strong> {company.about}</p>
+                  <h3 className="font-semibold mt-4">Projects:</h3>
+                  {company.projectPosts && company.projectPosts.length > 0 ? (
+                    <ul className="list-disc pl-5">
+                      {company.projectPosts.map((project) => (
+                        <li key={project._id}>
+                          <strong>Title:</strong> {project.projectTitle} <br />
+                          <strong>Type:</strong> {project.projectType} <br />
+                          <strong>Salary:</strong> {project.salary} <br />
+                          <strong>Location:</strong> {project.location} <br />
+                          <strong>Experience:</strong> {project.experience} years <br />
+                          <strong>Details:</strong>
+                          <ul>
+                            {project.detail.map((d, index) => (
+                              <li key={index}>
+                                <strong>Description:</strong> {d.desc} <br />
+                                <strong>Requirements:</strong> {d.requirements}
+                              </li>
+                            ))}
+                          </ul>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No projects available.</p>
+                  )}
                 </div>
                 <div className="space-x-4">
-                  <button
-                    onClick={() => handleEdit(professor)}
-                    className="btn btn-primary"
-                  >
+                  <button onClick={() => handleEdit(company)} className="btn btn-primary">
                     Edit
                   </button>
-                  <button
-                    onClick={() => handleDelete(professor._id)}
-                    className="btn btn-danger"
-                  >
+                  <button onClick={() => handleDelete(company._id)} className="btn btn-danger">
                     Delete
                   </button>
                 </div>
