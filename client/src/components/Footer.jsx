@@ -5,7 +5,7 @@ import uwinLogo from "../assets/uw logo.png"; // Import the logo
 const Footer = () => {
   return (
     <footer
-      className="text-white w-full mt-10 "
+      className="text-white w-full"
       style={{
         fontFamily:
           "'Lucida Sans', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif",
