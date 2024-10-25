@@ -152,11 +152,14 @@ const Navbar = () => {
             {user?.accountType === "admin" && (
               <>
                 <li>
-                  <Link to='/student-list'>Student List</Link>
+                  <Link to='/student-list'>Students List</Link>
                 </li>
                 <li>
                   <Link to='/company-professor-list'>Professor / Company List</Link>
                 </li>
+                 <li> 
+                 <Link to='/uploaded-list'>Uploaded List</Link>
+                 </li>
               </>
             )}
             {user?.email && (
@@ -222,6 +225,9 @@ const Navbar = () => {
                 </Link>
                 <Link to='/company-professor-list' onClick={handleCloseNavbar} className='py-2'>
                   Professor / Company List
+                </Link>
+                <Link to='/uploaded-list' onClick={handleCloseNavbar} className='py-2'>
+                Uploaded List
                 </Link>
               </>
             )}
