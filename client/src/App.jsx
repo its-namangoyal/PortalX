@@ -15,6 +15,9 @@ import {
   Admin,
   StudentApplications, 
   ApplicationDetails
+  StudentList,
+  CompanyProfessorList,
+  UploadedList,
 } from "./pages";
 import Projects from "./pages/Projects";
 import MyApplications from "./pages/MyApplications";
@@ -86,6 +89,10 @@ function App() {
           <Route path="/upload-project" element={<UploadProject />} />
           <Route path="/project-detail/:id" element={<ProjectDetail />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/student-list" element={<StudentList />} />
+          <Route path="/company-professor-list" element={<CompanyProfessorList />} />
+          <Route path="/uploaded-list" element={<UploadedList />} />
+
           <Route path="/student-applications" element={<StudentApplications />} />
           <Route path="/applications/:applicationId" element={<ApplicationDetails />} />
 

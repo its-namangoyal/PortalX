@@ -7,6 +7,9 @@ import ProjectDetail from "./ProjectDetail";
 import UploadProject from "./UploadProject";
 import UserProfile from "./UserProfile";
 import Admin from "./Admin";
+import StudentList from "./StudentList";
+import CompanyProfessorList from "./CompanyProfessorList";
+import UploadedList from './UploadedList';
 import StudentApplications from "./StudentApplications";
 import ApplicationDetails from "./ApplicationDetails"
 
@@ -20,6 +23,9 @@ export {
   UploadProject,
   UserProfile,
   Admin,
+  StudentList,
+  CompanyProfessorList,
+  UploadedList,
   StudentApplications,
   ApplicationDetails
 };
