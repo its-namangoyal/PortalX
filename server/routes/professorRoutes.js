@@ -1,13 +1,11 @@
 import express from 'express';
 import Companies from '../models/companiesModel.js'; // Ensure correct path
-import Projects from '../models/projectsModel.js'; // Ensure correct path for projects
-
 const router = express.Router();
 
-// Get all companies with populated projects
+// Get all companies
 router.get('/', async (req, res) => {
   try {
-    const companies = await Companies.find().populate('projectPosts'); // Populate projectPosts
+    const companies = await Companies.find();
     res.status(200).json(companies);
   } catch (error) {
     console.error('Error fetching companies:', error);
@@ -15,10 +13,10 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get a single company by ID with populated projects
+// Get a single company by ID
 router.get('/:id', async (req, res) => {
   try {
-    const company = await Companies.findById(req.params.id).populate('projectPosts'); // Populate projectPosts
+    const company = await Companies.findById(req.params.id);
     if (!company) return res.status(404).json({ message: 'Company not found.' });
 
     res.status(200).json(company);

@@ -29,6 +29,7 @@ const companySchema = new Schema(
     location: { type: String },
     about: { type: String },
     profileUrl: { type: String },
+    semester: { type: String, required: true, unique: true },
     projectPosts: [{ type: Schema.Types.ObjectId, ref: "projects" }],
     verified: { type: Boolean, default: false },
   },
