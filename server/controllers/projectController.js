@@ -4,6 +4,7 @@ import Companies from "../models/companiesModel.js";
 
 // Added 
 import Users from "../models/userModel.js";
+import Applications from "../models/applicationsModel.js";
 
 export const createProject = async (req, res, next) => {
   try {
@@ -267,9 +268,8 @@ export const deleteProjectPost = async (req, res, next) => {
 
 // Apply for project function
 export const applyForProject = async (req, res) => {
-  // const { projectId } = req.body;
-  const { projectId } = req.params; 
-  const userId = req.body.user.userId; // Assuming userId is available in the request, perhaps from authentication middleware
+  const { projectId } = req.params;
+  const userId = req.body.user.userId;
 
   try {
     // Check if the project exists
@@ -285,13 +285,19 @@ export const applyForProject = async (req, res) => {
     }
 
     // Check if the user has already applied for this project
-    if (project.application.includes(userId)) {
+    const existingApplication = await Applications.findOne({ project: projectId, student: userId });
+    if (existingApplication) {
       return res.status(400).json({ message: 'You have already applied for this project' });
     }
 
-    // Add user's id to project's application array
-    project.application.push(userId);
-    await project.save();
+    // Create a new application
+    const newApplication = new Applications({
+      project: projectId,
+      student: userId,  // Change this from 'applicant' to 'student'
+      status: 'pending'
+    });
+
+    await newApplication.save();
 
     res.status(200).json({ success: true, message: 'Application submitted successfully' });
   } catch (error) {
@@ -299,48 +305,3 @@ export const applyForProject = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
-
-export const getProjectApplications = async (req, res) => {
-  const projectId = req.params.projectId;
-
-  try {
-    // Find the project by projectId
-    const project = await Projects.findById(projectId).populate('application', 'firstName email'); // Replace 'username' and 'email' with fields you want to populate from Users model
-
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found' });
-    }
-
-    // Extract applications details
-    const applications = project.application.map(applicant => ({
-      userId: applicant._id,
-      firstName: applicant.firstName,
-      email: applicant.email,
-      // Add more fields as needed
-    }));
-
-    res.status(200).json({ applications });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-export const getUserApplications = async (req, res) => {
-  const { userId } = req.params;
-
-  try {
-    // Find all projects where the user ID is in the application array
-    const projects = await Projects.find({ application: userId }).populate('company');
-    if (!projects) {
-      return res.status(404).json({ message: 'No applications found for this user' });
-    }
-
-    res.status(200).json({ applications: projects });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-

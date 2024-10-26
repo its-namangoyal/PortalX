@@ -10,6 +10,8 @@ import Admin from "./Admin";
 import StudentList from "./StudentList";
 import CompanyProfessorList from "./CompanyProfessorList";
 import UploadedList from './UploadedList';
+import StudentApplications from "./StudentApplications";
+import ApplicationDetails from "./ApplicationDetails"
 
 export {
   About,
@@ -24,4 +26,6 @@ export {
   StudentList,
   CompanyProfessorList,
   UploadedList,
+  StudentApplications,
+  ApplicationDetails
 };

@@ -1,6 +1,8 @@
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Footer, Navbar } from "./components";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   About,
   AuthPage,
@@ -10,7 +12,9 @@ import {
   ProjectDetail,
   UploadProject,
   UserProfile,
-  Admin, // Added Admin import
+  Admin,
+  StudentApplications, 
+  ApplicationDetails,
   StudentList,
   CompanyProfessorList,
   UploadedList,
@@ -49,6 +53,9 @@ function App() {
 
   return (
     <main className="bg-[#f7fdfd]">
+      {/* Moved ToastContainer outside of Routes */}
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
+      
       <Routes>
         {/* Protected Routes */}
         <Route element={<Layout />}>
@@ -85,6 +92,9 @@ function App() {
           <Route path="/student-list" element={<StudentList />} />
           <Route path="/company-professor-list" element={<CompanyProfessorList />} />
           <Route path="/uploaded-list" element={<UploadedList />} />
+
+          <Route path="/student-applications" element={<StudentApplications />} />
+          <Route path="/applications/:applicationId" element={<ApplicationDetails />} />
 
           {/* Updated Admin route */}
           <Route 

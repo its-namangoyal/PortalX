@@ -13,18 +13,21 @@ const MyApplications = () => {
   const fetchApplications = async () => {
     setIsLoading(true);
     const id = params.id || user?._id;
-
+  
     try {
       const res = await apiRequest({
-        url: "/projects/applications/" + id,
+        url: "/applications/user/" + id,
         method: "GET",
       });
-
-      // Assuming `res.data` contains an array of applied projects
-      setApplications(res?.applications || []);
-      setIsLoading(false);
+  
+      if (res.success) {
+        setApplications(res?.data || []);
+      } else {
+        setApplications([]);
+      }
     } catch (error) {
-      console.log(error);
+      setApplications([]);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -47,18 +50,19 @@ const MyApplications = () => {
       </div>
 
       <div className='w-full mt-20 flex flex-col gap-2'>
-        <p>Showing: {applications.length} Applied Projects</p>
+        <p>Showing: {applications.length} Applications</p>
 
         <div className='flex flex-wrap gap-3'>
           {applications.length === 0 ? (
             <p>No applications found</p>
           ) : (
-            applications.map((project, index) => {
+            applications.map((application, index) => {
               const data = {
-                name: project?.company?.name,
-                email: project?.company?.email,
-                logo: project?.company?.profileUrl,
-                ...project,
+                ...application.project,
+                logo: application?.project?.company?.profileUrl,
+                status: application.status,
+                location: application?.project?.company?.location,
+                hasApplied: true, // Add this flag to indicate the user has already applied
               };
               return <ProjectCard project={data} key={index} />;
             })

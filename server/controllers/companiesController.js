@@ -3,7 +3,9 @@ import Companies from "../models/companiesModel.js";
 import Professor from "../models/professorModel.js";  // Import ProfessorModel
 import { compareString } from "../utils/index.js";
 import Verification from "../models/emailVerification.js";
-import projects from "../models/projectsModel.js";
+import Projects from "../models/projectsModel.js";
+import Application from "../models/applicationsModel.js"
+import Users from "../models/userModel.js"
 
 export const register = async (req, res, next) => {
   const { name, email, password, userID, accountType } = req.body;
@@ -432,4 +434,28 @@ export const getAllProjetsOfCompany = async (req, res) => {
 }
 
 
+export const getApplicationsForCompany = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    // Find projects by the company ID
+    const projects = await Projects.find({ company: id });
+
+    if (!projects.length) {
+      return res.status(200).json({ message: "No projects found for this company", success: false });
+    }
+
+    const projectIds = projects.map(project => project._id);
+    const applications = await Application.find({ project: { $in: projectIds } })
+      .populate("student", "firstName lastName email") // Populating the user data correctly
+      .populate("project");
+
+    res.status(200).json({
+      success: true,
+      data: applications,
+    });
+  } catch (error) {
+    console.error("Error in getApplicationsForCompany:", error);
+    res.status(500).json({ message: "Server Error", error: error.message, success: false });
+  }
+};
