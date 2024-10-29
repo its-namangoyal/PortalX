@@ -1,70 +1,70 @@
 import express from 'express';
-import Professor from '../models/professorModel.js';
-
+import Companies from '../models/companiesModel.js'; // Ensure correct path
 const router = express.Router();
 
-// Get all professors
+// Get all companies
 router.get('/', async (req, res) => {
   try {
-    const professors = await Professor.find();
-    res.status(200).json(professors);
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching professors' });
+    const companies = await Companies.find();
+    res.status(200).json(companies);
+  } catch (error) {
+    console.error('Error fetching companies:', error);
+    res.status(500).json({ message: 'Failed to load companies.' });
   }
 });
 
-// Get a professor by ID
+// Get a single company by ID
 router.get('/:id', async (req, res) => {
   try {
-    const professor = await Professor.findById(req.params.id);
-    if (professor) {
-      res.status(200).json(professor);
-    } else {
-      res.status(404).json({ message: 'Professor not found' });
-    }
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching professor' });
+    const company = await Companies.findById(req.params.id);
+    if (!company) return res.status(404).json({ message: 'Company not found.' });
+
+    res.status(200).json(company);
+  } catch (error) {
+    console.error('Error fetching company:', error);
+    res.status(500).json({ message: 'Failed to load company.' });
   }
 });
 
-// Create a new professor
+// Create a new company
 router.post('/', async (req, res) => {
-  const { professorID, firstName, lastName, email } = req.body;
-  const newProfessor = new Professor({ professorID, firstName, lastName, email });
-
   try {
-    await newProfessor.save();
-    res.status(201).json(newProfessor);
-  } catch (err) {
-    res.status(400).json({ message: 'Error creating professor' });
+    const newCompany = new Companies(req.body);
+    await newCompany.save();
+    res.status(201).json(newCompany);
+  } catch (error) {
+    console.error('Error creating company:', error);
+    res.status(400).json({ message: 'Failed to create company.' });
   }
 });
 
-// Update a professor
+// Update an existing company
 router.put('/:id', async (req, res) => {
   try {
-    const updatedProfessor = await Professor.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (updatedProfessor) {
-      res.status(200).json(updatedProfessor);
-    } else {
-      res.status(404).json({ message: 'Professor not found' });
-    }
-  } catch (err) {
-    res.status(400).json({ message: 'Error updating professor' });
+    const updatedCompany = await Companies.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedCompany) return res.status(404).json({ message: 'Company not found.' });
+
+    res.status(200).json(updatedCompany);
+  } catch (error) {
+    console.error('Error updating company:', error);
+    res.status(400).json({ message: 'Failed to update company.' });
   }
 });
 
-// Delete a professor
+// Delete a company
 router.delete('/:id', async (req, res) => {
   try {
-    const deletedProfessor = await Professor.findByIdAndDelete(req.params.id);
-    if (deletedProfessor) {
-      res.status(200).json({ message: 'Professor deleted successfully' });
-    } else {
-      res.status(404).json({ message: 'Professor not found' });
-    }
-  } catch (err) {
-    res.status(500).json({ message: 'Error deleting professor' });
+    const deletedCompany = await Companies.findByIdAndDelete(req.params.id);
+    if (!deletedCompany) return res.status(404).json({ message: 'Company not found.' });
+
+    res.status(200).json({ message: 'Company deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting company:', error);
+    res.status(500).json({ message: 'Failed to delete company.' });
   }
 });
 
