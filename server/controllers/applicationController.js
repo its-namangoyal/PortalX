@@ -12,7 +12,7 @@ export const getUserApplications = async (req, res) => {
         path: "project",
         populate: {
           path: "company", // Populate company inside project
-          select: "name profileUrl", // Fetch only necessary fields
+          select: "name profileUrl location", // Fetch only necessary fields
         },
       })
       .sort({ createdAt: -1 });

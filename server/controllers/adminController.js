@@ -58,12 +58,11 @@ export const register = async (req, res, next) => {
     email,
     password,
     semester,
-    year,
   } = req.body;
 
   try {
     // Validate fields
-    if (!firstName || !lastName || !email || !password || !semester || !year) {
+    if (!firstName || !lastName || !email || !password || !semester) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -80,7 +79,6 @@ export const register = async (req, res, next) => {
       email,
       password, // Assuming the model handles password hashing
       semester,
-      year,
       accountType: "admin",
     });
 
@@ -99,7 +97,6 @@ export const register = async (req, res, next) => {
         email: newAdmin.email,
         accountType: "admin",
         semester: newAdmin.semester,
-        year: newAdmin.year,
         accountType: newAdmin.accountType,
       },
       token,
@@ -136,7 +133,6 @@ export const signIn = async (req, res, next) => {
         email: admin.email,
         accountType: "admin",
         semester: admin.semester,
-        year: admin.year,
       },
       token,
     });

@@ -30,10 +30,6 @@ const adminSchema = new mongoose.Schema(
       type: String,
       required: [true, "Semester is Required!"],
     },
-    year: {
-      type: Number,
-      required: [true, "Year is Required!"],
-    },
     accountType: { 
       type: String, 
       default: "admin" // Default account type as "admin"

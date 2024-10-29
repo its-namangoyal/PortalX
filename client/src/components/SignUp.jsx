@@ -96,6 +96,27 @@ const SignUp = () => {
     }
   };
 
+  const renderAdminSemesterDropdown = () => {
+    if (accountType === "admin") {
+      return (
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700">Select Semester</label>
+          <select
+            {...register("semester", { required: "Semester selection is required" })}
+            className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">Select Semester</option>
+            <option value="Fall 2024">Fall 2024</option>
+            <option value="Winter 2025">Winter 2025</option>
+            <option value="Summer 2025">Summer 2025</option>
+          </select>
+          {errors.semester && <p className="text-red-600 text-sm">{errors.semester.message}</p>}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <Transition appear show={true} as="div"> {/* Always show the modal */}
       <Dialog as="div" className="relative z-10" onClose={() => {}}>
@@ -155,6 +176,9 @@ const SignUp = () => {
                 />
                 
                 {isRegister && renderAccountTypeFields()}
+                
+                {/* Semester dropdown for admin */}
+                {isRegister && renderAdminSemesterDropdown()}
 
                 <div className="mt-4 space-y-2">
                   <TextInput
