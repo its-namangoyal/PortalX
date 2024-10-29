@@ -61,6 +61,7 @@ const MyApplications = () => {
                 ...application.project,
                 logo: application?.project?.company?.profileUrl,
                 status: application.status,
+                location: application?.project?.company?.location,
                 hasApplied: true, // Add this flag to indicate the user has already applied
               };
               return <ProjectCard project={data} key={index} />;

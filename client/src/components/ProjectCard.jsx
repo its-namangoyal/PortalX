@@ -7,7 +7,7 @@ const noLogo =
 
 const ProjectCard = ({ project, currentUser }) => {
   const hasApplied = project?.hasApplied;
-  const applicationStatus = project?.status; // Get the application status
+  const applicationStatus = project?.status;
   const isApplyDisabled = currentUser?.semester !== project.semester;
 
   const getStatusColor = (status) => {
@@ -23,78 +23,57 @@ const ProjectCard = ({ project, currentUser }) => {
     }
   };
 
+  const getTimeAgoShort = (date) => {
+    const now = moment();
+    const duration = moment.duration(now.diff(moment(date)));
+
+    if (duration.asDays() >= 1) {
+      return `${Math.floor(duration.asDays())}d+`;
+    } else if (duration.asHours() >= 1) {
+      return `${Math.floor(duration.asHours())}h+`;
+    } else {
+      return `${Math.floor(duration.asMinutes())}m+`;
+    }
+  };
+
   return (
     <Link
       to={`/project-detail/${project?._id}`}
-      className="block overflow-hidden bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300"
+      className="block overflow-hidden bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-200"
+      style={{ width: "350px", height: "auto" }}
     >
-      <div className="p-6">
-        {/* Header Section */}
-        <div className="flex items-start space-x-4">
+      <div className="p-4 flex justify-between items-center">
+        {/* Left Section with Logo and Info */}
+        <div className="flex items-center space-x-4">
           <img
             src={project?.logo || noLogo}
-            alt={project?.name}
-            className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+            alt={project?.company?.name || project?.companyName}
+            className="w-12 h-12 rounded-full object-cover"
           />
-          <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-bold text-gray-900 line-clamp-2">
-              {project?.projectTitle}
-            </h3>
-            <div className="mt-1 flex items-center text-sm text-gray-500">
-              <span>{moment(project?.createdAt).fromNow()}</span>
-              <span className="mx-2">•</span>
-              <span className="text-blue-600 font-medium">
-                Semester {project.semester}
-              </span>
+          <div>
+            <div className="text-sm text-gray-600">
+              {project?.company?.name || project?.companyName}
+            </div>
+            <div className="flex justify-between items-center" style={{ width: "250px", height: "auto" }}>
+              <h3 className="text-base font-semibold text-gray-900">
+                {project?.projectTitle || "Untitled Project"}
+              </h3>
+              <div className="text-sm text-gray-500 ml-10">
+                {getTimeAgoShort(project?.createdAt)}
+              </div>
+            </div>
+
+            <div className="text-sm text-gray-600">
+              {project?.company?.location || project?.location || "Unknown location"}
+            </div>
+            <div className="text-sm text-gray-500 mt-1">
+              ${project?.salary || "N/A"}
+            </div>
+            <div className="text-sm text-gray-500 mt-1">
+              {project?.semester || "Not specified"} {/* Semester Info */}
             </div>
           </div>
         </div>
-
-        {/* Description Section */}
-        <p className="mt-4 text-sm text-gray-600 line-clamp-3">
-          {project?.detail[0]?.desc?.slice(0, 150) + "..."}
-        </p>
-
-        {/* Action Section */}
-        {currentUser?.accountType === "seeker" && ( // Only show for 'seeker' account type
-          <div className="mt-6">
-            {hasApplied && applicationStatus ? ( // Check if the user has applied and if status exists
-              <span className={`text-sm ${getStatusColor(applicationStatus)}`}>
-                Status: {applicationStatus}
-              </span>
-            ) : (
-              <button
-                className={`w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-colors duration-200 ${
-                  isApplyDisabled || hasApplied
-                    ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow"
-                }`}
-                disabled={isApplyDisabled || hasApplied}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (!isApplyDisabled && !hasApplied) {
-                    window.location.href = `/project-detail/${project?._id}`;
-                  }
-                }}
-                title={
-                  isApplyDisabled
-                    ? "Your semester doesn't match the project semester"
-                    : hasApplied
-                    ? "Application already submitted"
-                    : ""
-                }
-              >
-                {hasApplied ? (
-                  <span className="text-yellow-600 font-semibold">
-                    {applicationStatus} {/* Change to show application status */}
-                  </span>
-                ) : (
-                  "Apply Now"
-                )}
-              </button>
-            )}
-          </div>
-        )}
       </div>
     </Link>
   );

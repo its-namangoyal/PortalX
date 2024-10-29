@@ -47,8 +47,8 @@ const Header = ({ title, type, handleClick, searchQuery, setSearchQuery }) => {
 
       <div className={`container mx-auto relative z-10 px-5 flex items-center h-[350px]`}>
         <div className="w-full">
-          <div className="mb-8">
-            <p className="text-white font-bold text-4xl">{title}</p> {/* Changed text color to white */}
+          <div className="mx-8 flex justify-center">
+            <p className="text-grey font-bold text-4xl">{title}</p> {/* Changed text color to white */}
           </div>
 
           <div className="w-full flex items-center justify-around bg-transparent px-5 py-4">

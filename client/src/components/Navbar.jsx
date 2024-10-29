@@ -95,7 +95,7 @@ function MenuList({ user, isProfileOpen, onClick }) {
                     {user?.accountType === "seeker"
                       ? "Student Profile"
                       : user?.accountType === "company"
-                      ? "Company / Professor Profile"
+                      ? "Company Profile"
                       : "Admin Profile"}
                   </Link>
                 )}
@@ -169,20 +169,26 @@ const Navbar = () => {
                 <li>
                   <Link to="/companies">Companies / Professors</Link>
                 </li>
+<<<<<<< HEAD
                 <li>
                   <Link to="/previous-projects">Previous Projects</Link>
                 </li>
+=======
+>>>>>>> c4b6b93f03722eaa7935556e1de8e8574b94a907
               </>
             )}
 
             {user?.accountType === "admin" && (
               <>
                 <li>
-                  <Link to="/student-list">Student List</Link>
+                  <Link to='/student-list'>Students List</Link>
                 </li>
                 <li>
-                  <Link to="/company-professor-list">Professor / Company List</Link>
+                  <Link to='/company-professor-list'>Professor / Company List</Link>
                 </li>
+                 <li> 
+                 <Link to='/uploaded-list'>Uploaded List</Link>
+                 </li>
               </>
             )}
 
@@ -238,14 +244,17 @@ const Navbar = () => {
             {user?.accountType === "seeker" && (
               <>
                 <Link to="/" onClick={handleCloseNavbar} className="py-2">
-                  Find Project
+                  Projects
                 </Link>
                 <Link to="/companies" onClick={handleCloseNavbar} className="py-2">
                   Companies
                 </Link>
+<<<<<<< HEAD
                 <Link to="/previous-projects" onClick={handleCloseNavbar} className="py-2">
                   Previous Projects
                 </Link>
+=======
+>>>>>>> c4b6b93f03722eaa7935556e1de8e8574b94a907
                 <Link to="/applications" onClick={handleCloseNavbar} className="py-2">
                   Applications
                 </Link>
@@ -259,6 +268,9 @@ const Navbar = () => {
                 </Link>
                 <Link to="/company-professor-list" onClick={handleCloseNavbar} className="py-2">
                   Professor / Company List
+                </Link>
+                <Link to='/uploaded-list' onClick={handleCloseNavbar} className='py-2'>
+                Uploaded List
                 </Link>
               </>
             )}
