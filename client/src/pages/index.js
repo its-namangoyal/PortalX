@@ -11,7 +11,8 @@ import StudentList from "./StudentList";
 import CompanyProfessorList from "./CompanyProfessorList";
 import UploadedList from './UploadedList';
 import StudentApplications from "./StudentApplications";
-import ApplicationDetails from "./ApplicationDetails"
+import ApplicationDetails from "./ApplicationDetails";
+import Notes from "./Notes";
 
 export {
   About,
@@ -27,5 +28,6 @@ export {
   CompanyProfessorList,
   UploadedList,
   StudentApplications,
-  ApplicationDetails
+  ApplicationDetails,
+  Notes,
 };

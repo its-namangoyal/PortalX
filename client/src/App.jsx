@@ -18,6 +18,7 @@ import {
   StudentList,
   CompanyProfessorList,
   UploadedList,
+  Notes
 } from "./pages";
 import Projects from "./pages/Projects";
 import MyApplications from "./pages/MyApplications";
@@ -95,6 +96,7 @@ function App() {
 
           <Route path="/student-applications" element={<StudentApplications />} />
           <Route path="/applications/:applicationId" element={<ApplicationDetails />} />
+          <Route path="/notes" element={<Notes />} />
 
           {/* Updated Admin route */}
           <Route 
