@@ -23,6 +23,7 @@ const CompanyProfile = () => {
         method: "GET",
       });
 
+      
       setInfo(res?.data);
       setFilteredProjects(res?.data.projectPosts);
       setIsLoading(false);

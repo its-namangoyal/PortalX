@@ -97,6 +97,8 @@ const CompanyProfessorList = () => {
     return companies.filter(company => company.semester === filter);
   };
 
+  const filteredCompanies = getFilteredCompanies();
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       {message.text && (
@@ -147,98 +149,102 @@ const CompanyProfessorList = () => {
       </div>
 
       <div className="space-y-6">
-        {getFilteredCompanies().map((company) => (
-          <div
-            key={company._id}
-            className="bg-white shadow-md p-6 rounded-md flex items-center justify-between"
-          >
-            {editingCompany === company._id ? (
-              <div className="flex flex-col space-y-4 w-full">
-                <label className="font-semibold">Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="input-field"
-                />
+        {filteredCompanies.length > 0 ? (
+          filteredCompanies.map((company) => (
+            <div
+              key={company._id}
+              className="bg-white shadow-md p-6 rounded-md flex items-center justify-between"
+            >
+              {editingCompany === company._id ? (
+                <div className="flex flex-col space-y-4 w-full">
+                  <label className="font-semibold">Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="input-field"
+                  />
 
-                <label className="font-semibold">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="input-field"
-                />
+                  <label className="font-semibold">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="input-field"
+                  />
 
-                <label className="font-semibold">Contact</label>
-                <input
-                  type="text"
-                  name="contact"
-                  value={formData.contact}
-                  onChange={handleChange}
-                  className="input-field"
-                />
+                  <label className="font-semibold">Contact</label>
+                  <input
+                    type="text"
+                    name="contact"
+                    value={formData.contact}
+                    onChange={handleChange}
+                    className="input-field"
+                  />
 
-                <label className="font-semibold">Location</label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  className="input-field"
-                />
+                  <label className="font-semibold">Location</label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    className="input-field"
+                  />
 
-                <label className="font-semibold">About</label>
-                <textarea
-                  name="about"
-                  value={formData.about}
-                  onChange={handleChange}
-                  className="input-field"
-                />
+                  <label className="font-semibold">About</label>
+                  <textarea
+                    name="about"
+                    value={formData.about}
+                    onChange={handleChange}
+                    className="input-field"
+                  />
 
-                <label className="font-semibold">Semester</label>
-                <input
-                  type="text"
-                  name="semester"
-                  value={formData.semester}
-                  onChange={handleChange}
-                  className="input-field"
-                />
+                  <label className="font-semibold">Semester</label>
+                  <input
+                    type="text"
+                    name="semester"
+                    value={formData.semester}
+                    onChange={handleChange}
+                    className="input-field"
+                  />
 
-                <div className="flex space-x-4">
-                  <button onClick={handleUpdate} className="btn btn-primary">
-                    Save Changes
-                  </button>
-                  <button onClick={() => setEditingCompany(null)} className="btn btn-secondary">
-                    Cancel
-                  </button>
+                  <div className="flex space-x-4">
+                    <button onClick={handleUpdate} className="btn btn-primary">
+                      Save Changes
+                    </button>
+                    <button onClick={() => setEditingCompany(null)} className="btn btn-secondary">
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="flex justify-between w-full items-center">
-                <div className="text-lg font-medium">
-                  <img src={company.profileUrl} alt={`${company.name} Logo`} className="w-16 h-16 rounded-full mb-4" />
-                  <p><strong>Name:</strong> {company.name}</p>
-                  <p><strong>Email:</strong> {company.email}</p>
-                  <p><strong>Contact:</strong> {company.contact}</p>
-                  <p><strong>Location:</strong> {company.location}</p>
-                  <p><strong>About:</strong> {company.about}</p>
-                  <p><strong>Semester:</strong> {company.semester}</p> {/* Display semester */}
+              ) : (
+                <div className="flex justify-between w-full items-center">
+                  <div className="text-lg font-medium">
+                    <img src={company.profileUrl} alt={`${company.name} Logo`} className="w-16 h-16 rounded-full mb-4" />
+                    <p><strong>Name:</strong> {company.name}</p>
+                    <p><strong>Email:</strong> {company.email}</p>
+                    <p><strong>Contact:</strong> {company.contact}</p>
+                    <p><strong>Location:</strong> {company.location}</p>
+                    <p><strong>About:</strong> {company.about}</p>
+                    <p><strong>Semester:</strong> {company.semester}</p> {/* Display semester */}
+                  </div>
+                  <div className="space-x-4">
+                    <button onClick={() => handleEdit(company)} className="btn btn-primary">
+                      Edit
+                    </button>
+                    <button onClick={() => handleDelete(company._id)} className="btn btn-danger">
+                      Delete
+                    </button>
+                  </div>
                 </div>
-                <div className="space-x-4">
-                  <button onClick={() => handleEdit(company)} className="btn btn-primary">
-                    Edit
-                  </button>
-                  <button onClick={() => handleDelete(company._id)} className="btn btn-danger">
-                    Delete
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-600">No companies or professors found for the selected semester.</p>
+        )}
       </div>
     </div>
   );

@@ -135,7 +135,7 @@ const UploadedList = () => {
 
       <h1 className="text-3xl font-semibold text-center text-blue-600 mb-6">Uploaded List</h1>
 
-      <div className="flex justify-center mb-4">
+      <div className="flex justify-center mb-4 gap-3">
         <button
           onClick={() => setShowingStudents(true)}
           className={`px-4 py-2 rounded ${showingStudents ? 'bg-blue-600 text-white' : 'bg-gray-300 text-black'}`}
@@ -155,7 +155,7 @@ const UploadedList = () => {
           <div>
             <h2 className="text-2xl font-semibold mb-4">Students</h2>
             {students.map((student) => (
-              <div key={student._id} className="bg-white shadow-md p-6 rounded-md flex justify-between items-center">
+              <div key={student._id} className="bg-white shadow-md p-6 rounded-md flex justify-between items-center my-2">
                 {editingStudent === student._id ? (
                   <div className="flex flex-col space-y-4 w-full">
                     {['studentID', 'firstName', 'lastName', 'email', 'semester'].map((field) => (
@@ -197,7 +197,7 @@ const UploadedList = () => {
           <div>
             <h2 className="text-2xl font-semibold mb-4">Professors</h2>
             {professors.map((professor) => (
-              <div key={professor._id} className="bg-white shadow-md p-6 rounded-md flex justify-between items-center">
+              <div key={professor._id} className="bg-white shadow-md p-6 rounded-md flex justify-between items-center my-2">
                 {editingProfessor === professor._id ? (
                   <div className="flex flex-col space-y-4 w-full">
                     {['professorID', 'firstName', 'lastName', 'email', 'semester'].map((field) => (

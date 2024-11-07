@@ -143,78 +143,82 @@ const StudentList = () => {
       </div>
 
       <div className="space-y-6 mt-4">
-        {filteredUsers.map((user) => (
-          <div key={user._id} className="bg-white shadow-md p-6 rounded-md flex items-center justify-between">
-            {editingUser === user._id ? (
-              <div className="flex flex-col space-y-4 w-full">
-                <div>
-                  <label className="font-semibold">Student ID</label>
-                  <input
-                    type="text"
-                    name="studentID"
-                    value={formData.studentID}
-                    onChange={handleChange}
-                    className="input-field"
-                    disabled
-                  />
-                </div>
-                {['firstName', 'lastName', 'email', 'semester', 'contact', 'location', 'projectTitle'].map((field) => (
-                  <div key={field}>
-                    <label className="font-semibold">{field}</label>
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map((user) => (
+            <div key={user._id} className="bg-white shadow-md p-6 rounded-md flex items-center justify-between">
+              {editingUser === user._id ? (
+                <div className="flex flex-col space-y-4 w-full">
+                  <div>
+                    <label className="font-semibold">Student ID</label>
                     <input
                       type="text"
-                      name={field}
-                      value={formData[field]}
+                      name="studentID"
+                      value={formData.studentID}
                       onChange={handleChange}
                       className="input-field"
+                      disabled
                     />
                   </div>
-                ))}
-                <div className="flex space-x-4">
-                  <button onClick={handleUpdate} className="btn btn-primary">
-                    Update
-                  </button>
-                  <button onClick={() => setEditingUser(null)} className="btn btn-secondary">
-                    Cancel
-                  </button>
+                  {['firstName', 'lastName', 'email', 'semester', 'contact', 'location', 'projectTitle'].map((field) => (
+                    <div key={field}>
+                      <label className="font-semibold">{field}</label>
+                      <input
+                        type="text"
+                        name={field}
+                        value={formData[field]}
+                        onChange={handleChange}
+                        className="input-field"
+                      />
+                    </div>
+                  ))}
+                  <div className="flex space-x-4">
+                    <button onClick={handleUpdate} className="btn btn-primary">
+                      Update
+                    </button>
+                    <button onClick={() => setEditingUser(null)} className="btn btn-secondary">
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="flex justify-between w-full items-center">
-                <div className="text-lg font-medium">
-                  {user.profileUrl && (
-                    <img src={user.profileUrl} alt="Profile" className="w-20 h-20 rounded-full" />
-                  )}
-                  <p><strong>Student ID:</strong> {user.studentID}</p>
-                  <p><strong>Name:</strong> {user.firstName} {user.lastName}</p>
-                  <p><strong>Email:</strong> {user.email}</p>
-                  <p><strong>Semester:</strong> {user.semester}</p>
-                  <p><strong>Contact:</strong> {user.contact}</p>
-                  <p><strong>Location:</strong> {user.location}</p>
-                  <p><strong>Project Title:</strong> {user.projectTitle}</p>
-                  {user.cvUrl && (
-                    <a
-                      href={user.cvUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
-                    >
-                      Resume
-                    </a>
-                  )}
+              ) : (
+                <div className="flex justify-between w-full items-center">
+                  <div className="text-lg font-medium">
+                    {user.profileUrl && (
+                      <img src={user.profileUrl} alt="Profile" className="w-20 h-20 rounded-full" />
+                    )}
+                    <p><strong>Student ID:</strong> {user.studentID}</p>
+                    <p><strong>Name:</strong> {user.firstName} {user.lastName}</p>
+                    <p><strong>Email:</strong> {user.email}</p>
+                    <p><strong>Semester:</strong> {user.semester}</p>
+                    <p><strong>Contact:</strong> {user.contact}</p>
+                    <p><strong>Location:</strong> {user.location}</p>
+                    <p><strong>Project Title:</strong> {user.projectTitle}</p>
+                    {user.cvUrl && (
+                      <a
+                        href={user.cvUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                      >
+                        Resume
+                      </a>
+                    )}
+                  </div>
+                  <div className="space-x-4">
+                    <button onClick={() => handleEdit(user)} className="btn btn-primary">
+                      Edit
+                    </button>
+                    <button onClick={() => handleDelete(user._id)} className="btn btn-danger">
+                      Delete
+                    </button>
+                  </div>
                 </div>
-                <div className="space-x-4">
-                  <button onClick={() => handleEdit(user)} className="btn btn-primary">
-                    Edit
-                  </button>
-                  <button onClick={() => handleDelete(user._id)} className="btn btn-danger">
-                    Delete
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-600 mt-10">No students found for the selected semester.</p>
+        )}
       </div>
     </div>
   );

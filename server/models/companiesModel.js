@@ -30,7 +30,7 @@ const companySchema = new Schema(
     about: { type: String },
     profileUrl: { type: String },
     semester: { type: String, required: true, unique: true },
-    projectPosts: [{ type: Schema.Types.ObjectId, ref: "projects" }],
+    projectPosts: [{ type: Schema.Types.ObjectId, ref: "Projects" }],
     verified: { type: Boolean, default: false },
   },
   { timestamps: true }
