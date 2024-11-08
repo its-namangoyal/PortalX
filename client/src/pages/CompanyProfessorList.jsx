@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const CompanyProfessorList = () => {
@@ -11,11 +12,12 @@ const CompanyProfessorList = () => {
     location: '',
     about: '',
     profileUrl: '',
-    semester: '' // Add semester to form data
+    semester: ''
   });
   const [message, setMessage] = useState({ type: '', text: '' });
   const [confirmPopup, setConfirmPopup] = useState({ visible: false, action: null });
-  const [filter, setFilter] = useState('All'); // State for managing the selected filter
+  const [filter, setFilter] = useState('All');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCompanies();
@@ -40,7 +42,7 @@ const CompanyProfessorList = () => {
       location: company.location,
       about: company.about,
       profileUrl: company.profileUrl,
-      semester: company.semester // Load semester
+      semester: company.semester
     });
   };
 
@@ -91,10 +93,13 @@ const CompanyProfessorList = () => {
     setConfirmPopup({ visible: false, action: null });
   };
 
-  // Function to filter companies based on the selected semester
   const getFilteredCompanies = () => {
     if (filter === 'All') return companies;
     return companies.filter(company => company.semester === filter);
+  };
+
+  const handleViewNotes = (id) => {
+    navigate(`/professor-notes/${id}`);
   };
 
   const filteredCompanies = getFilteredCompanies();
@@ -228,7 +233,7 @@ const CompanyProfessorList = () => {
                     <p><strong>Contact:</strong> {company.contact}</p>
                     <p><strong>Location:</strong> {company.location}</p>
                     <p><strong>About:</strong> {company.about}</p>
-                    <p><strong>Semester:</strong> {company.semester}</p> {/* Display semester */}
+                    <p><strong>Semester:</strong> {company.semester}</p>
                   </div>
                   <div className="space-x-4">
                     <button onClick={() => handleEdit(company)} className="btn btn-primary">
@@ -236,6 +241,9 @@ const CompanyProfessorList = () => {
                     </button>
                     <button onClick={() => handleDelete(company._id)} className="btn btn-danger">
                       Delete
+                    </button>
+                    <button onClick={() => handleViewNotes(company._id)} className="btn btn-secondary">
+                      View Notes
                     </button>
                   </div>
                 </div>

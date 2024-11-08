@@ -13,6 +13,7 @@ import UploadedList from './UploadedList';
 import StudentApplications from "./StudentApplications";
 import ApplicationDetails from "./ApplicationDetails";
 import Notes from "./Notes";
+import ProfessorNotes from "./ProfessorNotes";
 
 export {
   About,
@@ -30,4 +31,5 @@ export {
   StudentApplications,
   ApplicationDetails,
   Notes,
+  ProfessorNotes
 };

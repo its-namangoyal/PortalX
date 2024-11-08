@@ -11,7 +11,8 @@ import {
   updateCompanyProfile,
   verifyEmail,
   getAllProjetsOfCompany,
-  getApplicationsForCompany
+  getApplicationsForCompany,
+  getProfessorProfile,
 } from "../controllers/companiesController.js";
 import userAuth from "../middlewares/authMiddleware.js";
 
@@ -38,6 +39,7 @@ router.post("/login", limiter, signIn);
 
 // GET DATA
 router.post("/get-company-profile", userAuth, getCompanyProfile);
+router.get('/get-professor-profile/:id', getProfessorProfile);
 router.post("/get-company-projectlisting", userAuth, getCompanyProjectListing);
 router.get("/", getCompanies);
 router.get("/get-company/:id", getCompanyById);

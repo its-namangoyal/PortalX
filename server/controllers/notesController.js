@@ -34,17 +34,20 @@ export const createNote = async (req, res) => {
 };
 
 
-// Get all notes for a specific company
 export const getNotesByCompany = async (req, res) => {
   const { companyId } = req.params;
+  console.log('Company ID received:', companyId); // Log the companyId
 
   try {
     const notes = await Notes.find({ company: companyId }).populate('company', 'name');
-    res.status(200).json({success: true, notes});
+    console.log('Notes found:', notes); // Log the notes found
+    res.status(200).json({ success: true, notes });
   } catch (error) {
+    console.error('Error fetching notes:', error); // Log any errors
     res.status(500).json({ message: 'Failed to fetch notes', error: error.message });
   }
 };
+
 
 // Update a note
 export const updateNote = async (req, res) => {
@@ -79,7 +82,7 @@ export const deleteNote = async (req, res) => {
       return res.status(404).json({ message: 'Note not found' });
     }
 
-    res.status(200).json({ message: 'Note deleted successfully' });
+    res.status(200).json({ success: true, message: 'Note deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to delete note', error: error.message });
   }

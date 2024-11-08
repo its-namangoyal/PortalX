@@ -132,7 +132,7 @@ export const updateCompanyProfile = async (req, res, next) => {
 
     const id = req.body.user.userId;
 
-    console.log("IDDDDDD:", id);
+    console.log("ID:", id);
 
     if (!mongoose.Types.ObjectId.isValid(id))
       return res.status(404).send(`No Company with id: ${id}`);
@@ -156,7 +156,7 @@ export const updateCompanyProfile = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Company Profile Updated SUccessfully",
+      message: "Company Profile Updated Successfully",
       company,
       token,
     });
@@ -165,6 +165,8 @@ export const updateCompanyProfile = async (req, res, next) => {
     res.status(404).json({ message: error.message });
   }
 };
+
+
 
 export const getCompanyProfile = async (req, res, next) => {
   try {
@@ -189,6 +191,32 @@ export const getCompanyProfile = async (req, res, next) => {
     res.status(404).json({ message: error.message });
   }
 };
+
+export const getProfessorProfile = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    console.log(`Received request for company with ID: ${id}`); // Log the ID to ensure it's being received
+
+    const company = await Companies.findById(id); // Simplified the query
+
+    if (!company) {
+      return res.status(200).send({
+        message: "Company Not Found",
+        success: false,
+      });
+    }
+
+    company.password = undefined;
+    res.status(200).json({
+      success: true,
+      data: company,
+    });
+  } catch (error) {
+    console.log('Error fetching company profile:', error); // Log the error details
+    res.status(404).json({ message: error.message });
+  }
+};
+
 
 //GET ALL COMPANIES
 export const getCompanies = async (req, res, next) => {
