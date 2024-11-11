@@ -1,22 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { handleDocumentUpload } from "../utils"; // Import the function for document upload
 
 const CompanyProfessorList = () => {
   const [companies, setCompanies] = useState([]);
   const [editingCompany, setEditingCompany] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    contact: '',
-    location: '',
-    about: '',
-    profileUrl: '',
-    semester: ''
+    name: "",
+    email: "",
+    contact: "",
+    location: "",
+    about: "",
+    profileUrl: "",
+    semester: "",
   });
-  const [message, setMessage] = useState({ type: '', text: '' });
-  const [confirmPopup, setConfirmPopup] = useState({ visible: false, action: null });
-  const [filter, setFilter] = useState('All');
+  const [message, setMessage] = useState({ type: "", text: "" });
+  const [confirmPopup, setConfirmPopup] = useState({
+    visible: false,
+    action: null,
+  });
+  const [filter, setFilter] = useState("All");
+  const [ethicalDoc, setEthicalDoc] = useState(null); // State for the ethical document
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,11 +30,13 @@ const CompanyProfessorList = () => {
 
   const fetchCompanies = async () => {
     try {
-      const response = await axios.get('http://localhost:8800/api-v1/professors');
+      const response = await axios.get(
+        "http://localhost:8800/api-v1/professors"
+      );
       setCompanies(response.data);
     } catch (err) {
-      console.error('Error fetching companies:', err);
-      showMessage('error', 'Failed to load companies.');
+      console.error("Error fetching companies:", err);
+      showMessage("error", "Failed to load companies.");
     }
   };
 
@@ -42,7 +49,7 @@ const CompanyProfessorList = () => {
       location: company.location,
       about: company.about,
       profileUrl: company.profileUrl,
-      semester: company.semester
+      semester: company.semester,
     });
   };
 
@@ -52,11 +59,11 @@ const CompanyProfessorList = () => {
       action: async () => {
         try {
           await axios.delete(`http://localhost:8800/api-v1/professors/${id}`);
-          showMessage('success', 'Company deleted successfully!');
+          showMessage("success", "Company deleted successfully!");
           fetchCompanies();
         } catch (err) {
-          console.error('Error deleting company:', err);
-          showMessage('error', 'Failed to delete company.');
+          console.error("Error deleting company:", err);
+          showMessage("error", "Failed to delete company.");
         }
       },
     });
@@ -67,13 +74,16 @@ const CompanyProfessorList = () => {
       visible: true,
       action: async () => {
         try {
-          await axios.put(`http://localhost:8800/api-v1/professors/${editingCompany}`, formData);
+          await axios.put(
+            `http://localhost:8800/api-v1/professors/${editingCompany}`,
+            formData
+          );
           setEditingCompany(null);
-          showMessage('success', 'Company updated successfully!');
+          showMessage("success", "Company updated successfully!");
           fetchCompanies();
         } catch (err) {
-          console.error('Error updating company:', err);
-          showMessage('error', 'Failed to update company.');
+          console.error("Error updating company:", err);
+          showMessage("error", "Failed to update company.");
         }
       },
     });
@@ -85,7 +95,7 @@ const CompanyProfessorList = () => {
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
-    setTimeout(() => setMessage({ type: '', text: '' }), 10000);
+    setTimeout(() => setMessage({ type: "", text: "" }), 10000);
   };
 
   const handleConfirm = async () => {
@@ -94,12 +104,40 @@ const CompanyProfessorList = () => {
   };
 
   const getFilteredCompanies = () => {
-    if (filter === 'All') return companies;
-    return companies.filter(company => company.semester === filter);
+    if (filter === "All") return companies;
+    return companies.filter((company) => company.semester === filter);
   };
 
   const handleViewNotes = (id) => {
     navigate(`/professor-notes/${id}`);
+  };
+
+  // Handle change of the ethical document
+  const handleEthicalDocChange = (e) => {
+    setEthicalDoc(e.target.files[0]);
+  };
+
+  // Upload ethical document
+  const uploadEthicalDocument = async (companyId) => {
+    if (!ethicalDoc) {
+      showMessage("error", "Please select a document to upload.");
+      return;
+    }
+
+    try {
+      const ethicalDocUrl = await handleDocumentUpload(ethicalDoc);
+
+      // Update the company with the document URL
+      await axios.put(`http://localhost:8800/api-v1/professors/${companyId}`, {
+        documentUrl: ethicalDocUrl,
+      });
+
+      showMessage("success", "Ethical document uploaded successfully!");
+      fetchCompanies(); // Refetch companies to reflect the uploaded document
+    } catch (error) {
+      console.error("Error uploading ethical document:", error);
+      showMessage("error", "Failed to upload ethical document.");
+    }
   };
 
   const filteredCompanies = getFilteredCompanies();
@@ -109,9 +147,9 @@ const CompanyProfessorList = () => {
       {message.text && (
         <div
           className={`fixed top-5 right-5 p-4 rounded-md shadow-md transition-transform transform ${
-            message.type === 'success'
-              ? 'bg-green-100 text-green-800'
-              : 'bg-red-100 text-red-800'
+            message.type === "success"
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
           }`}
         >
           {message.text}
@@ -128,7 +166,9 @@ const CompanyProfessorList = () => {
                 Yes
               </button>
               <button
-                onClick={() => setConfirmPopup({ visible: false, action: null })}
+                onClick={() =>
+                  setConfirmPopup({ visible: false, action: null })
+                }
                 className="btn btn-secondary"
               >
                 No
@@ -144,7 +184,9 @@ const CompanyProfessorList = () => {
           <button
             key={semester}
             className={`px-4 py-2 rounded-md ${
-              filter === semester ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+              filter === semester
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-700"
             }`}
             onClick={() => setFilter(semester)}
           >
@@ -219,7 +261,10 @@ const CompanyProfessorList = () => {
                     <button onClick={handleUpdate} className="btn btn-primary">
                       Save Changes
                     </button>
-                    <button onClick={() => setEditingCompany(null)} className="btn btn-secondary">
+                    <button
+                      onClick={() => setEditingCompany(null)}
+                      className="btn btn-secondary"
+                    >
                       Cancel
                     </button>
                   </div>
@@ -227,22 +272,71 @@ const CompanyProfessorList = () => {
               ) : (
                 <div className="flex justify-between w-full items-center">
                   <div className="text-lg font-medium">
-                    <img src={company.profileUrl} alt={`${company.name} Logo`} className="w-16 h-16 rounded-full mb-4" />
-                    <p><strong>Name:</strong> {company.name}</p>
-                    <p><strong>Email:</strong> {company.email}</p>
-                    <p><strong>Contact:</strong> {company.contact}</p>
-                    <p><strong>Location:</strong> {company.location}</p>
-                    <p><strong>About:</strong> {company.about}</p>
-                    <p><strong>Semester:</strong> {company.semester}</p>
+                    <img
+                      src={company.profileUrl}
+                      alt={`${company.name} Logo`}
+                      className="w-16 h-16 rounded-full mb-4"
+                    />
+                    <p>
+                      <strong>Name:</strong> {company.name}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {company.email}
+                    </p>
+                    <p>
+                      <strong>Contact:</strong> {company.contact}
+                    </p>
+                    <p>
+                      <strong>Location:</strong> {company.location}
+                    </p>
+                    <p>
+                      <strong>About:</strong> {company.about}
+                    </p>
+                    <p>
+                      <strong>Semester:</strong> {company.semester}
+                    </p>
+                    <div className="space-y-4 my-2">
+                      <input
+                        type="file"
+                        onChange={handleEthicalDocChange}
+                        className="file-input"
+                      />
+                    </div>
+                    <button
+                      onClick={() => uploadEthicalDocument(company._id)}
+                      className="btn btn-primary"
+                    >
+                      Upload Ethical Document
+                    </button>
+                    {/* Display link to view the ethical document */}
+                    {company.documentUrl && (
+                      <a
+                        href={company.documentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block mt-2 mx-2 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                      >
+                        View Ethical Document
+                      </a>
+                    )}
                   </div>
                   <div className="space-x-4">
-                    <button onClick={() => handleEdit(company)} className="btn btn-primary">
+                    <button
+                      onClick={() => handleEdit(company)}
+                      className="btn btn-primary"
+                    >
                       Edit
                     </button>
-                    <button onClick={() => handleDelete(company._id)} className="btn btn-danger">
+                    <button
+                      onClick={() => handleDelete(company._id)}
+                      className="btn btn-danger"
+                    >
                       Delete
                     </button>
-                    <button onClick={() => handleViewNotes(company._id)} className="btn btn-secondary">
+                    <button
+                      onClick={() => handleViewNotes(company._id)}
+                      className="btn btn-secondary"
+                    >
                       View Notes
                     </button>
                   </div>
@@ -251,7 +345,7 @@ const CompanyProfessorList = () => {
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-600">No companies or professors found for the selected semester.</p>
+          <div>No companies found</div>
         )}
       </div>
     </div>

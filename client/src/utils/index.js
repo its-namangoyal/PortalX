@@ -42,25 +42,41 @@ export const handleFileUpload = async (uploadFile) => {
 };
 
 export const handleResumeUpload = async (uploadFile) => {
-  // const formData = new FormData();
-  // formData.append("file", uploadFile);
-  // formData.append("upload_preset", "portalX");
-
-  // try {
-  //   const response = await axios.post(
-  //     `https://api.cloudinary.com/v1_1/dr4mgnqfa/raw/upload/`,
-  //     formData
-  //   );
-  //   console.log("RESPONSE", response);
-  //   return response.data.secure_url;
-  // } catch (error) {
-  //   console.log(error);
-  // }
-
 
   const formData = new FormData();
   formData.append("file", uploadFile);
   formData.append("upload_preset", "portalX");
+
+  try {
+    const response = await axios.post(
+      `https://api.cloudinary.com/v1_1/dr4mgnqfa/raw/upload/`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    // Log the full response to inspect the data
+    console.log("Full RESPONSE", response.data);
+
+    // Check if secure_url exists before returning
+    if (response.data.secure_url) {
+      return response.data.secure_url;
+    } else {
+      throw new Error("secure_url not found in the response.");
+    }
+  } catch (error) {
+    console.error("Upload error:", error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+export const handleDocumentUpload = async (uploadFile) => {
+  const formData = new FormData();
+  formData.append("file", uploadFile);
+  formData.append("upload_preset", "portalX"); // Ensure this preset is configured in Cloudinary
 
   try {
     const response = await axios.post(
