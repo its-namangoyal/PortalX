@@ -140,6 +140,20 @@ const CompanyProfessorList = () => {
     }
   };
 
+  // Function to delete the ethical document
+  const deleteEthicalDocument = async (companyId) => {
+    try {
+      await axios.put(`http://localhost:8800/api-v1/professors/${companyId}`, {
+        documentUrl: "", // Set the documentUrl to an empty string to delete it
+      });
+      showMessage("success", "Ethical document deleted successfully!");
+      fetchCompanies(); // Refetch companies to reflect the change
+    } catch (error) {
+      console.error("Error deleting ethical document:", error);
+      showMessage("error", "Failed to delete ethical document.");
+    }
+  };
+
   const filteredCompanies = getFilteredCompanies();
 
   return (
@@ -295,29 +309,39 @@ const CompanyProfessorList = () => {
                     <p>
                       <strong>Semester:</strong> {company.semester}
                     </p>
-                    <div className="space-y-4 my-2">
+                    <div className="my-2">
                       <input
                         type="file"
                         onChange={handleEthicalDocChange}
                         className="file-input"
                       />
+                      <button
+                        onClick={() => uploadEthicalDocument(company._id)}
+                        className="btn btn-primary"
+                      >
+                        Upload Ethical Document
+                      </button>
                     </div>
-                    <button
-                      onClick={() => uploadEthicalDocument(company._id)}
-                      className="btn btn-primary"
-                    >
-                      Upload Ethical Document
-                    </button>
                     {/* Display link to view the ethical document */}
                     {company.documentUrl && (
-                      <a
-                        href={company.documentUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block mt-2 mx-2 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
-                      >
-                        View Ethical Document
-                      </a>
+                      <>
+                        <a
+                          href={company.documentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-block mt-2 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                        >
+                          View Ethical Document
+                        </a>
+
+                        {/* Button to delete the ethical document */}
+                        <button
+                          onClick={() => deleteEthicalDocument(company._id)}
+                          className="inline-block mt-2 ml-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300"
+                        >
+                          Delete Ethical Document
+                        </button>
+                      </>
                     )}
                   </div>
                   <div className="space-x-4">
@@ -345,7 +369,9 @@ const CompanyProfessorList = () => {
             </div>
           ))
         ) : (
-          <div>No companies found</div>
+          <p className="text-center text-gray-600 mt-10">
+            No companies found for the selected semester.
+          </p>
         )}
       </div>
     </div>
