@@ -115,3 +115,49 @@ export const updateApplicationStatus = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server Error", error: error.message });
   }
 };
+
+// Controller to get all applications
+export const getAllApplications = async (req, res) => {
+  try {
+    const applications = await Application.find()
+      .populate('project', 'projectTitle') // populate project details
+      .populate('student', 'firstName lastName email'); // populate student details
+
+    res.status(200).json(applications);
+  } catch (error) {
+    console.error("Error fetching applications:", error);
+    res.status(500).json({ message: "Failed to fetch applications" });
+  }
+};
+
+// Controller to update admin approval
+export const updateAdminApproval = async (req, res) => {
+  const { applicationId } = req.params;
+  const { adminApproval } = req.body; // Expected to be a boolean
+
+  try {
+    // Find application by ID
+    const application = await Application.findById(applicationId);
+
+    if (!application) {
+      return res.status(404).json({ success: false, message: "Application not found" });
+    }
+
+    // Update the adminApproval field
+    application.adminApproval = adminApproval;
+    await application.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Admin approval updated to ${adminApproval ? "Accepted" : "Rejected"}`,
+      data: application,
+    });
+  } catch (error) {
+    console.error("Error in updateAdminApproval:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating admin approval",
+      error: error.message,
+    });
+  }
+};

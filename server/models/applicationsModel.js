@@ -19,6 +19,10 @@ const ApplicationSchema = new mongoose.Schema({
   appliedDate: {
     type: Date,
     default: Date.now
+  },
+  adminApproval: {
+    type: Boolean,
+    default: false
   }
 }, { timestamps: true });
 

@@ -183,6 +183,9 @@ const Navbar = () => {
                  <li> 
                  <Link to='/uploaded-list'>Uploaded List</Link>
                  </li>
+                 <li> 
+                 <Link to='/admin-applications'>Student Applications</Link>
+                 </li>
               </>
             )}
 
@@ -259,6 +262,9 @@ const Navbar = () => {
                 </Link>
                 <Link to='/uploaded-list' onClick={handleCloseNavbar} className='py-2'>
                 Uploaded List
+                </Link>
+                <Link to='/admin-applications' onClick={handleCloseNavbar} className='py-2'>
+                Applications
                 </Link>
               </>
             )}
