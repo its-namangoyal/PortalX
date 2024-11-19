@@ -1,7 +1,6 @@
 import React from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { FaSearch } from "react-icons/fa";
-import { popularSearch } from "../utils/data";
 import { Homepage } from "../assets"; // Import the Homepage image
 
 const SearchInput = ({ placeholder, value, setValue, handleClick }) => {
@@ -12,22 +11,25 @@ const SearchInput = ({ placeholder, value, setValue, handleClick }) => {
   const clearInput = () => setValue("");
 
   return (
-    <div className="flex w-full md:w-2/3 items-center bg-white shadow-md p-3" style={{ borderRadius: "25px", background: "rgba(255, 255, 255, 0.8)" }}>
+    <div className="flex w-full md:w-2/3 items-center bg-white shadow-lg p-4 rounded-full">
       <input
         value={value}
         onChange={handleChange}
         type="text"
-        className="w-full p-2 outline-none bg-transparent text-base placeholder-gray-500"
+        className="flex-grow p-2 outline-none bg-transparent text-gray-800 placeholder-gray-500 text-base"
         placeholder={placeholder}
       />
       {value && (
         <AiOutlineCloseCircle
-          className="text-gray-600 text-xl cursor-pointer mr-2"
+          className="text-gray-500 text-xl cursor-pointer mr-2"
           onClick={clearInput}
         />
       )}
-      <button onClick={handleClick} className="flex items-center justify-center">
-        <FaSearch className="text-gray-600 text-2xl cursor-pointer" />
+      <button
+        onClick={handleClick}
+        className="p-2 bg-blue-600 hover:bg-blue-700 rounded-full text-white shadow-md transition duration-300"
+      >
+        <FaSearch className="text-xl" />
       </button>
     </div>
   );
@@ -38,27 +40,28 @@ const Header = ({ title, type, handleClick, searchQuery, setSearchQuery }) => {
     <div className="relative">
       {/* Background Image Section */}
       <div
-        className={`absolute inset-x-0 top-0 z-0 h-[350px] bg-cover bg-center`}
+        className="absolute inset-x-0 top-0 h-[350px] bg-cover bg-center z-0"
         style={{ backgroundImage: `url(${Homepage})` }}
       ></div>
 
-      {/* Dark overlay only for the background image */}
-      <div className="absolute inset-x-0 top-0 h-[350px] bg-black opacity-10 z-0"></div>
+      {/* Gradient Overlay */}
+      <div className="absolute inset-x-0 top-0 h-[350px] bg-gradient-to-b from-black/60 to-black/20 z-0"></div>
 
-      <div className={`container mx-auto relative z-10 px-5 flex items-center h-[350px]`}>
-        <div className="w-full">
-          <div className="mx-8 flex justify-center">
-            <p className="text-grey font-bold text-4xl">{title}</p> {/* Changed text color to white */}
-          </div>
+      {/* Content Section */}
+      <div className="relative z-10 container mx-auto flex flex-col items-center justify-center h-[350px] text-center px-5">
+        {/* Title */}
+        <h1 className="text-white font-extrabold text-4xl md:text-5xl mb-6 leading-tight">
+          {title}
+        </h1>
 
-          <div className="w-full flex items-center justify-around bg-transparent px-5 py-4">
-            <SearchInput
-              placeholder="Search by internship title, keywords, or location"
-              value={searchQuery}
-              setValue={setSearchQuery}
-              handleClick={handleClick}
-            />
-          </div>
+        {/* Search Input */}
+        <div className="w-full max-w-3xl">
+          <SearchInput
+            placeholder="Search by internship title, keywords, or location"
+            value={searchQuery}
+            setValue={setSearchQuery}
+            handleClick={handleClick}
+          />
         </div>
       </div>
     </div>
