@@ -8,7 +8,7 @@ import Application from "../models/applicationsModel.js"
 import Users from "../models/userModel.js"
 
 export const register = async (req, res, next) => {
-  const { name, email, password, userID, accountType } = req.body;
+  const { name, email, password, professorID, accountType, semester } = req.body;
 
   // Validate fields
   if (!name) {
@@ -17,6 +17,10 @@ export const register = async (req, res, next) => {
   }
   if (!email) {
     next("Email address is required!");
+    return;
+  }
+  if (!semester) {
+    next("Semester is required!");
     return;
   }
   if (!password || password.length < 6) {
@@ -32,14 +36,14 @@ export const register = async (req, res, next) => {
       return;
     }
 
-    // If account type is company/professor, validate userID
+    // If account type is company/professor, validate professorID
     if (accountType !== "seeker") {
-      if (!userID) {
+      if (!professorID) {
         next("User ID is required for company/professor registration");
         return;
       }
 
-      const professor = await Professor.findOne({ professorID: userID });
+      const professor = await Professor.findOne({ professorID: professorID });
       if (!professor) {
         next("User ID is not present in the Professor/Company Database!");
         return;
@@ -51,7 +55,8 @@ export const register = async (req, res, next) => {
       name,
       email,
       password,
-      userID: accountType !== "seeker" ? userID : null,  // Only save userID if it's a company/professor
+      semester,
+      professorID: accountType !== "seeker" ? professorID : null,  // Only save professorID if it's a company/professor
     });
 
     // Generate a token
@@ -64,6 +69,7 @@ export const register = async (req, res, next) => {
         _id: company._id,
         name: company.name,
         email: company.email,
+        semester: company.semester,
       },
       token,
     });

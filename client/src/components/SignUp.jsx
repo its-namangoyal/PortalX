@@ -135,6 +135,25 @@ const SignUp = () => {
             error={errors.professorID ? errors.professorID.message : ""}
             className="border-2 border-blue-400 focus:border-blue-600 focus:ring focus:ring-blue-300"
           />
+          {/* Semester Dropdown */}
+        <div>
+          <label htmlFor="semester" className="block text-sm font-medium text-gray-700">
+            Semester
+          </label>
+          <select
+            id="semester"
+            {...register("semester", { required: "Semester is required" })}
+            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
+            <option value="">Select Semester</option>
+            <option value="Fall 2024">Fall 2024</option>
+            <option value="Winter 2025">Winter 2025</option>
+            <option value="Summer 2025">Summer 2025</option>
+          </select>
+          {errors.semester && (
+            <p className="mt-2 text-sm text-red-600">{errors.semester.message}</p>
+          )}
+        </div>
         </div>
       );
     }
