@@ -1,6 +1,6 @@
 import { Menu, Transition } from "@headlessui/react";
 import React, { Fragment, useState } from "react";
-import { AiOutlineClose, AiOutlineLogout } from "react-icons/ai";
+import { AiOutlineClose, AiOutlineLogout, AiOutlineSearch } from "react-icons/ai";
 import { BiChevronDown } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { HiMenuAlt3 } from "react-icons/hi";
@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 import { Logout } from "../redux/userSlice";
 import CustomButton from "./CustomButton";
 
-// MenuList Component
 function MenuList({ user, isProfileOpen, onClick }) {
   const dispatch = useDispatch();
 
@@ -24,12 +23,10 @@ function MenuList({ user, isProfileOpen, onClick }) {
         className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full shadow hover:bg-gray-200 transition duration-200"
         onClick={onClick}
       >
-        {/* User Info */}
         <div className="text-left">
           <p className="text-sm font-medium">{user?.firstName || user?.name}</p>
           <span className="text-xs text-gray-500">{user?.email}</span>
         </div>
-        {/* Profile Image */}
         {user?.profileUrl ? (
           <img
             src={user?.profileUrl}
@@ -41,7 +38,6 @@ function MenuList({ user, isProfileOpen, onClick }) {
             {user?.firstName?.[0] || user?.name?.[0]}
           </div>
         )}
-        {/* Dropdown Icon */}
         <BiChevronDown
           className={`text-lg transition-transform ${
             isProfileOpen ? "rotate-180" : ""
@@ -60,7 +56,6 @@ function MenuList({ user, isProfileOpen, onClick }) {
       >
         <Menu.Items className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg ring-1 ring-black ring-opacity-5">
           <div className="py-1">
-            {/* Profile */}
             <Menu.Item>
               {({ active }) => (
                 <Link
@@ -80,7 +75,6 @@ function MenuList({ user, isProfileOpen, onClick }) {
                 </Link>
               )}
             </Menu.Item>
-            {/* Logout */}
             <Menu.Item>
               {({ active }) => (
                 <button
@@ -101,11 +95,11 @@ function MenuList({ user, isProfileOpen, onClick }) {
   );
 }
 
-// Navbar Component
-const Navbar = () => {
+const Navbar = ({ searchQuery, setSearchQuery, handleSearch }) => {
   const { user } = useSelector((state) => state.user);
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const toggleNavbar = () => setIsOpen(!isOpen);
   const toggleProfileMenu = () => setIsProfileOpen(!isProfileOpen);
@@ -113,12 +107,10 @@ const Navbar = () => {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <nav className="container mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Logo */}
         <Link to="/" className="text-blue-600 text-2xl font-bold">
           Portal<span className="text-indigo-500">X</span>
         </Link>
 
-        {/* Desktop Navigation */}
         <ul className="hidden lg:flex gap-8 text-gray-700 font-medium items-center">
           {user?.accountType === "seeker" && (
             <>
@@ -149,9 +141,7 @@ const Navbar = () => {
                 <Link to="/student-list">Students List</Link>
               </li>
               <li>
-                <Link to="/company-professor-list">
-                  Professors / Companies
-                </Link>
+                <Link to="/company-professor-list">Professors / Companies</Link>
               </li>
               <li>
                 <Link to="/admin-applications">Applications</Link>
@@ -163,8 +153,23 @@ const Navbar = () => {
           </li>
         </ul>
 
-        {/* Profile Section */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:flex items-center gap-4">
+          <div className="relative">
+            {isSearchOpen && (
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                className="absolute -top-10 w-64 py-2 px-4 bg-gray-100 border border-gray-300 rounded-lg shadow-lg transition-all duration-300 focus:outline-none"
+              />
+            )}
+            <AiOutlineSearch
+              className="text-xl text-gray-600 cursor-pointer"
+              onClick={() => setIsSearchOpen((prev) => !prev)}
+            />
+          </div>
           {!user?.token ? (
             <Link to="/user-auth">
               <CustomButton
@@ -181,7 +186,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Menu Toggle */}
         <button
           className="lg:hidden text-gray-700"
           onClick={toggleNavbar}
@@ -191,7 +195,6 @@ const Navbar = () => {
         </button>
       </nav>
 
-      {/* Mobile Menu */}
       {isOpen && (
         <div className="lg:hidden bg-white shadow-md">
           <ul className="flex flex-col gap-4 px-4 py-2">
@@ -224,9 +227,7 @@ const Navbar = () => {
                   <Link to="/student-list">Students List</Link>
                 </li>
                 <li>
-                  <Link to="/company-professor-list">
-                    Professors / Companies
-                  </Link>
+                  <Link to="/company-professor-list">Professors / Companies</Link>
                 </li>
                 <li>
                   <Link to="/admin-applications">Applications</Link>
@@ -237,7 +238,6 @@ const Navbar = () => {
               <Link to="/about-us">About</Link>
             </li>
           </ul>
-
           {!user?.token && (
             <div className="px-4">
               <Link to="/user-auth">
