@@ -8,7 +8,7 @@ import Application from "../models/applicationsModel.js"
 import Users from "../models/userModel.js"
 
 export const register = async (req, res, next) => {
-  const { name, email, password, userID, accountType } = req.body;
+  const { name, email, password, professorID, accountType } = req.body;
 
   // Validate fields
   if (!name) {
@@ -34,12 +34,12 @@ export const register = async (req, res, next) => {
 
     // If account type is company/professor, validate userID
     if (accountType !== "seeker") {
-      if (!userID) {
+      if (!professorID) {
         next("User ID is required for company/professor registration");
         return;
       }
 
-      const professor = await Professor.findOne({ professorID: userID });
+      const professor = await Professor.findOne({ professorID: professorID });
       if (!professor) {
         next("User ID is not present in the Professor/Company Database!");
         return;
@@ -51,7 +51,7 @@ export const register = async (req, res, next) => {
       name,
       email,
       password,
-      userID: accountType !== "seeker" ? userID : null,  // Only save userID if it's a company/professor
+      professorID: accountType !== "seeker" ? professorID : null,  // Only save professorID if it's a company/professor
     });
 
     // Generate a token

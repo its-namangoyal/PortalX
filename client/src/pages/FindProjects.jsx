@@ -19,10 +19,24 @@ const FindProjects = () => {
   const [filterExp, setFilterExp] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
   const [semesterFilter, setSemesterFilter] = useState("All");
+  const [semesters, setSemesters] = useState([]); // State to store fetched semesters
 
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.user);
+
+  // Fetch available semesters
+  const fetchSemesters = async () => {
+    try {
+      const response = await apiRequest({
+        url: "http://localhost:8800/api-v1/semesters",
+        method: "GET",
+      });
+      setSemesters(response?.semesters || []);
+    } catch (error) {
+      console.error("Error fetching semesters:", error);
+    }
+  };
 
   // Fetch projects and user applications
   const fetchProjectsAndApplications = async () => {
@@ -92,6 +106,7 @@ const FindProjects = () => {
   };
 
   useEffect(() => {
+    fetchSemesters(); // Fetch semesters on component mount
     if (user?.semester) {
       fetchProjectsAndApplications();
     }
@@ -136,9 +151,11 @@ const FindProjects = () => {
             >
               <option value="All">All</option>
               <option value="Current">Current</option>
-              <option value="Fall 2024">Fall 2024</option>
-              <option value="Summer 2024">Summer 2024</option>
-              <option value="Winter 2024">Winter 2024</option>
+              {semesters.map((semester) => (
+                <option key={semester._id} value={semester.name}>
+                  {semester.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
