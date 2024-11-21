@@ -1,35 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const StudentList = () => {
   const [users, setUsers] = useState([]);
+  const [semesters, setSemesters] = useState([]); // State for storing semesters
   const [editingUser, setEditingUser] = useState(null);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    studentID: '',
-    semester: '',
-    contact: '',
-    location: '',
-    projectTitle: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    studentID: "",
+    semester: "",
+    contact: "",
+    location: "",
+    projectTitle: "",
   });
-  const [message, setMessage] = useState({ type: '', text: '' });
-  const [confirmPopup, setConfirmPopup] = useState({ visible: false, action: null });
+  const [message, setMessage] = useState({ type: "", text: "" });
+  const [confirmPopup, setConfirmPopup] = useState({
+    visible: false,
+    action: null,
+  });
   const [selectedSemester, setSelectedSemester] = useState("All");
 
-  // Fetch users on mount
+  // Fetch users and semesters on mount
   useEffect(() => {
     fetchUsers();
+    fetchSemesters();
   }, []);
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:8800/api-v1/students');
+      const response = await axios.get("http://localhost:8800/api-v1/students");
       setUsers(response.data);
     } catch (err) {
-      console.error('Error fetching users:', err);
-      showMessage('error', 'Failed to load users.');
+      console.error("Error fetching users:", err);
+      showMessage("error", "Failed to load users.");
     }
   };
 
@@ -53,11 +58,11 @@ const StudentList = () => {
       action: async () => {
         try {
           await axios.delete(`http://localhost:8800/api-v1/students/${id}`);
-          showMessage('success', 'User deleted successfully!');
+          showMessage("success", "User deleted successfully!");
           fetchUsers();
         } catch (err) {
-          console.error('Error deleting user:', err);
-          showMessage('error', 'Failed to delete user.');
+          console.error("Error deleting user:", err);
+          showMessage("error", "Failed to delete user.");
         }
       },
     });
@@ -68,13 +73,16 @@ const StudentList = () => {
       visible: true,
       action: async () => {
         try {
-          await axios.put(`http://localhost:8800/api-v1/students/${editingUser}`, formData);
+          await axios.put(
+            `http://localhost:8800/api-v1/students/${editingUser}`,
+            formData
+          );
           setEditingUser(null);
-          showMessage('success', 'User updated successfully!');
+          showMessage("success", "User updated successfully!");
           fetchUsers();
         } catch (err) {
-          console.error('Error updating user:', err);
-          showMessage('error', 'Failed to update user.');
+          console.error("Error updating user:", err);
+          showMessage("error", "Failed to update user.");
         }
       },
     });
@@ -86,7 +94,7 @@ const StudentList = () => {
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
-    setTimeout(() => setMessage({ type: '', text: '' }), 10000);
+    setTimeout(() => setMessage({ type: "", text: "" }), 10000);
   };
 
   const handleConfirm = async () => {
@@ -94,17 +102,35 @@ const StudentList = () => {
     setConfirmPopup({ visible: false, action: null });
   };
 
+  const fetchSemesters = async () => {
+    try {
+      const response = await axios.get('http://localhost:8800/api-v1/semesters');
+      if (response.data.success && Array.isArray(response.data.semesters)) {
+        setSemesters(response.data.semesters); // Set semesters only if data is valid
+      } else {
+        console.error('Invalid semester data:', response.data);
+        showMessage('error', 'Failed to load semesters.');
+      }
+    } catch (err) {
+      console.error('Error fetching semesters:', err);
+      showMessage('error', 'Failed to load semesters.');
+    }
+  };
+
   // Filter users based on the selected semester
-  const filteredUsers = selectedSemester === "All"
-    ? users
-    : users.filter(user => user.semester === selectedSemester);
+  const filteredUsers =
+    selectedSemester === "All"
+      ? users
+      : users.filter((user) => user.semester === selectedSemester);
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       {message.text && (
         <div
           className={`fixed top-5 right-5 p-4 rounded-md shadow-md ${
-            message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            message.type === "success"
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
           }`}
         >
           {message.text}
@@ -120,7 +146,12 @@ const StudentList = () => {
               <button onClick={handleConfirm} className="btn btn-primary">
                 Yes
               </button>
-              <button onClick={() => setConfirmPopup({ visible: false, action: null })} className="btn btn-secondary">
+              <button
+                onClick={() =>
+                  setConfirmPopup({ visible: false, action: null })
+                }
+                className="btn btn-secondary"
+              >
                 No
               </button>
             </div>
@@ -129,23 +160,30 @@ const StudentList = () => {
       )}
 
       <div className="flex justify-center gap-4 mt-5">
-        {["All", "Summer 2024", "Fall 2024", "Winter 2024"].map((semester) => (
-          <button
-            key={semester}
-            className={`px-4 py-2 rounded-md ${
-              selectedSemester === semester ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
-            }`}
-            onClick={() => setSelectedSemester(semester)}
-          >
-            {semester}
-          </button>
-        ))}
+        {["All", ...semesters.map((semester) => semester.name)].map(
+          (semester) => (
+            <button
+              key={semester}
+              className={`px-4 py-2 rounded-md ${
+                selectedSemester === semester
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+              onClick={() => setSelectedSemester(semester)}
+            >
+              {semester}
+            </button>
+          )
+        )}
       </div>
 
       <div className="space-y-6 mt-4">
         {filteredUsers.length > 0 ? (
           filteredUsers.map((user) => (
-            <div key={user._id} className="bg-white shadow-md p-6 rounded-md flex items-center justify-between">
+            <div
+              key={user._id}
+              className="bg-white shadow-md p-6 rounded-md flex items-center justify-between"
+            >
               {editingUser === user._id ? (
                 <div className="flex flex-col space-y-4 w-full">
                   <div>
@@ -159,7 +197,15 @@ const StudentList = () => {
                       disabled
                     />
                   </div>
-                  {['firstName', 'lastName', 'email', 'semester', 'contact', 'location', 'projectTitle'].map((field) => (
+                  {[
+                    "firstName",
+                    "lastName",
+                    "email",
+                    "semester",
+                    "contact",
+                    "location",
+                    "projectTitle",
+                  ].map((field) => (
                     <div key={field}>
                       <label className="font-semibold">{field}</label>
                       <input
@@ -175,7 +221,10 @@ const StudentList = () => {
                     <button onClick={handleUpdate} className="btn btn-primary">
                       Update
                     </button>
-                    <button onClick={() => setEditingUser(null)} className="btn btn-secondary">
+                    <button
+                      onClick={() => setEditingUser(null)}
+                      className="btn btn-secondary"
+                    >
                       Cancel
                     </button>
                   </div>
@@ -184,15 +233,33 @@ const StudentList = () => {
                 <div className="flex justify-between w-full items-center">
                   <div className="text-lg font-medium">
                     {user.profileUrl && (
-                      <img src={user.profileUrl} alt="Profile" className="w-20 h-20 rounded-full" />
+                      <img
+                        src={user.profileUrl}
+                        alt="Profile"
+                        className="w-20 h-20 rounded-full"
+                      />
                     )}
-                    <p><strong>Student ID:</strong> {user.studentID}</p>
-                    <p><strong>Name:</strong> {user.firstName} {user.lastName}</p>
-                    <p><strong>Email:</strong> {user.email}</p>
-                    <p><strong>Semester:</strong> {user.semester}</p>
-                    <p><strong>Contact:</strong> {user.contact}</p>
-                    <p><strong>Location:</strong> {user.location}</p>
-                    <p><strong>Project Title:</strong> {user.projectTitle}</p>
+                    <p>
+                      <strong>Student ID:</strong> {user.studentID}
+                    </p>
+                    <p>
+                      <strong>Name:</strong> {user.firstName} {user.lastName}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {user.email}
+                    </p>
+                    <p>
+                      <strong>Semester:</strong> {user.semester}
+                    </p>
+                    <p>
+                      <strong>Contact:</strong> {user.contact}
+                    </p>
+                    <p>
+                      <strong>Location:</strong> {user.location}
+                    </p>
+                    <p>
+                      <strong>Project Title:</strong> {user.projectTitle}
+                    </p>
                     {user.cvUrl && (
                       <a
                         href={user.cvUrl}
@@ -205,10 +272,16 @@ const StudentList = () => {
                     )}
                   </div>
                   <div className="space-x-4">
-                    <button onClick={() => handleEdit(user)} className="btn btn-primary">
+                    <button
+                      onClick={() => handleEdit(user)}
+                      className="btn btn-primary"
+                    >
                       Edit
                     </button>
-                    <button onClick={() => handleDelete(user._id)} className="btn btn-danger">
+                    <button
+                      onClick={() => handleDelete(user._id)}
+                      className="btn btn-danger"
+                    >
                       Delete
                     </button>
                   </div>
@@ -217,7 +290,9 @@ const StudentList = () => {
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-600 mt-10">No students found for the selected semester.</p>
+          <p className="text-center text-gray-600 mt-10">
+            No students found for the selected semester.
+          </p>
         )}
       </div>
     </div>

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Admin = () => {
   const [studentFile, setStudentFile] = useState(null);
   const [companyFile, setCompanyFile] = useState(null);
-  const [message, setMessage] = useState("");
+  const [newSemester, setNewSemester] = useState(""); // State to store new semester input
 
   const handleStudentFileChange = (e) => {
     setStudentFile(e.target.files[0]);
@@ -17,7 +19,7 @@ const Admin = () => {
   const handleStudentUpload = async (e) => {
     e.preventDefault();
     if (!studentFile) {
-      setMessage("Please select a student file.");
+      toast.error("Please select a student file.");
       return;
     }
 
@@ -31,17 +33,17 @@ const Admin = () => {
         },
       });
 
-      setMessage(response.data.message || "Student file uploaded successfully!");
+      toast.success(response.data.message || "Student file uploaded successfully!");
     } catch (error) {
       console.error(error);
-      setMessage("Error uploading student file.");
+      toast.error("Error uploading student file.");
     }
   };
 
   const handleCompanyUpload = async (e) => {
     e.preventDefault();
     if (!companyFile) {
-      setMessage("Please select a company/professor file.");
+      toast.error("Please select a company/professor file.");
       return;
     }
 
@@ -55,15 +57,38 @@ const Admin = () => {
         },
       });
 
-      setMessage(response.data.message || "Company/Professor file uploaded successfully!");
+      toast.success(response.data.message || "Company/Professor file uploaded successfully!");
     } catch (error) {
       console.error(error);
-      setMessage("Error uploading company/professor file.");
+      toast.error("Error uploading company/professor file.");
+    }
+  };
+
+  const handleAddSemester = async () => {
+    if (!newSemester.trim()) {
+      toast.error("Semester name cannot be empty.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8800/admin/semesters", { name: newSemester });
+
+      if (response.data.success) {
+        toast.success("Semester added successfully!");
+        setNewSemester(""); // Clear the input field
+      } else {
+        toast.error("Failed to add semester.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error adding semester.");
     }
   };
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 py-10">
+      <ToastContainer /> {/* To display toaster notifications */}
+
       <div className="flex flex-row space-x-10">
         {/* Upload Student Data */}
         <div className="mb-10">
@@ -124,11 +149,25 @@ const Admin = () => {
         </div>
       </div>
 
-      {message && (
-        <p className={`mt-6 text-center font-medium ${message.includes('Error') ? 'text-red-600' : 'text-green-600'}`}>
-          {message}
-        </p>
-      )}
+      {/* Add New Semester */}
+      <div className="mt-10">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">Admin Panel: Add New Semester</h2>
+        <div className="flex flex-col items-center space-y-4">
+          <input
+            type="text"
+            value={newSemester}
+            onChange={(e) => setNewSemester(e.target.value)}
+            placeholder="Enter Semester Name (e.g., Fall 2025)"
+            className="p-2 border border-gray-300 rounded-lg w-80 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          />
+          <button
+            onClick={handleAddSemester}
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-offset-2 transition duration-200"
+          >
+            Add Semester
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
