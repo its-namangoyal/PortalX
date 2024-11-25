@@ -15,6 +15,7 @@ import ApplicationDetails from "./ApplicationDetails";
 import Notes from "./Notes";
 import ProfessorNotes from "./ProfessorNotes";
 import AdminApplications from "./AdminApplications";
+import ProfessorProfile from "./ProfessorProfile";
 
 export {
   About,
@@ -33,5 +34,6 @@ export {
   ApplicationDetails,
   Notes,
   ProfessorNotes,
-  AdminApplications
+  AdminApplications,
+  ProfessorProfile
 };

@@ -78,7 +78,7 @@ function MenuList({ user, isProfileOpen, onClick }) {
                       user?.accountType === "seeker"
                         ? "user-profile"
                         : user?.accountType === "company"
-                        ? "company-profile"
+                        ? "professor-profile"
                         : "admin-profile"
                     }`}
                     className={`${

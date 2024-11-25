@@ -20,7 +20,8 @@ import {
   UploadedList,
   Notes,
   ProfessorNotes,
-  AdminApplications
+  AdminApplications,
+  ProfessorProfile
 } from "./pages";
 import Projects from "./pages/Projects";
 import MyApplications from "./pages/MyApplications";
@@ -88,6 +89,7 @@ function App() {
           <Route path="/user-profile/:id?" element={<UserProfile />} />
           <Route path="/applications" element={<MyApplications />} />
           <Route path="/company-profile" element={<CompanyProfile />} />
+          <Route path="/professor-profile" element={<ProfessorProfile />} />
           <Route path="/company-profile/:id" element={<CompanyProfile />} />
           <Route path="/upload-project" element={<UploadProject />} />
           <Route path="/project-detail/:id" element={<ProjectDetail />} />
