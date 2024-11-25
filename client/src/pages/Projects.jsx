@@ -10,7 +10,9 @@ const Projects = () => {
   const [info, setInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedSemester, setSelectedSemester] = useState("All");
+  const [semesters, setSemesters] = useState(["All", "Current"]);
 
+  // Fetch company information
   const fetchCompany = async () => {
     setIsLoading(true);
     let id = params?.id || user?._id;
@@ -29,6 +31,28 @@ const Projects = () => {
     }
   };
 
+  // Fetch semesters from the API and update the semester filter buttons
+  const fetchSemesters = async () => {
+    try {
+      const res = await apiRequest({
+        url: "http://localhost:8800/api-v1/semesters",  // Adjust the API endpoint as needed
+        method: "GET",
+      });
+
+      console.log("API Response:", res); // Debug the response
+
+      if (res?.semesters?.length > 0) {
+        const fetchedSemesters = res.semesters.map((semester) => semester.name);
+        setSemesters(["All", "Current", ...fetchedSemesters]);
+      } else {
+        console.error("No semesters found in API response.");
+      }
+    } catch (error) {
+      console.error("Error fetching semesters:", error.message);
+    }
+  };
+
+  // Filter projects by selected semester
   const filterProjectsBySemester = (projects, semester) => {
     if (semester === "All") return projects;
     if (semester === "Current") return projects.filter((proj) => proj.semester === user?.semester);
@@ -37,6 +61,7 @@ const Projects = () => {
 
   useEffect(() => {
     fetchCompany();
+    fetchSemesters();
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, []);
 
@@ -53,7 +78,7 @@ const Projects = () => {
       </div>
 
       <div className="flex gap-4 mt-5">
-        {["All", "Current", "Fall 2024", "Summer 2024", "Winter 2024"].map((semester) => (
+        {semesters.map((semester) => (
           <button
             key={semester}
             className={`px-4 py-2 rounded-md ${

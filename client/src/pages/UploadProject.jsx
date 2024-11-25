@@ -16,8 +16,6 @@ const UploadProject = () => {
   const {
     register,
     handleSubmit,
-    getValues,
-    watch,
     formState: { errors },
   } = useForm({
     mode: "onChange",
@@ -25,16 +23,13 @@ const UploadProject = () => {
   });
 
   const [errMsg, setErrMsg] = useState("");
-  const [projectType, setProjectType] = useState("Full-Time");
   const [isLoading, setIsLoading] = useState(false);
-  const [recentPost, setRecentPost] = useState([]);
+  const [semesters, setSemesters] = useState([]); // State for semesters
 
   const onSubmit = async (data) => {
     console.log(data);
 
-    console.log(user?.profileUrl);
     if (
-      // !user?.profileUrl ||
       !user?.about ||
       !user?.contact ||
       !user?.location
@@ -46,7 +41,7 @@ const UploadProject = () => {
     setIsLoading(true);
     setErrMsg(null);
 
-    const newData = { ...data, projectType: projectType };
+    const newData = { ...data, projectType: "Full-Time" }; // Example project type
     try {
       const res = await apiRequest({
         url: "/projects/upload-project",
@@ -70,24 +65,27 @@ const UploadProject = () => {
     }
   };
 
-  const getRecentPost = async () => {
-    try {
-      const id = user?._id;
-
-      const res = await apiRequest({
-        url: "/companies/get-company/" + id,
-        method: "GET",
-      });
-
-      setRecentPost(res?.data?.projectPosts);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+  // Fetch the semesters on component mount
   useEffect(() => {
-    getRecentPost();
-  }, []);
+    const fetchSemesters = async () => {
+      try {
+        const res = await apiRequest({
+          url: "/semesters", // Make API call to fetch semesters
+          method: "GET",
+        });
+
+        if (res?.success) {
+          setSemesters(res.semesters); // Set the fetched semesters
+        } else {
+          console.error("Failed to fetch semesters");
+        }
+      } catch (error) {
+        console.error("Error fetching semesters:", error);
+      }
+    };
+
+    fetchSemesters();
+  }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   return (
     <div className='container mx-auto flex flex-col md:flex-row gap-8 2xl:gap-14 bg-[#f7fdfd] px-5'>
@@ -120,10 +118,15 @@ const UploadProject = () => {
                 className='w-full rounded border border-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-base px-3 py-2'
               >
                 <option value="">Select Semester</option>
-                <option value="Fall 2024">Fall 2024</option>
-                <option value="Winter 2025">Winter 2025</option>
-                <option value="Spring 2025">Spring 2025</option>
-                <option value="Summer 2025">Summer 2025</option>
+                {semesters.length > 0 ? (
+                  semesters.map((semester) => (
+                    <option key={semester._id} value={semester.name}>
+                      {semester.name}
+                    </option>
+                  ))
+                ) : (
+                  <option>Loading...</option>
+                )}
               </select>
               {errors.semester && (
                 <span className='text-red-500 text-sm mt-1'>{errors.semester.message}</span>
@@ -131,11 +134,6 @@ const UploadProject = () => {
             </div>
 
             <div className='w-full flex gap-4'>
-              {/* <div className={`w-1/2 mt-2`}>
-                <label className='text-gray-600 text-sm mb-1'>Project Type</label>
-                <ProjectTypes projectTitle={projectType} setProjectTitle={setProjectType} />
-              </div> */}
-
               <div className='w-1/2'>
                 <TextInput
                   name='salary'
@@ -178,16 +176,6 @@ const UploadProject = () => {
               </div>
             </div>
 
-            {/* <TextInput
-              name='location'
-              label='Project Location'
-              placeholder='eg. New York'
-              type='text'
-              register={register("location", {
-                required: "Project Location is required",
-              })}
-              error={errors.location ? errors.location?.message : ""}
-            /> */}
             <div className='flex flex-col'>
               <label className='text-gray-600 text-sm mb-1'>
                 Project Description
@@ -237,21 +225,6 @@ const UploadProject = () => {
           </form>
         </div>
       </div>
-      {/* <div className='w-full md:w-1/3 2xl:2/4 p-5 mt-20 md:mt-0'>
-        <p className='text-gray-500 font-semibold'>Recent Project Post</p>
-
-        <div className='w-full flex flex-wrap gap-6'>
-          {recentPost.slice(0, 4).map((project, index) => {
-            const data = {
-              name: user?.name,
-              email: user?.email,
-              logo: user?.profileUrl,
-              ...project,
-            };
-            return <ProjectCard project={data} key={index} />;
-          })}
-        </div>
-      </div> */}
     </div>
   );
 };

@@ -8,7 +8,7 @@ import Application from "../models/applicationsModel.js"
 import Users from "../models/userModel.js"
 
 export const register = async (req, res, next) => {
-  const { name, email, password, userID, accountType } = req.body;
+  const { name, email, password, accountType, semester } = req.body;
 
   // Validate fields
   if (!name) {
@@ -23,6 +23,10 @@ export const register = async (req, res, next) => {
     next("Password is required and must be greater than 6 characters");
     return;
   }
+  if (!semester) {
+    next("Semester is required!");
+    return;
+  }
 
   try {
     // Check if account already exists
@@ -32,16 +36,11 @@ export const register = async (req, res, next) => {
       return;
     }
 
-    // If account type is company/professor, validate userID
+    // If account type is company/professor, validate email in the Professor collection
     if (accountType !== "seeker") {
-      if (!userID) {
-        next("User ID is required for company/professor registration");
-        return;
-      }
-
-      const professor = await Professor.findOne({ professorID: userID });
+      const professor = await Professor.findOne({ email });
       if (!professor) {
-        next("User ID is not present in the Professor/Company Database!");
+        next("Email is not present in the Professor Database!");
         return;
       }
     }
@@ -51,7 +50,7 @@ export const register = async (req, res, next) => {
       name,
       email,
       password,
-      userID: accountType !== "seeker" ? userID : null,  // Only save userID if it's a company/professor
+      semester, // Save the semester field
     });
 
     // Generate a token
@@ -64,6 +63,7 @@ export const register = async (req, res, next) => {
         _id: company._id,
         name: company.name,
         email: company.email,
+        semester: company.semester,
       },
       token,
     });
@@ -72,6 +72,8 @@ export const register = async (req, res, next) => {
     res.status(404).json({ message: error.message });
   }
 };
+
+
 
 
 export const signIn = async (req, res, next) => {

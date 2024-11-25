@@ -21,11 +21,13 @@ const CompanyProfessorList = () => {
     action: null,
   });
   const [filter, setFilter] = useState("All");
+  const [semesters, setSemesters] = useState([]); // State for semesters
   const [ethicalDoc, setEthicalDoc] = useState(null); // State for the ethical document
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchCompanies();
+    fetchSemesters();
   }, []);
 
   const fetchCompanies = async () => {
@@ -154,6 +156,16 @@ const CompanyProfessorList = () => {
     }
   };
 
+  const fetchSemesters = async () => {
+    try {
+      const response = await axios.get("http://localhost:8800/api-v1/semesters");
+      setSemesters(response.data.semesters);
+    } catch (err) {
+      console.error("Error fetching semesters:", err);
+      showMessage("error", "Failed to load semesters.");
+    }
+  };
+
   const filteredCompanies = getFilteredCompanies();
 
   return (
@@ -194,17 +206,27 @@ const CompanyProfessorList = () => {
 
       {/* Filter buttons section */}
       <div className="flex justify-center gap-4 mt-5 mb-5">
-        {["All", "Summer 2024", "Fall 2024", "Winter 2024"].map((semester) => (
+        <button
+          className={`px-4 py-2 rounded-md ${
+            filter === "All"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700"
+          }`}
+          onClick={() => setFilter("All")}
+        >
+          All
+        </button>
+        {semesters.map((semester) => (
           <button
-            key={semester}
+            key={semester._id}
             className={`px-4 py-2 rounded-md ${
-              filter === semester
+              filter === semester.name
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700"
             }`}
-            onClick={() => setFilter(semester)}
+            onClick={() => setFilter(semester.name)}
           >
-            {semester}
+            {semester.name}
           </button>
         ))}
       </div>

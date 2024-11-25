@@ -4,6 +4,7 @@ import Admin from "../models/adminModel.js";
 import { createJWT } from "../utils/index.js";
 import Student from '../models/studentsModel.js'; // Assuming you have a Student model
 import Company from '../models/professorModel.js'; // Assuming you have a Company model
+import Semester from '../models/semesterModel.js';
 
 export const uploadStudentFile = async (req, res) => {
   try {
@@ -139,5 +140,31 @@ export const signIn = async (req, res, next) => {
   } catch (error) {
     console.error("Admin login error:", error);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Controller to add a new semester
+export const addSemester = async (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ success: false, message: 'Semester name is required.' });
+  }
+
+  try {
+    // Check if the semester already exists
+    const existingSemester = await Semester.findOne({ name });
+    if (existingSemester) {
+      return res.status(400).json({ success: false, message: 'Semester already exists.' });
+    }
+
+    // Create and save the new semester
+    const newSemester = new Semester({ name });
+    await newSemester.save();
+
+    return res.status(201).json({ success: true, message: 'Semester added successfully.' });
+  } catch (error) {
+    console.error('Error adding semester:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 };
