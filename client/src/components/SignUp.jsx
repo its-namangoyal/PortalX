@@ -8,6 +8,7 @@ import { apiRequest } from "../utils";
 import CustomButton from "./CustomButton";
 import Loading from "./Loading";
 import TextInput from "./TextInput";
+import { useEffect } from "react";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -20,7 +21,33 @@ const SignUp = () => {
 
   const currentYear = new Date().getFullYear();
 
-  const { register, handleSubmit, getValues, formState: { errors } } = useForm({ mode: "onChange" });
+  const [semesters, setSemesters] = useState([]);
+
+  useEffect(() => {
+    const fetchSemesters = async () => {
+      try {
+        const res = await apiRequest({ url: "semesters", method: "GET" });
+        if (res?.success) {
+          setSemesters(res?.semesters);
+        } else {
+          console.error("Failed to fetch semesters");
+        }
+      } catch (error) {
+        console.error("Error fetching semesters:", error);
+      }
+    };
+
+    if (isRegister && (accountType === "company" || accountType === "admin")) {
+      fetchSemesters();
+    }
+  }, [isRegister, accountType]);
+
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm({ mode: "onChange" });
 
   const onSubmit = async (data) => {
     setIsLoading(true);
@@ -63,7 +90,9 @@ const SignUp = () => {
           const newData = { token: res?.token, ...res?.user };
           dispatch(Login(newData));
           localStorage.setItem("userInfo", JSON.stringify(newData));
-          window.location.replace(accountType === "seeker" ? "/find-projects" : "/projects");
+          window.location.replace(
+            accountType === "seeker" ? "/find-projects" : "/projects"
+          );
         }
       }
     } catch (error) {
@@ -84,7 +113,9 @@ const SignUp = () => {
                 label="First Name"
                 placeholder="Enter First Name"
                 type="text"
-                register={register("firstName", { required: "First Name is required" })}
+                register={register("firstName", {
+                  required: "First Name is required",
+                })}
                 error={errors.firstName ? errors.firstName.message : ""}
                 className="border-2 border-blue-400 focus:border-blue-600 focus:ring focus:ring-blue-300"
               />
@@ -95,7 +126,9 @@ const SignUp = () => {
                 label="Last Name"
                 placeholder="Enter Last Name"
                 type="text"
-                register={register("lastName", { required: "Last Name is required" })}
+                register={register("lastName", {
+                  required: "Last Name is required",
+                })}
                 error={errors.lastName ? errors.lastName.message : ""}
                 className="border-2 border-blue-400 focus:border-blue-600 focus:ring focus:ring-blue-300"
               />
@@ -107,7 +140,9 @@ const SignUp = () => {
               label="Student ID"
               placeholder="Enter Student ID"
               type="text"
-              register={register("studentID", { required: "Student ID is required" })}
+              register={register("studentID", {
+                required: "Student ID is required",
+              })}
               error={errors.studentID ? errors.studentID.message : ""}
               className="border-2 border-blue-400 focus:border-blue-600 focus:ring focus:ring-blue-300"
             />
@@ -119,26 +154,91 @@ const SignUp = () => {
         <div className="w-full space-y-4">
           <TextInput
             name="name"
-            label="Company/Professor Name"
-            placeholder="Company/Professor Name"
+            label="Company Name"
+            placeholder="Company Name"
             type="text"
-            register={register("name", { required: "Company Name is required" })}
+            register={register("name", {
+              required: "Company Name is required",
+            })}
             error={errors.name ? errors.name.message : ""}
             className="border-2 border-blue-400 focus:border-blue-600 focus:ring focus:ring-blue-300"
           />
-          <TextInput
-            name="professorID"
-            label="Professor ID"
-            placeholder="Enter Professor ID"
-            type="text"
-            register={register("professorID", { required: "Professor ID is required" })}
-            error={errors.professorID ? errors.professorID.message : ""}
-            className="border-2 border-blue-400 focus:border-blue-600 focus:ring focus:ring-blue-300"
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Semester
+            </label>
+            <select
+              {...register("semester", { required: "Semester is required" })}
+              className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Select Semester</option>
+              {semesters.map((semester) => (
+                <option key={semester._id} value={semester.name}>
+                  {semester.name}
+                </option>
+              ))}
+            </select>
+            {errors.semester && (
+              <p className="text-red-600 text-sm">{errors.semester.message}</p>
+            )}
+          </div>
+        </div>
+      );
+    } else if (accountType === "admin") {
+      return (
+        <div className="w-full space-y-4">
+          <div className="w-full flex gap-2 md:gap-4">
+            <div className="w-1/2">
+              <TextInput
+                name="firstName"
+                label="First Name"
+                placeholder="Enter First Name"
+                type="text"
+                register={register("firstName", {
+                  required: "First Name is required",
+                })}
+                error={errors.firstName ? errors.firstName.message : ""}
+                className="border-2 border-blue-400 focus:border-blue-600 focus:ring focus:ring-blue-300"
+              />
+            </div>
+            <div className="w-1/2">
+              <TextInput
+                name="lastName"
+                label="Last Name"
+                placeholder="Enter Last Name"
+                type="text"
+                register={register("lastName", {
+                  required: "Last Name is required",
+                })}
+                error={errors.lastName ? errors.lastName.message : ""}
+                className="border-2 border-blue-400 focus:border-blue-600 focus:ring focus:ring-blue-300"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Semester
+            </label>
+            <select
+              {...register("semester", { required: "Semester is required" })}
+              className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Select Semester</option>
+              {semesters.map((semester) => (
+                <option key={semester._id} value={semester.name}>
+                  {semester.name}
+                </option>
+              ))}
+            </select>
+            {errors.semester && (
+              <p className="text-red-600 text-sm">{errors.semester.message}</p>
+            )}
+          </div>
         </div>
       );
     }
   };
+  
 
   return (
     <Transition appear show={true} as="div">
@@ -158,12 +258,17 @@ const SignUp = () => {
         <div className="fixed inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
             <Dialog.Panel className="w-full max-w-md bg-white p-8 rounded-lg shadow-xl border border-gray-300">
-              <Dialog.Title as="h3" className="text-2xl font-bold text-gray-800 text-left">
+              <Dialog.Title
+                as="h3"
+                className="text-2xl font-bold text-gray-800 text-left"
+              >
                 {isRegister ? "Create Account" : "Account Sign In"}
               </Dialog.Title>
 
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700">Account Type</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Account Type
+                </label>
                 <select
                   value={accountType}
                   onChange={(e) => setAccountType(e.target.value)}
@@ -175,7 +280,10 @@ const SignUp = () => {
                 </select>
               </div>
 
-              <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+              <form
+                className="mt-6 space-y-4"
+                onSubmit={handleSubmit(onSubmit)}
+              >
                 <TextInput
                   name="email"
                   label="Email Address"
@@ -184,12 +292,14 @@ const SignUp = () => {
                   register={register("email", {
                     required: "Email Address is required!",
                     pattern: {
-                      value: accountType === "seeker" 
-                        ? /^[a-zA-Z0-9._%+-]+@uwindsor\.ca$/i 
-                        : /^[a-zA-Z0-9._%+-]+@[a-zA-Z]+\.[a-zA-Z]+$/i,
-                      message: accountType === "seeker" 
-                        ? "Email must be a valid '@uwindsor.ca' address" 
-                        : "Enter a valid email address",
+                      value:
+                        accountType === "seeker"
+                          ? /^[a-zA-Z0-9._%+-]+@uwindsor\.ca$/i
+                          : /^[a-zA-Z0-9._%+-]+@[a-zA-Z]+\.[a-zA-Z]+$/i,
+                      message:
+                        accountType === "seeker"
+                          ? "Email must be a valid '@uwindsor.ca' address"
+                          : "Enter a valid email address",
                     },
                   })}
                   error={errors.email ? errors.email.message : ""}
@@ -204,7 +314,9 @@ const SignUp = () => {
                     label="Password"
                     placeholder="Enter Password"
                     type="password"
-                    register={register("password", { required: "Password is required" })}
+                    register={register("password", {
+                      required: "Password is required",
+                    })}
                     error={errors.password ? errors.password.message : ""}
                     className="border-2 border-blue-400 focus:border-blue-600 focus:ring focus:ring-blue-300"
                   />
@@ -215,7 +327,9 @@ const SignUp = () => {
                       placeholder="Confirm Password"
                       type="password"
                       register={register("cPassword", {
-                        validate: value => value === getValues("password") || "Passwords do not match"
+                        validate: (value) =>
+                          value === getValues("password") ||
+                          "Passwords do not match",
                       })}
                       error={errors.cPassword ? errors.cPassword.message : ""}
                       className="border-2 border-blue-400 focus:border-blue-600 focus:ring focus:ring-blue-300"
@@ -238,7 +352,9 @@ const SignUp = () => {
               </form>
 
               <div className="mt-4 text-center text-sm text-gray-500">
-                {isRegister ? "Already have an account?" : "Don't have an account?"}{" "}
+                {isRegister
+                  ? "Already have an account?"
+                  : "Don't have an account?"}{" "}
                 <button
                   type="button"
                   className="text-blue-600 hover:underline"
