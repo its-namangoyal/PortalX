@@ -35,7 +35,7 @@ const Projects = () => {
   const fetchSemesters = async () => {
     try {
       const res = await apiRequest({
-        url: "http://localhost:8800/api-v1/semesters",  // Adjust the API endpoint as needed
+        url: "http://localhost:8800/api-v1/semesters", // Adjust the API endpoint as needed
         method: "GET",
       });
 
@@ -55,7 +55,8 @@ const Projects = () => {
   // Filter projects by selected semester
   const filterProjectsBySemester = (projects, semester) => {
     if (semester === "All") return projects;
-    if (semester === "Current") return projects.filter((proj) => proj.semester === user?.semester);
+    if (semester === "Current")
+      return projects.filter((proj) => proj.semester === user?.semester);
     return projects.filter((proj) => proj.semester === semester);
   };
 
@@ -77,38 +78,44 @@ const Projects = () => {
         </h2>
       </div>
 
-      <div className="flex gap-4 mt-5">
-        {semesters.map((semester) => (
-          <button
-            key={semester}
-            className={`px-4 py-2 rounded-md ${
-              selectedSemester === semester ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
-            }`}
-            onClick={() => setSelectedSemester(semester)}
-          >
-            {semester}
-          </button>
-        ))}
-      </div>
+      <div className="w-full mt-2 flex flex-col gap-2">
+        {/* Semester Filter Section */}
+        <div className="flex gap-4 justify-center my-5">
+          {semesters.map((semester) => (
+            <button
+              key={semester}
+              className={`px-4 py-2 rounded-md ${
+                selectedSemester === semester
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+              onClick={() => setSelectedSemester(semester)}
+            >
+              {semester}
+            </button>
+          ))}
+        </div>
 
-      <div className="w-full mt-10 flex flex-col gap-2">
-        <p>Projects Posted</p>
-
-        {info?.projectPosts?.length > 0 ? (
+        {/* Project List */}
+        {info?.projectPosts?.length > 0 &&
+        filterProjectsBySemester(info.projectPosts, selectedSemester).length >
+          0 ? (
           <div className="flex flex-wrap gap-3">
-            {filterProjectsBySemester(info.projectPosts, selectedSemester).map((project, index) => {
-              const data = {
-                companyName: info?.name, 
-                email: info?.email,
-                logo: info?.profileUrl,
-                location: info?.location,
-                ...project,
-              };
-              return <ProjectCard project={data} key={index} />;
-            })}
+            {filterProjectsBySemester(info.projectPosts, selectedSemester).map(
+              (project, index) => {
+                const data = {
+                  companyName: info?.name,
+                  email: info?.email,
+                  logo: info?.profileUrl,
+                  location: info?.location,
+                  ...project,
+                };
+                return <ProjectCard project={data} key={index} />;
+              }
+            )}
           </div>
         ) : (
-          <p className="text-gray-500 mt-4">No projects posted yet.</p>
+          <p className="text-gray-500 mt-4 text-center">No projects posted for the selected semester.</p>
         )}
       </div>
     </div>

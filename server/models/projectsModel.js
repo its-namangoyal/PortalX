@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import Application from "./applicationsModel.js";
 
 const projectSchema = new mongoose.Schema(
   {
@@ -14,6 +15,16 @@ const projectSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Middleware to delete related applications when a project is deleted
+projectSchema.pre("deleteOne", { document: true, query: false }, async function (next) {
+  try {
+    await Application.deleteMany({ project: this._id });
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 const Projects = mongoose.model("Projects", projectSchema);  // Changed from "projects" to "Projects"
 

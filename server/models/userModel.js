@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import JWT from "jsonwebtoken";
+import Application from "./applicationsModel.js";
 
 //schema
 const userSchema = new mongoose.Schema(
@@ -69,6 +70,16 @@ userSchema.methods.createJWT = function () {
     expiresIn: "1d",
   });
 };
+
+// Middleware to delete related applications when a user is deleted
+userSchema.pre("deleteOne", { document: true, query: false }, async function (next) {
+  try {
+    await Application.deleteMany({ student: this._id });
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 const Users = mongoose.model("Users", userSchema);
 
