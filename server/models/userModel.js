@@ -45,7 +45,8 @@ const userSchema = new mongoose.Schema(
     cvUrl: { type: String },
     projectTitle: { type: String },
     about: { type: String },
-    verified: { type: Boolean, default: true },
+    verified: { type: Boolean, default: false },
+
   },
   { timestamps: true }
 );

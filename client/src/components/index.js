@@ -9,6 +9,7 @@ import Loading from "./Loading";
 import Navbar from "./Navbar";
 import SignUp from "./SignUp";
 import TextInput from "./TextInput";
+import RegisterSuccess from "./RegisterSuccess";
 
 export {
   CompanyCard,
@@ -22,4 +23,5 @@ export {
   Navbar,
   SignUp,
   TextInput,
+  RegisterSuccess,
 };

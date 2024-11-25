@@ -37,7 +37,6 @@ app.use(morgan("dev"));
 app.use(router);
 app.use("/admin", adminRoutes); // Add this line to mount admin routes
 app.use("/applications", applicationRoutes); // Updated this line
-
 //error middleware
 app.use(errorMiddleware);
 
