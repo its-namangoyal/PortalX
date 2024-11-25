@@ -110,8 +110,7 @@ function MenuList({ user, isProfileOpen, onClick }) {
             </div>
           </Menu.Items>
         </Transition>
-      </Menu>
-    </div>
+    </Menu>
   );
 }
 
