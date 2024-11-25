@@ -38,15 +38,8 @@ const CompanyProfile = () => {
         method: "GET",
       });
 
-      console.log("API Response:", res); // Debug response
-
-      // Check if semesters array exists in the response
       if (res?.semesters?.length > 0) {
-        // Map over the semesters and extract the 'name' field
         const fetchedSemesters = res.semesters.map((semester) => semester.name);
-        console.log("Fetched semesters:", fetchedSemesters);
-
-        // Add "All" and "Current" to the fetched semesters list
         setSemesters(["All", "Current", ...fetchedSemesters]);
       } else {
         console.error("No semesters found in API response.");
@@ -78,7 +71,7 @@ const CompanyProfile = () => {
 
   return (
     <div className="container mx-auto p-5">
-      <div className="w-full mt-10 flex gap-3">
+      <div className="w-full mt-10 flex justify-center gap-3">
         {semesters.map((semester) => (
           <button
             key={semester}
@@ -89,7 +82,6 @@ const CompanyProfile = () => {
           </button>
         ))}
       </div>
-
       <div className="w-full mt-20 flex flex-col gap-2">
         <p>Projects Posted</p>
         {filteredProjects?.length > 0 ? (

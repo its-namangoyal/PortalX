@@ -20,7 +20,7 @@ const ProjectDetail = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
   const [isSemesterMatch, setIsSemesterMatch] = useState(false);
-  const [applicationStatus, setApplicationStatus] = useState(null); // To hold the application status
+  const [applicationStatus, setApplicationStatus] = useState(null);
 
   const getProjectDetails = async () => {
     setIsFetching(true);
@@ -34,10 +34,8 @@ const ProjectDetail = () => {
       setSimilarProjects(res?.similarProjects.filter((p) => p._id !== id));
       setIsFetching(false);
 
-      // Check if user's semester matches project's semester
       setIsSemesterMatch(user?.semester === res?.data?.semester);
 
-      // Fetch projects from the same company
       const companyRes = await apiRequest({
         url: `/companies/get-company-projects/${res?.data?.company?._id}`,
         method: "GET",
@@ -47,14 +45,13 @@ const ProjectDetail = () => {
         companyRes?.data?.projectPosts.filter((p) => p._id !== id)
       );
 
-      // Updated API call to include userId as query parameter
       const applicationRes = await apiRequest({
         url: `/applications/check/${id}?userId=${user?._id}`,
         method: "GET",
         token: user?.token,
       });
       setHasApplied(applicationRes?.exists || false);
-      setApplicationStatus(applicationRes?.status || null); // Set the application status if exists
+      setApplicationStatus(applicationRes?.status || null);
     } catch (error) {
       setIsFetching(false);
       console.log(error);
@@ -84,7 +81,6 @@ const ProjectDetail = () => {
   };
 
   const handleApply = async () => {
-    // Add a check to prevent applying if semesters don't match or already applied
     if (!isSemesterMatch || hasApplied) {
       return;
     }
@@ -99,7 +95,7 @@ const ProjectDetail = () => {
       if (res?.success) {
         alert(res?.message);
         setHasApplied(true);
-        setApplicationStatus(res?.status); // Assuming the response includes the new application status
+        setApplicationStatus(res?.status);
       }
     } catch (error) {
       console.log(error);
@@ -112,7 +108,7 @@ const ProjectDetail = () => {
   }, [id]);
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto mt-10">
       <div className="w-full flex flex-col md:flex-row gap-10">
         {/* LEFT SIDE */}
         {isFetching ? (
@@ -127,7 +123,7 @@ const ProjectDetail = () => {
                   className="w-20 h-20 md:w-24 md:h-20 rounded"
                 />
 
-                <div className="flex flex-col">
+                <div className="flex flex-col mx-2">
                   <p className="text-xl font-semibold text-gray-600">
                     {project?.projectTitle}
                   </p>
@@ -152,13 +148,6 @@ const ProjectDetail = () => {
                 <span className="text-sm">Salary</span>
                 <p className="text-lg font-semibold text-gray-700">
                   $ {project?.salary}
-                </p>
-              </div>
-
-              <div className="bg-[#fed0ab] w-40 h-16 px-6 rounded-lg flex flex-col items-center justify-center">
-                <span className="text-sm">No. of Applicants</span>
-                <p className="text-lg font-semibold text-gray-700">
-                  {project?.applications?.length || 0}
                 </p>
               </div>
 
@@ -253,16 +242,16 @@ const ProjectDetail = () => {
                   containerStyles={`w-full flex items-center justify-center text-white py-3 px-5 outline-none rounded-full text-base ${
                     hasApplied
                       ? applicationStatus === "accepted"
-                        ? "bg-green-500" // Accepted
+                        ? "bg-green-500"
                         : applicationStatus === "rejected"
-                        ? "bg-red-500" // Rejected
-                        : "bg-yellow-500" // Submitted or under review
+                        ? "bg-red-500"
+                        : "bg-yellow-500"
                       : !isSemesterMatch
                       ? "bg-gray-500 cursor-not-allowed"
-                      : "bg-black" // Apply Now
+                      : "bg-blue-700"
                   }`}
-                  onClick={handleApply}
                   disabled={hasApplied || !isSemesterMatch}
+                  onClick={handleApply}
                 />
               )}
             </div>
@@ -277,7 +266,7 @@ const ProjectDetail = () => {
               className="w-full flex flex-wrap gap-4"
               style={{ marginTop: "12px" }}
             >
-              {similarProjects?.slice(0, 6).map((project, index) => {
+              {similarProjects?.slice(0, 3).map((project, index) => {
                 const data = {
                   name: project?.company.name,
                   logo: project?.company.profileUrl || noLogo,
@@ -296,7 +285,7 @@ const ProjectDetail = () => {
               className="w-full flex flex-wrap gap-4"
               style={{ marginTop: "12px" }}
             >
-              {companyProjects?.slice(0, 6).map((project, index) => {
+              {companyProjects?.slice(0, 3).map((project, index) => {
                 const data = {
                   name: project?.company.name,
                   logo: project?.company.profileUrl || noLogo,

@@ -13,13 +13,13 @@ const MyApplications = () => {
   const fetchApplications = async () => {
     setIsLoading(true);
     const id = params.id || user?._id;
-  
+
     try {
       const res = await apiRequest({
         url: "/applications/user/" + id,
         method: "GET",
       });
-  
+
       if (res.success) {
         setApplications(res?.data || []);
       } else {
@@ -42,19 +42,23 @@ const MyApplications = () => {
   }
 
   return (
-    <div className='container mx-auto p-5'>
-      <div className='w-full flex flex-col md:flex-row gap-3 justify-between'>
-        <h2 className='text-gray-600 text-xl font-semibold'>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-gray-800 text-2xl font-semibold">
           My Applications
         </h2>
       </div>
 
-      <div className='w-full mt-20 flex flex-col gap-2'>
-        <p>Showing: {applications.length} Applications</p>
+      <div className="mt-6">
+        <p className="text-gray-600 mb-4">
+          Showing: {applications.length} Application(s)
+        </p>
 
-        <div className='flex flex-wrap gap-3'>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
           {applications.length === 0 ? (
-            <p>No applications found</p>
+            <p className="col-span-full text-center text-gray-600">
+              No applications found
+            </p>
           ) : (
             applications.map((application, index) => {
               const data = {
