@@ -137,6 +137,7 @@ const Navbar = () => {
         <Link to="/student-list" className={`py-2 ${isActive("/student-list")}`}>Student List</Link>,
         <Link to="/company-professor-list" className={`py-2 ${isActive("/company-professor-list")}`}>Professor / Company List</Link>,
         <Link to="/uploaded-list" className={`py-2 ${isActive("/uploaded-list")}`}>Uploaded List</Link>,
+        <Link to='/admin-project' className={`py-2 ${isActive("/admin-project")}`}>Projects</Link>,
         <Link to="/admin-applications" className={`py-2 ${isActive("/admin-applications")}`}>Student Applications</Link>,
         ...commonLinks  // Append the commonLinks array here
       ];

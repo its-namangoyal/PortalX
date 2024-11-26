@@ -16,6 +16,7 @@ import Notes from "./Notes";
 import ProfessorNotes from "./ProfessorNotes";
 import AdminApplications from "./AdminApplications";
 import ProfessorProfile from "./ProfessorProfile";
+import AdminProjects from "./AdminProjects";
 
 export {
   About,
@@ -35,5 +36,6 @@ export {
   Notes,
   ProfessorNotes,
   AdminApplications,
-  ProfessorProfile
+  ProfessorProfile,
+  AdminProjects
 };

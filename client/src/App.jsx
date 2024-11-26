@@ -21,7 +21,8 @@ import {
   Notes,
   ProfessorNotes,
   AdminApplications,
-  ProfessorProfile
+  ProfessorProfile,
+  AdminProjects,
 } from "./pages";
 import Projects from "./pages/Projects";
 import MyApplications from "./pages/MyApplications";
@@ -103,6 +104,7 @@ function App() {
           <Route path="/notes" element={<Notes />} />
           <Route path="/professor-notes/:id" element={<ProfessorNotes />} />
           <Route path="/admin-applications" element={<AdminApplications />} />
+          <Route path="/admin-project" element={<AdminProjects />} />
           {/* Updated Admin route */}
           <Route 
             path="/admin" 
