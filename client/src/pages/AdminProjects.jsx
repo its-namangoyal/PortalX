@@ -50,8 +50,8 @@ const AdminProjects = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+    <div className="p-8 bg-gradient-to-r from-blue-50 via-gray-50 to-indigo-50 min-h-screen">
+      <h1 className="text-4xl font-extrabold text-center mb-10 text-gray-900">
         Admin Projects
       </h1>
 
@@ -60,10 +60,10 @@ const AdminProjects = () => {
           Loading...
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Projects List */}
-          <div className="bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-700">
+          <div className="bg-white shadow-lg rounded-xl p-6">
+            <h2 className="text-2xl font-bold mb-6 text-gray-700">
               Projects
             </h2>
             {projects.length === 0 ? (
@@ -73,15 +73,15 @@ const AdminProjects = () => {
                 <div
                   key={project._id}
                   onClick={() => handleProjectClick(project._id)}
-                  className="cursor-pointer p-4 mb-3 bg-gray-50 rounded-lg shadow hover:shadow-lg transition-shadow hover:bg-gray-100"
+                  className="cursor-pointer p-5 mb-4 bg-gray-100 rounded-lg shadow-md hover:shadow-xl hover:scale-105 transition-all duration-200"
                 >
-                  <h3 className="font-medium text-gray-800">
+                  <h3 className="font-semibold text-gray-800 text-lg">
                     {project.projectTitle}
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 mt-1">
                     Applications: {project.applicationCount || 0}
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 mt-1">
                     Company: {project.company?.name || "N/A"}
                   </p>
                 </div>
@@ -90,79 +90,77 @@ const AdminProjects = () => {
           </div>
 
           {/* Project Details and Applications */}
-          <div className="bg-white shadow-md rounded-lg p-6">
+          <div className="bg-white shadow-lg rounded-xl p-6">
             {selectedProject ? (
               <>
-                <h2 className="text-xl font-semibold mb-4 text-gray-700">
+                <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-4">
                   Project Details
                 </h2>
-                <div className="mb-6">
-                  <h3 className="font-medium text-gray-800">
+                <div className="mb-8">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">
                     {selectedProject.projectTitle}
                   </h3>
-                  <p className="text-gray-600">
-                    Company: {selectedProject.company?.name || "N/A"}
-                  </p>
-                  <p className="text-gray-600">
-                    Location: {selectedProject.company?.location || "N/A"}
-                  </p>
-                  <p className="text-gray-600">
-                    Salary: ${selectedProject.salary || "N/A"}
-                  </p>
-                  <p className="text-gray-600">
-                    Project Type: {selectedProject.projectType || "N/A"}
-                  </p>
-                  <p className="text-gray-600">
-                    Vacancies: {selectedProject.vacancies || "N/A"}
-                  </p>
-                  <p className="text-gray-600">
-                    Experience Required: {selectedProject.experience || 0} year(s)
-                  </p>
-                  <p className="text-gray-600">
-                    Semester: {selectedProject.semester || "N/A"}
-                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { label: "Company", value: selectedProject.company?.name },
+                      { label: "Location", value: selectedProject.company?.location },
+                      { label: "Salary", value: `$${selectedProject.salary || "N/A"}` },
+                      { label: "Project Type", value: selectedProject.projectType },
+                      { label: "Vacancies", value: selectedProject.vacancies },
+                      { label: "Experience Required", value: `${selectedProject.experience || 0} year(s)` },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="bg-gray-50 p-4 rounded-lg">
+                        <p className="text-sm text-gray-500">{label}</p>
+                        <p className="font-medium text-gray-800">{value || "N/A"}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-
-                <h3 className="font-medium text-gray-700 mb-4">
+                <h3 className="text-xl font-bold text-gray-800 mb-6 border-b pb-3">
                   Applications ({applications.length})
                 </h3>
                 {applications.length === 0 ? (
                   <p className="text-gray-500">No applications yet.</p>
                 ) : (
-                  applications.map((application) => (
-                    <div
-                      key={application._id}
-                      className="border-b py-3 text-gray-700"
-                    >
-                      <p>
-                        Student: {application.student.firstName}{" "}
-                        {application.student.lastName}
-                      </p>
-                      <p>Email: {application.student.email}</p>
-                      <p>
-                        Status:{" "}
-                        <span
-                          className={`font-medium ${
-                            application.status === "accepted"
-                              ? "text-green-600"
-                              : application.status === "rejected"
-                              ? "text-red-600"
-                              : "text-yellow-600"
-                          }`}
-                        >
-                          {application.status}
-                        </span>
-                      </p>
-                      <p>
-                        Applied Date:{" "}
-                        {new Date(application.appliedDate).toLocaleDateString()}
-                      </p>
-                    </div>
-                  ))
+                  <div className="space-y-4">
+                    {applications.map((application) => (
+                      <div
+                        key={application._id}
+                        className="bg-gray-100 rounded-lg p-4 shadow hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-semibold text-gray-800">
+                              {application.student.firstName} {application.student.lastName}
+                            </p>
+                            <p className="text-gray-600 text-sm">
+                              {application.student.email}
+                            </p>
+                          </div>
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-medium ${
+                              application.status === "accepted"
+                                ? "bg-green-100 text-green-800"
+                                : application.status === "rejected"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-yellow-100 text-yellow-800"
+                            }`}
+                          >
+                            {application.status}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-2">
+                          Applied: {new Date(application.appliedDate).toLocaleDateString()}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </>
             ) : (
-              <p className="text-gray-500">Select a project to view details</p>
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">Select a project to view details</p>
+              </div>
             )}
           </div>
         </div>
