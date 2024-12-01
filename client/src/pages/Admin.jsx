@@ -243,28 +243,6 @@ const Admin = () => {
                 Dashboard
               </button>
             </li>
-            <li>
-              <button
-                onClick={() => setActiveTab('students')}
-                className={`w-full flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors ${
-                  activeTab === 'students' ? 'bg-gray-800 text-white' : ''
-                }`}
-              >
-                <FaGraduationCap className="mr-3" />
-                Students
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveTab('companies')}
-                className={`w-full flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors ${
-                  activeTab === 'companies' ? 'bg-gray-800 text-white' : ''
-                }`}
-              >
-                <FaBriefcase className="mr-3" />
-                Companies
-              </button>
-            </li>
           </ul>
         </nav>
       </div>
@@ -275,10 +253,7 @@ const Admin = () => {
           <div className="mx-auto px-6 py-4">
             <div className="flex items-center justify-between">
               <h1 className="text-2xl font-semibold text-gray-800">Dashboard Overview</h1>
-              <button className="flex items-center text-gray-600 hover:text-gray-800">
-                <FaSignOutAlt className="mr-2" />
-                Logout
-              </button>
+         
             </div>
           </div>
         </header>
