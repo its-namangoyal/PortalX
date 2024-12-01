@@ -248,11 +248,17 @@ const ProjectDetail = () => {
                       ? applicationStatus === "accepted"
                         ? "Application Accepted"
                         : "Application Pending"
+                      : !isSemesterMatch
+                      ? "Semester Mismatch"
                       : "Apply Now"
                   }
                   onClick={handleApply}
                   containerStyles={`w-full flex items-center justify-center ${
                     hasApplied
+                      ? applicationStatus === "accepted"
+                        ? "bg-green-500 text-white"
+                        : "bg-yellow-500 text-black"
+                      : !isSemesterMatch
                       ? "bg-gray-400 text-white"
                       : "bg-black text-white"
                   } py-3 px-5 outline-none rounded-full text-base`}

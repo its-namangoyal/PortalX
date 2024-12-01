@@ -71,12 +71,12 @@ const CompanyProfile = () => {
 
   return (
     <div className="container mx-auto p-5">
-      <div className="w-full mt-10 flex justify-center gap-3">
+      <div className="w-full mt-3 flex justify-center gap-3">
         {semesters.map((semester) => (
           <button
             key={semester}
             onClick={() => setSelectedSemester(semester)}
-            className={`py-2 px-4 rounded ${selectedSemester === semester ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+            className={`text-blue-600 py-1 px-4 rounded-full border border-blue-600`}
           >
             {semester}
           </button>

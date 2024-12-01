@@ -72,7 +72,7 @@ const Projects = () => {
 
   return (
     <div className="container mx-auto p-5">
-      <div className="w-full flex flex-col md:flex-row gap-3 justify-between">
+      <div className="w-full flex flex-col md:flex-row gap-3 justify-center">
         <h2 className="text-gray-600 text-xl font-semibold">
           Welcome, {info?.name}
         </h2>
@@ -84,10 +84,10 @@ const Projects = () => {
           {semesters.map((semester) => (
             <button
               key={semester}
-              className={`px-4 py-2 rounded-md ${
+              className={`py-1 px-4 rounded-full border border-blue-600 ${
                 selectedSemester === semester
                   ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700"
+                  : "bg-white text-blue-600"
               }`}
               onClick={() => setSelectedSemester(semester)}
             >

@@ -1,215 +1,131 @@
-import { Menu, Transition } from "@headlessui/react";
-import React, { Fragment, useState } from "react";
-import { AiOutlineClose, AiOutlineLogout } from "react-icons/ai";
-import { BiChevronDown } from "react-icons/bi";
-import { CgProfile } from "react-icons/cg";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { AiOutlineLogout } from "react-icons/ai";
 import { HiMenuAlt3 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
 import { Logout } from "../redux/userSlice";
-import CustomButton from "./CustomButton";
 
-// MenuList Component: Handles the profile menu with options like profile navigation and logout
-function MenuList({ user, isProfileOpen, onClick }) {
-  const dispatch = useDispatch();
-
-  const handleLogout = () => {
-    dispatch(Logout());
-    window.location.replace("/");
-  };
-
+// Sidebar Component (Navbar)
+const Sidebar = ({ links, onLogout, user }) => {
   return (
-    <Menu as="div" className="relative">
-      <Menu.Button
-        className="flex items-center gap-2 bg-white px-4 py-2 text-sm font-medium text-slate-700 rounded-full shadow-md hover:bg-opacity-20"
-        onClick={onClick} // Toggles the profile menu
-      >
-        <div className="flex flex-col items-start">
-          <p className="text-sm font-semibold">{user?.firstName ?? user?.name}</p>
-          <span className="text-sm text-blue-600">{user?.projectTitle ?? user?.email}</span>
-        </div>
-
-        {/* Profile Image or Initials */}
-        {user?.profileUrl ? (
-          <img src={user?.profileUrl} alt="user profile" className="w-10 h-10 rounded-full object-cover" />
-        ) : (
-          <div className="w-10 h-10 rounded-full bg-indigo-600 text-white text-lg flex items-center justify-center">
-            {user?.firstName?.slice(0, 1) || user?.name?.slice(0, 1)}
-          </div>
-        )}
-
-        <BiChevronDown className={`h-8 w-8 text-slate-600 transform transition-transform ${isProfileOpen ? "rotate-180" : ""}`} />
-      </Menu.Button>
-
-      {/* Dropdown Menu */}
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
-      >
-        <Menu.Items className="absolute z-50 mt-2 w-56 right-0 bg-white divide-y divide-gray-100 rounded-md shadow-lg">
-          <div className="p-1">
-            <Menu.Item>
-              {({ active }) => (
-                <Link
-                  to={`${
-                    user?.accountType === "seeker"
-                      ? "user-profile"
-                      : user?.accountType === "company"
-                      ? "professor-profile"
-                      : "admin-profile"
-                  }`}
-                  className={`group flex items-center rounded-md p-2 text-sm ${active ? "bg-blue-500 text-white" : "text-gray-900"}`}
-                  onClick={onClick}
-                >
-                  <CgProfile className={`mr-2 h-5 w-5 ${active ? "text-white" : "text-gray-600"}`} />
-                  {user?.accountType === "seeker"
-                    ? "Student Profile"
-                    : user?.accountType === "company"
-                    ? "Company Profile"
-                    : "Admin Profile"}
-                </Link>
-              )}
-            </Menu.Item>
-
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  onClick={handleLogout}
-                  className={`group flex items-center rounded-md px-2 py-2 text-sm ${active ? "bg-blue-500 text-white" : "text-gray-900"}`}
-                >
-                  <AiOutlineLogout className={`mr-2 h-5 w-5 ${active ? "text-white" : "text-gray-600"}`} />
-                  Log Out
-                </button>
-              )}
-            </Menu.Item>
-          </div>
-        </Menu.Items>
-      </Transition>
-    </Menu>
-  );
-}
-
-// Main Navbar Component: Contains the navigation and user interaction for different account types
-const Navbar = () => {
-  const { user } = useSelector((state) => state.user); // Get user data from Redux store
-  const [isOpen, setIsOpen] = useState(false); // Mobile menu state
-  const [isProfileOpen, setIsProfileOpen] = useState(false); // Profile dropdown state
-  const location = useLocation(); // Use location hook to get current path
-
-  // Toggles mobile navigation
-  const handleCloseNavbar = () => {
-    setIsOpen((prev) => !prev);
-  };
-
-  // Toggles profile dropdown menu
-  const handleProfileClick = () => {
-    setIsProfileOpen((prev) => !prev);
-  };
-
-  // Checks if the link matches the current path
-  const isActive = (path) => 
-  location.pathname === path 
-    ? "text-blue-600 font-semibold border-b-2 border-blue-600"  // Active state with blue text and underline
-    : "text-gray-900 hover:bg-blue-100 hover:text-blue-600 transition-transform duration-300 rounded";  // Normal and hover state
-
-  const renderLinks = () => {
-    const commonLinks = [
-      // Keep the About button at the end of the list
-      <Link to="/about-us" className={`py-2 ${isActive("/about-us")}`}>About</Link>
-    ];
-
-    if (user?.accountType === "seeker") {
-      return [
-        <Link to="/" className={`py-2 ${isActive("/find-projects")}`}>Find Internships</Link>,
-        <Link to="/companies" className={`py-2 ${isActive("/companies")}`}>Companies / Professors</Link>,
-        <Link to="/applications" className={`py-2 ${isActive("/applications")}`}>My Applications</Link>,
-        ...commonLinks  // Append the commonLinks array here
-      ];
-    }
-
-    if (user?.accountType === "admin") {
-      return [
-        <Link to="/student-list" className={`py-2 ${isActive("/student-list")}`}>Student List</Link>,
-        <Link to="/company-professor-list" className={`py-2 ${isActive("/company-professor-list")}`}>Professor / Company List</Link>,
-        <Link to="/uploaded-list" className={`py-2 ${isActive("/uploaded-list")}`}>Uploaded List</Link>,
-        <Link to='/admin-project' className={`py-2 ${isActive("/admin-project")}`}>Projects</Link>,
-        <Link to="/admin-applications" className={`py-2 ${isActive("/admin-applications")}`}>Student Applications</Link>,
-        ...commonLinks  // Append the commonLinks array here
-      ];
-    }
-
-    if (user?.accountType === "company") {
-      return [
-        <Link to="/upload-project" className={`py-2 ${isActive("/upload-project")}`}>Post a Project</Link>,
-        <Link to="/student-applications" className={`py-2 ${isActive("/student-applications")}`}>Applications</Link>,
-        ...commonLinks  // Append the commonLinks array here
-      ];
-    }
-  };
-
-  return (
-    <div className="relative bg-[#f7fdfd] z-50 shadow-sm">
-      <nav className="container mx-auto flex items-center justify-between p-5">
-        {/* Logo Section */}
-        <div>
-          <Link
-            to="/"
-            className="text-blue-600 font-bold text-2xl hover:scale-110 transform transition-transform"
-          >
-            Portal<span className="text-[#1677cccb]">X</span>
-          </Link>
-        </div>
-
-        {/* Desktop Menu */}
-        <ul className="hidden lg:flex gap-8 items-center text-base font-medium text-slate-700">
-          {user?.email && renderLinks()}
-        </ul>
-
-        {/* Profile Section */}
-        <div className="hidden lg:block">
-          {!user?.token ? (
-            <Link to="/user-auth">
-              <CustomButton
-                title="Sign In"
-                containerStyles="text-blue-600 py-1.5 px-5 border border-blue-600 rounded-full hover:bg-blue-700 hover:text-white"
-              />
+    <div className="h-screen w-64 bg-gradient-to-b from-blue-600 to-blue-800 text-white fixed top-0 left-0 shadow-xl z-50">
+      <div className="p-6 font-bold text-3xl border-b-4 border-blue-700">
+        Portal<span className="text-[#00B5E2]">X</span>
+      </div>
+      <ul className="p-6 space-y-2">
+        {" "}
+        {/* Reduced gap between links */}
+        {links.map((link, index) => (
+          <li key={index} className="hover:bg-blue-700 rounded-lg">
+            <Link to={link.path} className="block p-4 text-lg font-semibold">
+              {link.label}
             </Link>
-          ) : (
-            <MenuList user={user} isProfileOpen={isProfileOpen} onClick={handleProfileClick} />
-          )}
-        </div>
-
-        {/* Mobile Menu Toggle */}
-        <button className="block lg:hidden" onClick={handleCloseNavbar}>
-          {isOpen ? <AiOutlineClose size={26} /> : <HiMenuAlt3 size={26} />}
+          </li>
+        ))}
+        {/* Profile Option */}
+        {(user?.accountType === "seeker" ||
+          user?.accountType === "company") && (
+          <li className="hover:bg-blue-700 rounded-lg">
+            <Link
+              to={
+                user?.accountType === "seeker"
+                  ? "/user-profile"
+                  : "/professor-profile"
+              }
+              className="block p-4 text-lg font-semibold"
+            >
+              Profile
+            </Link>
+          </li>
+        )}
+      </ul>
+      <div className="absolute bottom-5 w-full px-6">
+        <button
+          onClick={onLogout}
+          className="flex items-center gap-2 w-full p-4 bg-blue-700 hover:bg-blue-800 rounded-lg text-lg font-semibold transition-colors duration-300"
+        >
+          <AiOutlineLogout size={20} />
+          Log Out
         </button>
-      </nav>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="lg:hidden flex flex-col items-start bg-[#f7fdfd] container mx-auto px-5 py-5">
-          {user?.email && renderLinks()}
-          <div className="w-full py-4">
-            {!user?.token ? (
-              <Link to="/user-auth">
-                <CustomButton
-                  title="Sign In"
-                  containerStyles="text-blue-600 py-1.5 px-5 border border-blue-600 rounded-full hover:bg-blue-700 hover:text-white"
-                />
-              </Link>
-            ) : (
-              <MenuList user={user} isProfileOpen={isProfileOpen} onClick={handleProfileClick} />
-            )}
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
 
-export default Navbar;
+// Main Navbar Layout with Sidebar
+const NavbarLayout = ({ children }) => {
+  const { user } = useSelector((state) => state.user); // Get user data from Redux store
+  const dispatch = useDispatch();
+
+  // Sidebar state for mobile
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const handleLogout = () => {
+    dispatch(Logout());
+    window.location.replace("/"); // Redirect to the home page after logout
+  };
+
+  // Sidebar links based on account type
+  const getLinks = () => {
+    if (user?.accountType === "seeker") {
+      return [
+        { path: "/", label: "Home" },
+        { path: "/companies", label: "Companies / Professors" },
+        { path: "/applications", label: "My Applications" },
+        { path: "/about-us", label: "About" },
+      ];
+    } else if (user?.accountType === "admin") {
+      return [
+        { path: "/", label: "Home" },
+        { path: "/student-list", label: "Student List" },
+        { path: "/company-professor-list", label: "Professor / Company List" },
+        { path: "/uploaded-list", label: "Uploaded List" },
+        { path: "/admin-project", label: "Projects" },
+        { path: "/admin-applications", label: "Student Applications" },
+        { path: "/about-us", label: "About" },
+      ];
+    } else if (user?.accountType === "company") {
+      return [
+        { path: "/", label: "Home" },
+        { path: "/upload-project", label: "Post a Project" },
+        { path: "/student-applications", label: "Applications" },
+        { path: "/about-us", label: "About" },
+      ];
+    }
+    return [];
+  };
+
+  const links = getLinks();
+
+  return (
+    <div className="flex">
+      {/* Sidebar */}
+      <Sidebar links={links} onLogout={handleLogout} user={user} />
+
+      {/* Main Content */}
+      <div
+        className={`transition-all ml-64 w-full ${
+          isSidebarOpen ? "ml-0" : "ml-64"
+        }`}
+      >
+        {/* Top Navbar for Mobile */}
+        <div className="lg:hidden p-4 flex justify-between items-center bg-gradient-to-r from-blue-600 to-blue-700 shadow-md">
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="text-white text-2xl"
+          >
+            <HiMenuAlt3 size={26} />
+          </button>
+          <h1 className="text-white font-bold text-2xl">
+            Portal<span className="text-[#00B5E2]">X</span>
+          </h1>
+        </div>
+
+        {/* Page Content */}
+        <div className="p-6">{children}</div>
+      </div>
+    </div>
+  );
+};
+
+export default NavbarLayout;

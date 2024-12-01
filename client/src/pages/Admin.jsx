@@ -225,7 +225,7 @@ const Admin = () => {
       <ToastContainer />
       
       {/* Sidebar */}
-      <div className="w-64 bg-gray-900 min-h-screen flex flex-col">
+      {/* <div className="w-64 bg-gray-900 min-h-screen flex flex-col">
         <div className="p-4">
           <h2 className="text-white text-2xl font-bold">Admin Panel</h2>
         </div>
@@ -245,7 +245,7 @@ const Admin = () => {
             </li>
           </ul>
         </nav>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="flex-1">

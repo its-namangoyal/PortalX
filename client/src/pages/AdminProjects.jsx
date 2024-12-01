@@ -7,6 +7,7 @@ const AdminProjects = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedSemester, setSelectedSemester] = useState("All");
 
   const api = axios.create({
     baseURL: "http://localhost:8800/api-v1",
@@ -14,12 +15,14 @@ const AdminProjects = () => {
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [selectedSemester]);
 
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/adminproject/projects");
+      const response = await api.get("/adminproject/projects", {
+        params: { semester: selectedSemester }, // Passing selected semester as query parameter
+      });
       setProjects(response.data);
       setError(null);
     } catch (error) {
@@ -45,15 +48,34 @@ const AdminProjects = () => {
     }
   };
 
+  const handleSemesterChange = (semester) => {
+    setSelectedSemester(semester);
+  };
+
   if (error) {
     return <div className="p-4 text-red-600 font-semibold">{error}</div>;
   }
 
   return (
     <div className="p-8 bg-gradient-to-r from-blue-50 via-gray-50 to-indigo-50 min-h-screen">
-      <h1 className="text-4xl font-extrabold text-center mb-10 text-gray-900">
-        Admin Projects
-      </h1>
+      {/* Semester Filter */}
+      <div className="mb-6">
+        <div className="flex gap-4 justify-center">
+          {["All", "Fall 2024", "Summer 2024", "Winter 2024"].map((semester) => (
+            <button
+              key={semester}
+              onClick={() => handleSemesterChange(semester)}
+              className={`py-1 px-4 rounded-full border border-blue-600 ${
+                selectedSemester === semester
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-blue-600"
+              }`}
+            >
+              {semester}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {loading ? (
         <div className="text-center text-xl text-gray-600 animate-pulse">
@@ -63,9 +85,7 @@ const AdminProjects = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Projects List */}
           <div className="bg-white shadow-lg rounded-xl p-6">
-            <h2 className="text-2xl font-bold mb-6 text-gray-700">
-              Projects
-            </h2>
+            <h2 className="text-2xl font-bold mb-6 text-gray-700">Projects</h2>
             {projects.length === 0 ? (
               <p className="text-gray-500">No projects found.</p>
             ) : (
@@ -101,7 +121,7 @@ const AdminProjects = () => {
                     {selectedProject.projectTitle}
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
-                    {[
+                    {[ 
                       { label: "Company", value: selectedProject.company?.name },
                       { label: "Location", value: selectedProject.company?.location },
                       { label: "Salary", value: `$${selectedProject.salary || "N/A"}` },

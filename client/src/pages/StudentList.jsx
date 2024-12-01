@@ -164,10 +164,10 @@ const StudentList = () => {
           (semester) => (
             <button
               key={semester}
-              className={`px-4 py-2 rounded-md ${
+              className={`py-1 px-4 rounded-full border border-blue-600 ${
                 selectedSemester === semester
                   ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700"
+                  : "bg-white text-blue-600"
               }`}
               onClick={() => setSelectedSemester(semester)}
             >

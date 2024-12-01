@@ -207,10 +207,10 @@ const CompanyProfessorList = () => {
       {/* Filter buttons section */}
       <div className="flex justify-center gap-4 mt-5 mb-5">
         <button
-          className={`px-4 py-2 rounded-md ${
+          className={`py-1 px-4 rounded-full border border-blue-600 ${
             filter === "All"
               ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700"
+              : "bg-white text-blue-600"
           }`}
           onClick={() => setFilter("All")}
         >
@@ -219,10 +219,10 @@ const CompanyProfessorList = () => {
         {semesters.map((semester) => (
           <button
             key={semester._id}
-            className={`px-4 py-2 rounded-md ${
+            className={`py-1 px-4 rounded-full border border-blue-600 ${
               filter === semester.name
                 ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700"
+                : "bg-white text-blue-600"
             }`}
             onClick={() => setFilter(semester.name)}
           >

@@ -11,7 +11,7 @@ const SearchInput = ({ placeholder, value, setValue, handleClick }) => {
 
   return (
     <div
-      className="flex w-full md:w-1/2 items-center bg-white shadow-md p-3" // Adjusted width here
+      className="flex w-full md:w-1/2 items-center bg-white shadow-md px-3" // Adjusted width here
       style={{ borderRadius: "25px", background: "rgba(255, 255, 255, 0.8)" }}
     >
       <input
@@ -36,7 +36,7 @@ const SearchInput = ({ placeholder, value, setValue, handleClick }) => {
 
 const Header = ({ title, handleClick, searchQuery, setSearchQuery }) => {
   return (
-    <div className="w-full py-5 flex flex-col items-center bg-transparent">
+    <div className="w-full py-6 flex flex-col items-center bg-transparent">
       <p className="text-gray-800 font-bold text-2xl mb-5">{title}</p>
       <SearchInput
         placeholder="Search by internship title, keywords, or location"

@@ -8,7 +8,11 @@ const router = express.Router();
 // Get all projects with application counts
 router.get("/projects", async (req, res) => {
   try {
-    const projects = await Projects.find()
+    const { semester } = req.query; // Get the semester from the query parameters
+    
+    const query = semester && semester !== "All" ? { semester } : {}; // Filter if a specific semester is selected
+    
+    const projects = await Projects.find(query)
       .populate("company", "name")
       .lean();
 
@@ -27,6 +31,7 @@ router.get("/projects", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 // Get specific project with its applications
 router.get("/projects/:projectId", async (req, res) => {

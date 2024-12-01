@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import { CustomButton, ProjectCard, ListBox, Loading } from "../components";
 import Header from "../components/Header";
 import { apiRequest, updateURL } from "../utils";
-import { experience } from "../utils/data";
 
 const FindProjects = () => {
   const [sort, setSort] = useState("Newest");
@@ -74,7 +73,7 @@ const FindProjects = () => {
         );
       }
 
-      // Apply experience filter
+      // Apply experience filter (if any)
       if (filterExp.length > 0) {
         filteredProjects = filteredProjects.filter((project) =>
           filterExp.some((range) => {
@@ -93,16 +92,6 @@ const FindProjects = () => {
     } finally {
       setIsFetching(false);
     }
-  };
-
-  // Handle experience filter updates
-  const filterExperience = (e) => {
-    const selectedExp = e.target.value;
-    setFilterExp((prevExp) =>
-      prevExp.includes(selectedExp)
-        ? prevExp.filter((exp) => exp !== selectedExp)
-        : [...prevExp, selectedExp]
-    );
   };
 
   useEffect(() => {
@@ -124,47 +113,35 @@ const FindProjects = () => {
         setLocation={setProjectLocation}
       />
 
-      <div className="container mx-auto flex gap-6 2xl:gap-10 md:px-5 py-0 md:py-6 bg-[#f7fdfd]">
-        {/* Filters Section */}
-        <div className="hidden md:flex flex-col w-1/6 h-fit bg-white shadow-sm">
-          <p className="text-lg font-semibold text-slate-600">Filter by Experience</p>
-          <div className="flex flex-col gap-2">
-            {experience.map((exp) => (
-              <label key={exp.title} className="flex gap-3 items-center">
-                <input
-                  type="checkbox"
-                  value={exp.value}
-                  className="w-4 h-4"
-                  onChange={filterExperience}
-                />
-                <span>{exp.title}</span>
-              </label>
-            ))}
-          </div>
+      {/* Semester Filter Buttons (Moved Above Projects Section) */}
+      <div className="w-full flex justify-center gap-3 mb-6">
+        <CustomButton
+          onClick={() => setSemesterFilter("All")}
+          title="All"
+          containerStyles="text-blue-600 py-1 px-4 rounded-full border border-blue-600"
+        />
+        <CustomButton
+          onClick={() => setSemesterFilter("Current")}
+          title="Current"
+          containerStyles="text-blue-600 py-1 px-4 rounded-full border border-blue-600"
+        />
+        {semesters.map((semester) => (
+          <CustomButton
+            key={semester._id}
+            onClick={() => setSemesterFilter(semester.name)}
+            title={semester.name}
+            containerStyles="text-blue-600 py-1 px-4 rounded-full border border-blue-600"
+          />
+        ))}
+      </div>
 
-          <div className="mt-4">
-            <label className="text-lg font-semibold text-slate-600">Filter by Semester</label>
-            <select
-              value={semesterFilter}
-              onChange={(e) => setSemesterFilter(e.target.value)}
-              className="w-full mt-2 p-2 border rounded text-gray-700"
-            >
-              <option value="All">All</option>
-              <option value="Current">Current</option>
-              {semesters.map((semester) => (
-                <option key={semester._id} value={semester.name}>
-                  {semester.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
+      <div className="container mx-auto flex justify-center px-6 bg-[#f7fdfd]">
         {/* Projects Section */}
-        <div className="w-full md:w-5/6 px-5 md:px-0">
+        <div className="w-full px-5 md:px-0">
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm md:text-base">
-              Showing: <span className="font-semibold">{recordCount}</span> Internships Available
+              Showing: <span className="font-semibold">{recordCount}</span>{" "}
+              Internships Available
             </p>
             <div className="flex flex-col md:flex-row gap-0 md:gap-2 md:items-center">
               <p className="text-sm md:text-base">Sort By:</p>
@@ -182,7 +159,8 @@ const FindProjects = () => {
                 logo: project?.company?.profileUrl,
                 hasApplied,
                 status: hasApplied
-                  ? applications.find((app) => app.project._id === project._id)?.status
+                  ? applications.find((app) => app.project._id === project._id)
+                      ?.status
                   : null,
                 ...project,
               };

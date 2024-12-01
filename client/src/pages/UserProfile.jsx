@@ -296,8 +296,8 @@ const UserProfile = () => {
 
 
   return (
-    <div className='container mx-auto flex items-center justify-center py-10'> 
-      <div className='w-full md:w-2/3 2xl:w-2/4 bg-white shadow-lg p-10 pb-20 rounded-lg'>
+    <div className='container mx-auto flex items-center justify-center'> 
+      <div className='w-full bg-white shadow-lg p-10 pb-20 rounded-lg'>
         <div className='flex flex-col items-center justify-center mb-4'>
           <h1 className='text-4xl font-semibold text-slate-600'>
             {userInfo?.firstName + " " + userInfo?.lastName}

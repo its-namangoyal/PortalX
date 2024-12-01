@@ -1,8 +1,8 @@
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Footer, Navbar } from "./components";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   About,
   AuthPage,
@@ -13,7 +13,7 @@ import {
   UploadProject,
   UserProfile,
   Admin,
-  StudentApplications, 
+  StudentApplications,
   ApplicationDetails,
   StudentList,
   CompanyProfessorList,
@@ -32,24 +32,31 @@ function Layout() {
   const location = useLocation();
 
   return user?.token ? (
-    <>
-      <Navbar />
-      <Outlet />
+    <div className="flex flex-col min-h-screen">
+      {/* Sidebar */}
+      <Navbar /> {/* The Sidebar/ Navbar remains fixed on the left */}
+      {/* Main Content */}
+      <div className="flex-grow ml-64">
+        <Outlet />
+      </div>
+      {/* Footer */}
       <Footer />
-    </>
+    </div>
   ) : (
     <Navigate to="/user-auth" state={{ from: location }} replace />
   );
 }
 
-// New layout component for pages with Navbar and Footer but no auth required
+// Public Layout for pages without authentication
 function PublicLayout() {
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <Outlet />
+      <div className="flex-grow">
+        <Outlet />
+      </div>
       <Footer />
-    </>
+    </div>
   );
 }
 
@@ -58,9 +65,8 @@ function App() {
 
   return (
     <main className="bg-[#f7fdfd]">
-      {/* Moved ToastContainer outside of Routes */}
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
-      
+
       <Routes>
         {/* Protected Routes */}
         <Route element={<Layout />}>
@@ -96,28 +102,40 @@ function App() {
           <Route path="/project-detail/:id" element={<ProjectDetail />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/student-list" element={<StudentList />} />
-          <Route path="/company-professor-list" element={<CompanyProfessorList />} />
+          <Route
+            path="/company-professor-list"
+            element={<CompanyProfessorList />}
+          />
           <Route path="/uploaded-list" element={<UploadedList />} />
-
-          <Route path="/student-applications" element={<StudentApplications />} />
-          <Route path="/applications/:applicationId" element={<ApplicationDetails />} />
+          <Route
+            path="/student-applications"
+            element={<StudentApplications />}
+          />
+          <Route
+            path="/applications/:applicationId"
+            element={<ApplicationDetails />}
+          />
           <Route path="/notes" element={<Notes />} />
           <Route path="/professor-notes/:id" element={<ProfessorNotes />} />
           <Route path="/admin-applications" element={<AdminApplications />} />
           <Route path="/admin-project" element={<AdminProjects />} />
-          {/* Updated Admin route */}
-          <Route 
-            path="/admin" 
-            element={user?.accountType === "admin" ? <Admin /> : <Navigate to="/" replace />} 
+          <Route path="/about-us" element={<About />} />
+          <Route
+            path="/admin"
+            element={
+              user?.accountType === "admin" ? (
+                <Admin />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
           />
         </Route>
 
-        {/* Public Routes with Navbar and Footer */}
-        <Route element={<PublicLayout />}>
-          <Route path="/about-us" element={<About />} />
-        </Route>
+        {/* Public Routes */}
+        <Route element={<PublicLayout />}></Route>
 
-        {/* Public Routes without Navbar and Footer */}
+        {/* Authentication Routes */}
         <Route path="/user-auth" element={<AuthPage />} />
       </Routes>
     </main>
