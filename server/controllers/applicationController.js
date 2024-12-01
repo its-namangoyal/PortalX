@@ -1,6 +1,7 @@
 import Application from "../models/applicationsModel.js";
 import User from "../models/userModel.js"; // Implied import for User model
 import Projects from "../models/projectsModel.js"; // Add this import
+import mongoose from "mongoose";
 
 export const getUserApplications = async (req, res) => {
   try {
@@ -74,7 +75,7 @@ export const getApplicationById = async (req, res) => {
       .populate({
         path: "student",
         model: User, // Reference the User model (not Users, change this line)
-        select: "firstName lastName email cvUrl", // Select only the required fields
+        select: "firstName lastName email cvUrl profileUrl", // Select only the required fields
       })
       .populate({
         path: "project",
@@ -157,6 +158,48 @@ export const updateAdminApproval = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "An error occurred while updating admin approval",
+      error: error.message,
+    });
+  }
+};
+
+// Get applications by project ID
+export const getApplicationsByProject = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    // Convert the projectId from string to ObjectId
+    if (!mongoose.Types.ObjectId.isValid(projectId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid project ID",  // Return a 400 error if the projectId is invalid
+      });
+    }
+
+    // Use ObjectId to query the Application model
+    const applications = await Application.find({ project: new mongoose.Types.ObjectId(projectId) })
+      .populate({
+        path: "student",
+        select: "firstName lastName email profileUrl cvUrl",  // Fetch only necessary student fields
+      })
+      .sort({ createdAt: -1 });  // Sort applications by newest first
+
+    if (!applications.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No applications found for this project",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: applications,
+    });
+  } catch (error) {
+    console.error("Error in getApplicationsByProject:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
       error: error.message,
     });
   }

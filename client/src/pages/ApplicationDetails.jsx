@@ -5,6 +5,9 @@ import { toast } from "react-toastify";
 import { apiRequest } from "../utils";
 import Loading from "../components/Loading";
 
+const noLogo =
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/450px-No_image_available.svg.png";
+
 const ApplicationDetails = () => {
   const { applicationId } = useParams();
   const { user } = useSelector((state) => state.user);
@@ -100,35 +103,51 @@ const ApplicationDetails = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-6">Application Details</h1>
+    <div className="container mx-auto px-10 py-8">
+      <h1 className="text-4xl font-bold mb-6 text-indigo-600">Application Details</h1>
 
-      <div className="bg-white shadow-xl rounded-lg p-6 relative overflow-hidden">
+      {/* Main content wrapper */}
+      <div className="bg-white shadow-xl rounded-lg p-6 space-y-6">
+        {/* Project Title */}
         <div className="mb-6">
           <h2 className="text-2xl font-semibold mb-4 text-indigo-600">{project.projectTitle}</h2>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
               <h3 className="text-xl font-semibold">Applicant Information</h3>
-              <p className="text-gray-700">
-                Name: <span className="font-medium">{student.firstName} {student.lastName}</span>
-              </p>
-              <p className="text-gray-700">Email: {student.email}</p>
-              <p className="text-gray-700">Applied on: {new Date(application.appliedDate).toLocaleDateString()}</p>
-              <p className="text-gray-700">Semester: {project.semester}</p>
+              <div className="space-y-2">
+                <p className="text-gray-700">
+                  Name: <span className="font-medium">{student.firstName} {student.lastName}</span>
+                </p>
+                <p className="text-gray-700">Email: {student.email}</p>
+                <p className="text-gray-700">Applied on: {new Date(application.appliedDate).toLocaleDateString()}</p>
+                <p className="text-gray-700">Semester: {project.semester}</p>
+              </div>
+              <div className="mt-4">
+                <a
+                  href={student.cvUrl}
+                  download
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4 inline-block"
+                >
+                  Download Resume
+                </a>
+              </div>
             </div>
-            <div className="flex flex-col items-start">
-              <a
-                href={student.cvUrl}
-                download
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4"
-              >
-                Download Resume
-              </a>
+
+            {/* Student Profile Picture */}
+            <div className="flex flex-col items-center justify-center">
+              <img
+                src={student.profileUrl || noLogo}
+                alt="Student Profile"
+                className="w-32 h-32 rounded-full object-cover mb-4"
+              />
+              <p className="text-lg font-semibold text-gray-700">{student.firstName} {student.lastName}</p>
             </div>
           </div>
         </div>
 
-        <div className="mb-4">
+        {/* Status Section */}
+        <div className="mb-6">
           <h3 className="text-xl font-semibold">
             {user.accountType === "admin" ? "Admin Approval" : "Application Status"}
           </h3>
@@ -144,15 +163,15 @@ const ApplicationDetails = () => {
 
         {/* Admin controls */}
         {user.accountType === "admin" && (
-          <div className="flex gap-4">
+          <div className="flex gap-6 mt-6 justify-center">
             <button
-              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded w-1/3"
               onClick={() => updateAdminApproval("Accepted")}
             >
               Accept
             </button>
             <button
-              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded w-1/3"
               onClick={() => updateAdminApproval("Rejected")}
             >
               Reject
@@ -162,15 +181,15 @@ const ApplicationDetails = () => {
 
         {/* Company controls */}
         {user.accountType === "company" && (
-          <div className="flex gap-4 mt-4">
+          <div className="flex gap-8 mt-6 justify-center">
             <button
-              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded w-1/3"
               onClick={() => updateApplicationStatus("accepted")}
             >
               Accept
             </button>
             <button
-              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded w-1/3"
               onClick={() => updateApplicationStatus("rejected")}
             >
               Reject

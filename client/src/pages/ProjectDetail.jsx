@@ -16,6 +16,7 @@ const ProjectDetail = () => {
   const [project, setProject] = useState(null);
   const [similarProjects, setSimilarProjects] = useState([]);
   const [companyProjects, setCompanyProjects] = useState([]);
+  const [studentsAccepted, setStudentsAccepted] = useState([]);
   const [selected, setSelected] = useState("0");
   const [isFetching, setIsFetching] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
@@ -52,6 +53,20 @@ const ProjectDetail = () => {
       });
       setHasApplied(applicationRes?.exists || false);
       setApplicationStatus(applicationRes?.status || null);
+
+      // Fetch applications for the project if the account type is not 'seeker'
+      if (user?.accountType !== "seeker") {
+        const applicationsRes = await apiRequest({
+          url: `/applications/get-applications-by-project/${id}`,
+          method: "GET",
+          token: user?.token,
+        });
+
+        // Filter accepted students
+        setStudentsAccepted(
+          applicationsRes?.data?.filter((app) => app.status === "accepted")
+        );
+      }
     } catch (error) {
       setIsFetching(false);
       console.log(error);
@@ -232,26 +247,15 @@ const ProjectDetail = () => {
                     hasApplied
                       ? applicationStatus === "accepted"
                         ? "Application Accepted"
-                        : applicationStatus === "rejected"
-                        ? "Application Rejected"
-                        : "Application Submitted"
-                      : !isSemesterMatch
-                      ? "Semester Mismatch"
+                        : "Application Pending"
                       : "Apply Now"
                   }
-                  containerStyles={`w-full flex items-center justify-center text-white py-3 px-5 outline-none rounded-full text-base ${
-                    hasApplied
-                      ? applicationStatus === "accepted"
-                        ? "bg-green-500"
-                        : applicationStatus === "rejected"
-                        ? "bg-red-500"
-                        : "bg-yellow-500"
-                      : !isSemesterMatch
-                      ? "bg-gray-500 cursor-not-allowed"
-                      : "bg-blue-700"
-                  }`}
-                  disabled={hasApplied || !isSemesterMatch}
                   onClick={handleApply}
+                  containerStyles={`w-full flex items-center justify-center ${
+                    hasApplied
+                      ? "bg-gray-400 text-white"
+                      : "bg-black text-white"
+                  } py-3 px-5 outline-none rounded-full text-base`}
                 />
               )}
             </div>
@@ -259,43 +263,81 @@ const ProjectDetail = () => {
         )}
 
         {/* RIGHT SIDE */}
-        {user?.accountType === "seeker" ? (
-          <div className="w-full md:w-1/3 2xl:w-2/4 p-5 mt-20 md:mt-0">
-            <p className="text-gray-500 font-semibold">Similar Projects</p>
-            <div
-              className="w-full flex flex-wrap gap-4"
-              style={{ marginTop: "12px" }}
-            >
-              {similarProjects?.slice(0, 3).map((project, index) => {
-                const data = {
-                  name: project?.company.name,
-                  logo: project?.company.profileUrl || noLogo,
-                  ...project,
-                };
-                return <ProjectCard project={data} key={index} />;
-              })}
-            </div>
-          </div>
-        ) : (
-          <div className="w-full md:w-1/3 2xl:w-2/4 p-5 mt-20 md:mt-0">
-            <p className="text-gray-500 font-semibold">
-              Other projects from {user?.name}
-            </p>
-            <div
-              className="w-full flex flex-wrap gap-4"
-              style={{ marginTop: "12px" }}
-            >
-              {companyProjects?.slice(0, 3).map((project, index) => {
-                const data = {
-                  name: project?.company.name,
-                  logo: project?.company.profileUrl || noLogo,
-                  ...project,
-                };
-                return <ProjectCard project={data} key={index} />;
-              })}
-            </div>
-          </div>
-        )}
+        <div className="w-full md:w-1/3 2xl:w-1/3 bg-white px-5 py-10 md:px-10 shadow-md">
+          {/* For Seekers: Show Similar Projects */}
+          {user?.accountType === "seeker" && (
+            <>
+              <p className="text-lg font-semibold">Similar Projects</p>
+              <div className="w-full mt-5 flex flex-col gap-3">
+                {similarProjects?.map((project) => (
+                  <ProjectCard
+                    key={project?._id}
+                    project={{
+                      ...project,
+                      logo: project?.company?.profileUrl,
+                    }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* For Companies and Others: Show Accepted Students */}
+          {user?.accountType !== "seeker" && (
+            <>
+              <p className="text-2xl font-bold text-gray-800">
+                Students Enrolled
+              </p>
+              <div className="w-full mt-6 flex flex-col gap-6">
+                {studentsAccepted?.map((application) => (
+                  <div
+                    key={application?._id}
+                    className="w-full bg-white shadow-md rounded-lg p-6 hover:shadow-xl transition-all"
+                  >
+                    <div className="flex items-center gap-5">
+                      {/* Profile Picture */}
+                      {application?.student?.profileUrl && (
+                        <img
+                          src={application?.student?.profileUrl}
+                          alt={`${application?.student?.firstName} ${application?.student?.lastName}`}
+                          className="w-20 h-20 rounded-full object-cover border-2 border-gray-300"
+                        />
+                      )}
+                      <div>
+                        <p className="text-xl font-semibold text-gray-900">
+                          {application?.student?.firstName}{" "}
+                          {application?.student?.lastName}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {application?.student?.email}
+                        </p>
+                        <span className="text-sm text-gray-500">
+                          Applied on{" "}
+                          {moment(application?.appliedDate).format(
+                            "MMM Do YYYY"
+                          )}
+                        </span>
+                        {/* CV/Resume */}
+                        {application?.student?.cvUrl && (
+                          <div className="mt-4">
+                            <a
+                              href={application?.student?.cvUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 font-medium text-sm hover:underline"
+                            >
+                              View Resume
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
