@@ -313,24 +313,44 @@ const CompanyProfessorList = () => {
                       alt={`${company.name} Logo`}
                       className="w-16 h-16 rounded-full mb-4"
                     />
-                    <p>
+                    <p className="my-2">
                       <strong>Name:</strong> {company.name}
                     </p>
-                    <p>
+                    <p className="my-2">
                       <strong>Email:</strong> {company.email}
                     </p>
-                    <p>
+                    <p className="my-2">
                       <strong>Contact:</strong> {company.contact}
                     </p>
-                    <p>
+                    <p className="my-2">
                       <strong>Location:</strong> {company.location}
                     </p>
-                    <p>
+                    <p className="w-25">
                       <strong>About:</strong> {company.about}
                     </p>
-                    <p>
+                    <p className="my-2">
                       <strong>Semester:</strong> {company.semester}
                     </p>
+                    <div className="space-x-4 my-3">
+                    <button
+                      onClick={() => handleEdit(company)}
+                      className="btn btn-primary"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(company._id)}
+                      className="btn btn-danger"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => handleViewNotes(company._id)}
+                      className="btn btn-secondary"
+                    >
+                      Notes
+                    </button>
+                  </div>
                     <div className="my-2">
                       <input
                         type="file"
@@ -365,26 +385,6 @@ const CompanyProfessorList = () => {
                         </button>
                       </>
                     )}
-                  </div>
-                  <div className="space-x-4">
-                    <button
-                      onClick={() => handleEdit(company)}
-                      className="btn btn-primary"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(company._id)}
-                      className="btn btn-danger"
-                    >
-                      Delete
-                    </button>
-                    <button
-                      onClick={() => handleViewNotes(company._id)}
-                      className="btn btn-secondary"
-                    >
-                      View Notes
-                    </button>
                   </div>
                 </div>
               )}

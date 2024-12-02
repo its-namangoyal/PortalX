@@ -50,6 +50,14 @@ const Companies = () => {
     }
   };
 
+  const truncateText = (text, wordLimit) => {
+    const words = text.split(" ");
+    if (words.length > wordLimit) {
+      return words.slice(0, wordLimit).join(" ") + "...";
+    }
+    return text;
+  };
+
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
     await fetchCompanies();
@@ -128,7 +136,9 @@ const Companies = () => {
                   <span>{cmp.location}</span>
                 </div>
 
-                <p className="text-sm text-gray-500 mt-2">{cmp.about}</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  {truncateText(cmp.about, 10)} {/* Limit to 20 words */}
+                </p>
               </div>
 
               {/* View Projects Button */}

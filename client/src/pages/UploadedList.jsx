@@ -76,7 +76,7 @@ const UploadedList = () => {
       visible: true,
       action: async () => {
         try {
-          await axios.put(`http://localhost:8800/api-v1/uploadedlist/${type}/${id}`, updatedData);
+          await axios.put(`http://localhost:8800/api-v1/uploadedlist/${type}s/${id}`, updatedData);
           showMessage('success', `${type === 'student' ? 'Student' : 'Professor'} updated successfully!`);
           fetchStudents();
           fetchProfessors();
@@ -89,8 +89,8 @@ const UploadedList = () => {
             setProfessorData({ firstName: '', lastName: '', email: '', professorID: '', semester: '' });
           }
         } catch (error) {
-          console.error(`Failed to update ${type.slice(0, -1)}:`, error);
-          showMessage('error', `Failed to update ${type.slice(0, -1)}.`);
+          console.error(`Failed to update ${type}:`, error);
+          showMessage('error', `Failed to update ${type}.`);
         }
       },
     });
