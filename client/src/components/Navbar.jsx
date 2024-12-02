@@ -42,7 +42,7 @@ const Sidebar = ({ links, onLogout, user }) => {
       <div className="absolute bottom-5 w-full px-6">
         <button
           onClick={onLogout}
-          className="flex items-center gap-2 w-full p-4 bg-blue-700 hover:bg-red-500 rounded-lg text-lg font-semibold transition-colors duration-300"
+          className="flex items-center gap-2 w-full p-4 hover:bg-red-500 rounded-lg text-lg font-semibold transition-colors duration-300"
         >
           <AiOutlineLogout size={20} />
           Log Out
@@ -78,7 +78,7 @@ const NavbarLayout = ({ children }) => {
       return [
         { path: "/", label: "Home" },
         { path: "/student-list", label: "Student List" },
-        { path: "/company-professor-list", label: "Professor / Company List" },
+        { path: "/company-professor-list", label: "Company List" },
         { path: "/uploaded-list", label: "Uploaded List" },
         { path: "/admin-project", label: "Projects" },
         { path: "/admin-applications", label: "Student Applications" },
