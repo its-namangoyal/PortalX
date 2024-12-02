@@ -8,7 +8,7 @@ import { Logout } from "../redux/userSlice";
 // Sidebar Component (Navbar)
 const Sidebar = ({ links, onLogout, user }) => {
   return (
-    <div className="h-screen w-64 bg-gradient-to-b from-blue-600 to-blue-800 text-white fixed top-0 left-0 shadow-xl z-50">
+    <div className="h-screen w-64 bg-blue-600 text-white fixed top-0 left-0 shadow-xl z-50">
       <div className="p-6 font-bold text-3xl border-b-4 border-blue-700">
         Portal<span className="text-[#00B5E2]">X</span>
       </div>
@@ -16,7 +16,7 @@ const Sidebar = ({ links, onLogout, user }) => {
         {" "}
         {/* Reduced gap between links */}
         {links.map((link, index) => (
-          <li key={index} className="hover:bg-blue-700 rounded-lg">
+          <li key={index} className="hover:bg-white rounded-lg">
             <Link to={link.path} className="block p-4 text-lg font-semibold">
               {link.label}
             </Link>
@@ -25,7 +25,7 @@ const Sidebar = ({ links, onLogout, user }) => {
         {/* Profile Option */}
         {(user?.accountType === "seeker" ||
           user?.accountType === "company") && (
-          <li className="hover:bg-blue-700 rounded-lg">
+          <li className="hover:bg-white rounded-lg">
             <Link
               to={
                 user?.accountType === "seeker"
@@ -42,7 +42,7 @@ const Sidebar = ({ links, onLogout, user }) => {
       <div className="absolute bottom-5 w-full px-6">
         <button
           onClick={onLogout}
-          className="flex items-center gap-2 w-full p-4 bg-blue-700 hover:bg-blue-800 rounded-lg text-lg font-semibold transition-colors duration-300"
+          className="flex items-center gap-2 w-full p-4 bg-blue-700 hover:bg-red-500 rounded-lg text-lg font-semibold transition-colors duration-300"
         >
           <AiOutlineLogout size={20} />
           Log Out
@@ -70,7 +70,7 @@ const NavbarLayout = ({ children }) => {
     if (user?.accountType === "seeker") {
       return [
         { path: "/", label: "Home" },
-        { path: "/companies", label: "Companies / Professors" },
+        { path: "/companies", label: "Companies" },
         { path: "/applications", label: "My Applications" },
         { path: "/about-us", label: "About" },
       ];
