@@ -19,7 +19,7 @@ const Footer = () => {
         />
         {/* Footer Text */}
         <p className="text-gray-600 text-md font-light">
-          &copy; {new Date().getFullYear()} PortalX. All rights reserved.
+          &copy; {new Date().getFullYear()} PortalX- All rights reserved.
         </p>
       </div>
     </footer>
